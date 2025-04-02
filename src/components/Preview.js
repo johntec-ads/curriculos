@@ -3,12 +3,15 @@ import { Container, Paper, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 
 function Preview() {
   const navigate = useNavigate();
   const printRef = useRef(null);
   const [curriculumData, setCurriculumData] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
@@ -30,11 +33,13 @@ function Preview() {
     const element = printRef.current;
     if (!element) return;
 
+    setIsGenerating(true);
     try {
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        logging: true
+        logging: false,
+        backgroundColor: '#ffffff'
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -46,6 +51,9 @@ function Preview() {
       pdf.save(`Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`);
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar o PDF. Tente novamente.');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -171,6 +179,18 @@ function Preview() {
           Gerar PDF
         </Button>
       </Box>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isGenerating}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress color="inherit" />
+          <Typography sx={{ mt: 2, color: 'white' }}>
+            Gerando PDF...
+          </Typography>
+        </Box>
+      </Backdrop>
     </Container>
   );
 }

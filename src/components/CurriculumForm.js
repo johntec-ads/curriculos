@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Box, Typography, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Alert from '@mui/material/Alert';
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ function CurriculumForm() {
     }],
     skills: ['']
   });
+  const [errors, setErrors] = useState({});
 
   const handlePersonalInfoChange = (e) => {
     const { name, value } = e.target;
@@ -94,15 +96,45 @@ function CurriculumForm() {
     }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Validação de campos obrigatórios
+    if (!formData.personalInfo.name.trim()) {
+      newErrors.name = 'Nome é obrigatório';
+    }
+    if (!formData.personalInfo.email.trim()) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!/\S+@\S+\.\S+/.test(formData.personalInfo.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    if (!formData.personalInfo.phone.trim()) {
+      newErrors.phone = 'Telefone é obrigatório';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('curriculumData', JSON.stringify(formData));
-    navigate('/preview');
+    if (validateForm()) {
+      localStorage.setItem('curriculumData', JSON.stringify(formData));
+      navigate('/preview');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
     <Container maxWidth="md">
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mb: 4 }}>
+        {Object.keys(errors).length > 0 && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Por favor, corrija os erros antes de continuar
+          </Alert>
+        )}
+        
         <Typography variant="h4" gutterBottom>Informações Pessoais</Typography>
         
         <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
@@ -113,6 +145,8 @@ function CurriculumForm() {
             value={formData.personalInfo.name}
             onChange={handlePersonalInfoChange}
             required
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <TextField
             fullWidth
@@ -122,6 +156,8 @@ function CurriculumForm() {
             value={formData.personalInfo.email}
             onChange={handlePersonalInfoChange}
             required
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
             fullWidth
@@ -130,6 +166,8 @@ function CurriculumForm() {
             value={formData.personalInfo.phone}
             onChange={handlePersonalInfoChange}
             required
+            error={!!errors.phone}
+            helperText={errors.phone}
           />
           <TextField
             fullWidth
