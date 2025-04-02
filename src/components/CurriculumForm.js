@@ -112,8 +112,39 @@ function CurriculumForm() {
       newErrors.phone = 'Telefone é obrigatório';
     }
 
+    // Validação de Experiência
+    formData.experience.forEach((exp, index) => {
+      if (!exp.company.trim()) {
+        newErrors[`experience_${index}_company`] = 'Empresa é obrigatória';
+      }
+      if (!exp.position.trim()) {
+        newErrors[`experience_${index}_position`] = 'Cargo é obrigatório';
+      }
+      if (!exp.startDate) {
+        newErrors[`experience_${index}_startDate`] = 'Data de início é obrigatória';
+      }
+    });
+
+    // Validação de Educação
+    formData.education.forEach((edu, index) => {
+      if (!edu.institution.trim()) {
+        newErrors[`education_${index}_institution`] = 'Instituição é obrigatória';
+      }
+      if (!edu.course.trim()) {
+        newErrors[`education_${index}_course`] = 'Curso é obrigatório';
+      }
+    });
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('pt-BR', {
+      year: 'numeric',
+      month: '2-digit'
+    });
   };
 
   const handleSubmit = (e) => {
@@ -204,12 +235,16 @@ function CurriculumForm() {
                 label="Instituição"
                 value={edu.institution}
                 onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
+                error={!!errors[`education_${index}_institution`]}
+                helperText={errors[`education_${index}_institution`]}
               />
               <TextField
                 fullWidth
                 label="Curso"
                 value={edu.course}
                 onChange={(e) => handleEducationChange(index, 'course', e.target.value)}
+                error={!!errors[`education_${index}_course`]}
+                helperText={errors[`education_${index}_course`]}
               />
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                 <TextField
@@ -254,6 +289,8 @@ function CurriculumForm() {
                 value={exp.company}
                 onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
                 required
+                error={!!errors[`experience_${index}_company`]}
+                helperText={errors[`experience_${index}_company`]}
               />
               <TextField
                 fullWidth
@@ -261,6 +298,8 @@ function CurriculumForm() {
                 value={exp.position}
                 onChange={(e) => handleExperienceChange(index, 'position', e.target.value)}
                 required
+                error={!!errors[`experience_${index}_position`]}
+                helperText={errors[`experience_${index}_position`]}
               />
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                 <TextField
@@ -270,6 +309,8 @@ function CurriculumForm() {
                   onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
                   InputLabelProps={{ shrink: true }}
                   required
+                  error={!!errors[`experience_${index}_startDate`]}
+                  helperText={errors[`experience_${index}_startDate`]}
                 />
                 <TextField
                   label="Data Fim"

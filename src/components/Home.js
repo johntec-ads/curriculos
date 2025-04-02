@@ -13,7 +13,20 @@ function Home() {
           gap: 3
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom>
+        {/* Logo e Identificação */}
+        <Typography 
+          variant="h3" 
+          sx={{ 
+            color: '#1976d2',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
+          }}
+        >
+          JOHNTEC.ADS
+        </Typography>
+
+        <Typography variant="h4" component="h1" gutterBottom>
           Gerador de Currículos
         </Typography>
 
@@ -28,9 +41,23 @@ function Home() {
           variant="contained"
           color="primary"
           size="large"
+          sx={{ minWidth: '200px' }}
         >
           Criar Novo Currículo
         </Button>
+
+        {/* Informações de Contato */}
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            Desenvolvido por JOHNTEC.ADS
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            johntec.ads@gmail.com
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            © {new Date().getFullYear()} Todos os direitos reservados
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );

@@ -29,6 +29,22 @@ function Preview() {
     }
   }, [curriculumData]);
 
+  const formatDate = (date) => {
+    if (!date) return 'Presente';
+    return new Date(date).toLocaleDateString('pt-BR', {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
+
+  const sortByDate = (items) => {
+    return [...items].sort((a, b) => {
+      const dateA = new Date(a.startDate);
+      const dateB = new Date(b.startDate);
+      return dateB - dateA;
+    });
+  };
+
   const handlePrint = async () => {
     const element = printRef.current;
     if (!element) return;
@@ -101,7 +117,7 @@ function Preview() {
             whiteSpace: 'nowrap'
           }}
         >
-          johtec.ads
+          JOHNTEC.ADS
         </Typography>
 
         {/* Cabeçalho */}
@@ -132,13 +148,13 @@ function Preview() {
         <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
           Experiência Profissional
         </Typography>
-        {curriculumData.experience.map((exp, index) => (
+        {sortByDate(curriculumData.experience).map((exp, index) => (
           <Box key={index} sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
               {exp.company} - {exp.position}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {exp.startDate} - {exp.endDate}
+              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
             </Typography>
             <Typography>{exp.description}</Typography>
           </Box>
@@ -191,7 +207,7 @@ function Preview() {
           }}
         >
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Desenvolvido por johtec.ads • {new Date().getFullYear()} • johntec.ads@gmail.com
+            Desenvolvido por JOHNTEC.ADS • {new Date().getFullYear()} • johntec.ads@gmail.com
           </Typography>
         </Box>
       </Paper>
