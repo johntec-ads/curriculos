@@ -78,6 +78,8 @@ function Preview() {
           margin: 'auto',
           backgroundColor: '#fff',
           boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+          position: 'relative',
+          overflow: 'hidden',
           '@media print': {
             margin: 0,
             boxShadow: 'none',
@@ -85,6 +87,23 @@ function Preview() {
           }
         }}
       >
+        {/* Marca d'água */}
+        <Typography
+          sx={{
+            position: 'absolute',
+            bottom: '40px',
+            right: '20px',
+            transform: 'rotate(-45deg)',
+            color: 'rgba(0, 0, 0, 0.03)',
+            fontSize: '80px',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          johtec.ads
+        </Typography>
+
         {/* Cabeçalho */}
         <Typography variant="h4" gutterBottom sx={{ borderBottom: '2px solid #1976d2' }}>
           {curriculumData.personalInfo.name}
@@ -156,6 +175,24 @@ function Preview() {
               {skill}
             </Typography>
           ))}
+        </Box>
+
+        {/* Rodapé */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '10px',
+            left: '0',
+            right: '0',
+            textAlign: 'center',
+            borderTop: '1px solid #eee',
+            pt: 1,
+            mt: 4
+          }}
+        >
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Desenvolvido por johtec.ads • {new Date().getFullYear()} • johntec.ads@gmail.com
+          </Typography>
         </Box>
       </Paper>
 
