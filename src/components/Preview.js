@@ -1,15 +1,31 @@
 import { useEffect, useState, useRef } from 'react';
-import { Container, Paper, Typography, Button, Box } from '@mui/material';
+import { 
+  Container, 
+  Box, 
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActionArea,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Grid,
+  Button
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import { getTemplateById, templates } from '../templates';
 
 function Preview() {
   const navigate = useNavigate();
   const printRef = useRef(null);
   const [curriculumData, setCurriculumData] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState('template1');
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -18,6 +34,7 @@ function Preview() {
     if (data) {
       const parsedData = JSON.parse(data);
       setCurriculumData(parsedData);
+      setSelectedTemplate(parsedData.template || 'template1');
     }
   }, []);
 
@@ -28,22 +45,6 @@ function Preview() {
       setIsDataLoaded(false);
     }
   }, [curriculumData]);
-
-  const formatDate = (date) => {
-    if (!date) return 'Presente';
-    return new Date(date).toLocaleDateString('pt-BR', {
-      year: 'numeric',
-      month: 'long'
-    });
-  };
-
-  const sortByDate = (items) => {
-    return [...items].sort((a, b) => {
-      const dateA = new Date(a.startDate);
-      const dateB = new Date(b.startDate);
-      return dateB - dateA;
-    });
-  };
 
   const handlePrint = async () => {
     const element = printRef.current;
@@ -77,173 +78,94 @@ function Preview() {
     navigate('/create');
   };
 
-  if (!isDataLoaded) return <div>Carregando...</div>;
+  const handleTemplateChange = (templateId) => {
+    setSelectedTemplate(templateId);
+    setCurriculumData(prev => ({
+      ...prev,
+      template: templateId
+    }));
+    localStorage.setItem('curriculumData', JSON.stringify({
+      ...curriculumData,
+      template: templateId
+    }));
+    setIsTemplateDialogOpen(false);
+  };
 
-  if (!curriculumData) return <div>Nenhum dado encontrado.</div>;
+  const templateData = getTemplateById(selectedTemplate);
+  const TemplateComponent = templateData?.component;
+
+  if (!TemplateComponent) return <div>Template não encontrado</div>;
 
   return (
     <Container maxWidth="md">
-      <Paper
-        ref={printRef}
-        sx={{
-          p: 4,
-          mt: 4,
-          mb: 4,
-          width: '210mm',
-          minHeight: '297mm',
-          margin: 'auto',
-          backgroundColor: '#fff',
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          position: 'relative',
-          overflow: 'hidden',
-          '@media print': {
-            margin: 0,
-            boxShadow: 'none',
-            padding: '20mm'
-          }
-        }}
-      >
-        {/* Marca d'água */}
-        <Typography
-          sx={{
-            position: 'absolute',
-            bottom: '40px',
-            right: '20px',
-            transform: 'rotate(-45deg)',
-            color: 'rgba(0, 0, 0, 0.03)',
-            fontSize: '80px',
-            pointerEvents: 'none',
-            userSelect: 'none',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          JOHNTEC.ADS
-        </Typography>
-
-        {/* Cabeçalho */}
-        <Typography variant="h4" gutterBottom sx={{ borderBottom: '2px solid #1976d2' }}>
-          {curriculumData.personalInfo.name}
-        </Typography>
-
-        <Box sx={{ mb: 3 }}>
-          <Typography>{curriculumData.personalInfo.email}</Typography>
-          <Typography>{curriculumData.personalInfo.phone}</Typography>
-          <Typography>{curriculumData.personalInfo.address}</Typography>
-          {curriculumData.personalInfo.linkedin && (
-            <Typography>LinkedIn: {curriculumData.personalInfo.linkedin}</Typography>
-          )}
-        </Box>
-
-        {/* Objetivo */}
-        {curriculumData.personalInfo.objective && (
-          <>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
-              Objetivo Profissional
-            </Typography>
-            <Typography paragraph>{curriculumData.personalInfo.objective}</Typography>
-          </>
-        )}
-
-        {/* Experiência */}
-        <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
-          Experiência Profissional
-        </Typography>
-        {sortByDate(curriculumData.experience).map((exp, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              {exp.company} - {exp.position}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
-            </Typography>
-            <Typography>{exp.description}</Typography>
-          </Box>
-        ))}
-
-        {/* Educação */}
-        <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
-          Educação
-        </Typography>
-        {curriculumData.education.map((edu, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              {edu.course}
-            </Typography>
-            <Typography variant="body2">
-              {edu.institution} ({edu.startDate} - {edu.endDate})
-            </Typography>
-            <Typography>{edu.description}</Typography>
-          </Box>
-        ))}
-
-        {/* Habilidades */}
-        <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
-          Habilidades
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {curriculumData.skills.map((skill, index) => (
-            <Typography key={index} component="span" sx={{
-              bgcolor: '#e3f2fd',
-              px: 2,
-              py: 0.5,
-              borderRadius: 1
-            }}>
-              {skill}
-            </Typography>
-          ))}
-        </Box>
-
-        {/* Rodapé */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '10px',
-            left: '0',
-            right: '0',
-            textAlign: 'center',
-            borderTop: '1px solid #eee',
-            pt: 1,
-            mt: 4
-          }}
-        >
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Desenvolvido por JOHNTEC.ADS • {new Date().getFullYear()} • johntec.ads@gmail.com
-          </Typography>
-        </Box>
-      </Paper>
-
-      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+      <Box sx={{ mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
         <Button
-          onClick={handleBack}
           variant="outlined"
           color="primary"
-          size="large"
+          onClick={() => setIsTemplateDialogOpen(true)}
         >
-          Voltar e Editar
-        </Button>
-        <Button
-          onClick={handlePrint}
-          variant="contained"
-          color="primary"
-          size="large"
-          sx={{ minWidth: '200px' }}
-          disabled={!isDataLoaded}
-        >
-          Gerar PDF
+          Escolher Outro Modelo
         </Button>
       </Box>
 
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isGenerating}
+      <TemplateComponent 
+        ref={printRef}
+        data={curriculumData}
+        onPrint={handlePrint}
+        onBack={handleBack}
+        isGenerating={isGenerating}
+      />
+
+      <Dialog 
+        open={isTemplateDialogOpen} 
+        onClose={() => setIsTemplateDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
       >
-        <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress color="inherit" />
-          <Typography sx={{ mt: 2, color: 'white' }}>
-            Gerando PDF...
-          </Typography>
-        </Box>
-      </Backdrop>
+        <DialogTitle>Escolha um Modelo de Currículo</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={3}>
+            {templates.map((template) => (
+              <Grid item xs={12} sm={6} md={4} key={template.id}>
+                <Card 
+                  sx={{ 
+                    border: selectedTemplate === template.id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: 3
+                    }
+                  }}
+                >
+                  <CardActionArea onClick={() => handleTemplateChange(template.id)}>
+                    <CardMedia
+                      component="img"
+                      height="320"
+                      image={template.thumbnail}
+                      alt={template.name}
+                      sx={{
+                        objectFit: 'contain',
+                        bgcolor: '#f5f5f5',
+                        filter: selectedTemplate === template.id ? 'none' : 'grayscale(40%)'
+                      }}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h6" component="div" sx={{ 
+                        color: selectedTemplate === template.id ? '#1976d2' : 'inherit' 
+                      }}>
+                        {template.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {template.description}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }

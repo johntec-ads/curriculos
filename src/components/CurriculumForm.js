@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Box, Typography, IconButton } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, IconButton, Divider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Alert from '@mui/material/Alert';
@@ -165,7 +165,7 @@ function CurriculumForm() {
             Por favor, corrija os erros antes de continuar
           </Alert>
         )}
-        
+
         <Typography variant="h4" gutterBottom>Informações Pessoais</Typography>
         
         <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
