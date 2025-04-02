@@ -205,10 +205,107 @@ function CurriculumForm() {
           Adicionar Educação
         </Button>
 
-        {/* Experiência e Skills seguem o mesmo padrão */}
-        
-        <Box sx={{ mt: 4 }}>
-          <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
+        {/* Seção de Experiência */}
+        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>Experiência Profissional</Typography>
+        {formData.experience.map((exp, index) => (
+          <Box key={index} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+            <Box sx={{ display: 'grid', gap: 2 }}>
+              <TextField
+                fullWidth
+                label="Empresa"
+                value={exp.company}
+                onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
+                required
+              />
+              <TextField
+                fullWidth
+                label="Cargo"
+                value={exp.position}
+                onChange={(e) => handleExperienceChange(index, 'position', e.target.value)}
+                required
+              />
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <TextField
+                  label="Data Início"
+                  type="date"
+                  value={exp.startDate}
+                  onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                />
+                <TextField
+                  label="Data Fim"
+                  type="date"
+                  value={exp.endDate}
+                  onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Box>
+              <TextField
+                fullWidth
+                label="Descrição das Atividades"
+                multiline
+                rows={3}
+                value={exp.description}
+                onChange={(e) => handleExperienceChange(index, 'description', e.target.value)}
+              />
+            </Box>
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+              <IconButton onClick={() => removeField('experience', index)} color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        ))}
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => addNewField('experience')}
+          sx={{ mb: 4 }}
+        >
+          Adicionar Experiência
+        </Button>
+
+        {/* Seção de Habilidades */}
+        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>Habilidades</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+          {formData.skills.map((skill, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TextField
+                label={`Habilidade ${index + 1}`}
+                value={skill}
+                onChange={(e) => handleSkillChange(index, e.target.value)}
+                size="small"
+              />
+              <IconButton onClick={() => removeField('skills', index)} color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </Box>
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => addNewField('skills')}
+          sx={{ mb: 4 }}
+        >
+          Adicionar Habilidade
+        </Button>
+
+        <Box sx={{ mt: 4, display: 'flex', gap: 2 }}>
+          <Button 
+            onClick={() => navigate('/')} 
+            variant="outlined" 
+            color="primary" 
+            size="large"
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            size="large"
+            fullWidth
+          >
             Visualizar Currículo
           </Button>
         </Box>

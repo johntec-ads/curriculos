@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Container, Paper, Typography, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function Preview() {
+  const navigate = useNavigate();
+  const componentRef = useRef();
   const [curriculumData, setCurriculumData] = useState(null);
   
   useEffect(() => {
@@ -13,14 +16,19 @@ function Preview() {
   }, []);
 
   const handlePrint = useReactToPrint({
-    content: () => document.getElementById('curriculum-preview'),
+    content: () => componentRef.current,
   });
+
+  const handleBack = () => {
+    navigate('/create');
+  };
 
   if (!curriculumData) return <div>Carregando...</div>;
 
   return (
     <Container maxWidth="md">
       <Paper 
+        ref={componentRef}
         id="curriculum-preview" 
         sx={{ 
           p: 4, 
@@ -28,7 +36,11 @@ function Preview() {
           mb: 4, 
           minHeight: '297mm',
           width: '210mm',
-          margin: 'auto'
+          margin: 'auto',
+          '@media print': {
+            margin: 0,
+            boxShadow: 'none'
+          }
         }}
       >
         {/* Cabeçalho */}
@@ -105,7 +117,15 @@ function Preview() {
         </Box>
       </Paper>
       
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
+      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Button 
+          onClick={handleBack}
+          variant="outlined"
+          color="primary"
+          size="large"
+        >
+          Voltar e Editar
+        </Button>
         <Button 
           onClick={handlePrint} 
           variant="contained" 
