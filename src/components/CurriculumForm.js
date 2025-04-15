@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Box, Typography, IconButton, Divider } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, IconButton, Alert, Snackbar } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Alert from '@mui/material/Alert';
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -33,6 +32,11 @@ function CurriculumForm() {
     skills: ['']
   });
   const [errors, setErrors] = useState({});
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handlePersonalInfoChange = (e) => {
     const { name, value } = e.target;
@@ -139,18 +143,11 @@ function CurriculumForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const formatDate = (date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('pt-BR', {
-      year: 'numeric',
-      month: '2-digit'
-    });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       localStorage.setItem('curriculumData', JSON.stringify(formData));
+      setSnackbarOpen(true); // Exibir feedback visual
       navigate('/preview');
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -159,13 +156,21 @@ function CurriculumForm() {
 
   return (
     <Container maxWidth="md">
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mb: 4 }}>
-        {Object.keys(errors).length > 0 && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            Por favor, corrija os erros antes de continuar
-          </Alert>
-        )}
+      {/* Feedback visual */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        message="Dados salvos com sucesso!"
+      />
 
+      {Object.keys(errors).length > 0 && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Por favor, corrija os erros antes de continuar
+        </Alert>
+      )}
+
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" gutterBottom>Informações Pessoais</Typography>
         
         <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
