@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   const formatDate = (date) => {
@@ -27,16 +27,15 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
       <Paper
         ref={ref}
         sx={{
-          p: 4,
-          mt: 4,
-          mb: 4,
           width: '210mm',
           minHeight: '297mm',
-          margin: 'auto',
+          margin: '32px auto',
+          p: 4,
           backgroundColor: '#fff',
           boxShadow: '0 0 10px rgba(0,0,0,0.1)',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          fontFamily: 'Arial, sans-serif'
         }}
       >
         {/* Marca d'água */}
@@ -128,6 +127,23 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
             </Typography>
           ))}
         </Box>
+
+        {/* Idiomas */}
+        <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          Idiomas
+        </Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {(data?.languages || []).map((language, index) => (
+            <Typography key={index} component="span" sx={{
+              bgcolor: '#e3f2fd',
+              px: 2,
+              py: 0.5,
+              borderRadius: 1
+            }}>
+              {language}
+            </Typography>
+          ))}
+        </Box>
       </Paper>
 
       <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
@@ -159,14 +175,14 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
 
 const Template1Wrapper = (props) => {
   const navigate = useNavigate();
-  const [data, setData] = useState({
+  const [data] = useState({
     personalInfo: {
       name: 'João da Silva',
       email: 'joao.silva@example.com',
       phone: '(11) 99999-9999',
       address: 'Rua Exemplo, 123, São Paulo, SP',
       linkedin: 'linkedin.com/in/joaosilva',
-      objective: 'Contribuir com minhas habilidades em desenvolvimento web.'
+      objective: 'Busco uma posição desafiadora como Desenvolvedor Frontend para aplicar meus conhecimentos em React e contribuir para o crescimento da empresa.'
     },
     education: [
       {
@@ -174,7 +190,14 @@ const Template1Wrapper = (props) => {
         course: 'Bacharelado em Ciência da Computação',
         startDate: '2015-01-01',
         endDate: '2019-12-31',
-        description: 'Formação sólida em desenvolvimento de software.'
+        description: 'Formação sólida em desenvolvimento de software, participação em projetos de pesquisa e iniciação científica.'
+      },
+      {
+        institution: 'Escola Técnica Estadual',
+        course: 'Técnico em Informática',
+        startDate: '2012-01-01',
+        endDate: '2014-12-31',
+        description: 'Curso técnico com foco em lógica de programação, redes e manutenção de computadores.'
       }
     ],
     experience: [
@@ -183,10 +206,18 @@ const Template1Wrapper = (props) => {
         position: 'Desenvolvedor Frontend',
         startDate: '2020-01-01',
         endDate: '2023-12-31',
-        description: 'Desenvolvimento de interfaces responsivas.'
+        description: 'Desenvolvimento de interfaces responsivas em React, integração com APIs REST, testes automatizados e colaboração com equipe ágil.'
+      },
+      {
+        company: 'Tech Solutions',
+        position: 'Estagiário de Desenvolvimento',
+        startDate: '2018-06-01',
+        endDate: '2019-12-31',
+        description: 'Apoio no desenvolvimento de sistemas internos, manutenção de aplicações em JavaScript e suporte a usuários.'
       }
     ],
-    skills: ['JavaScript', 'React', 'CSS']
+    skills: ['JavaScript', 'React', 'CSS', 'HTML', 'TypeScript', 'Git', 'Jest', 'Redux', 'Figma'],
+    languages: ['Português (Nativo)', 'Inglês (Avançado)', 'Espanhol (Intermediário)']
   });
 
   const handleBack = () => {

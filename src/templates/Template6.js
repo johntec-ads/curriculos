@@ -5,7 +5,7 @@ import { Paper, Box, Typography, Button, Avatar, Divider } from '@mui/material';
 
 const Template6 = ({ data, onBack, onPrint, isGenerating }) => {
   return (
-    <Paper sx={{ display: 'flex', minHeight: '297mm', width: '210mm', margin: '32px auto', p: 0, background: '#fff' }}>
+    <Paper sx={{ width: '210mm', minHeight: '297mm', margin: '32px auto', p: 0, background: '#fff', fontFamily: 'Arial, sans-serif', display: 'flex' }}>
       {/* Barra lateral */}
       <Box sx={{ width: 240, bgcolor: '#1976d2', color: '#fff', p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Avatar
@@ -103,8 +103,8 @@ const Template6Wrapper = (props) => {
       phone: '(11) 99999-9999',
       address: 'Rua Exemplo, 123, São Paulo, SP',
       linkedin: 'linkedin.com/in/joaosilva',
-      objective: 'Contribuir com minhas habilidades em desenvolvimento web.',
-      photoUrl: '', // Adicione aqui a URL da foto se desejar
+      objective: 'Busco uma posição desafiadora como Desenvolvedor Frontend para aplicar meus conhecimentos em React e contribuir para o crescimento da empresa.',
+      photoUrl: '',
     },
     education: [
       {
@@ -112,7 +112,14 @@ const Template6Wrapper = (props) => {
         course: 'Bacharelado em Ciência da Computação',
         startDate: '2015-01-01',
         endDate: '2019-12-31',
-        description: 'Formação sólida em desenvolvimento de software.'
+        description: 'Formação sólida em desenvolvimento de software, participação em projetos de pesquisa e iniciação científica.'
+      },
+      {
+        institution: 'Escola Técnica Estadual',
+        course: 'Técnico em Informática',
+        startDate: '2012-01-01',
+        endDate: '2014-12-31',
+        description: 'Curso técnico com foco em lógica de programação, redes e manutenção de computadores.'
       }
     ],
     experience: [
@@ -121,11 +128,18 @@ const Template6Wrapper = (props) => {
         position: 'Desenvolvedor Frontend',
         startDate: '2020-01-01',
         endDate: '2023-12-31',
-        description: 'Desenvolvimento de interfaces responsivas.'
+        description: 'Desenvolvimento de interfaces responsivas em React, integração com APIs REST, testes automatizados e colaboração com equipe ágil.'
+      },
+      {
+        company: 'Tech Solutions',
+        position: 'Estagiário de Desenvolvimento',
+        startDate: '2018-06-01',
+        endDate: '2019-12-31',
+        description: 'Apoio no desenvolvimento de sistemas internos, manutenção de aplicações em JavaScript e suporte a usuários.'
       }
     ],
-    skills: ['JavaScript', 'React', 'CSS'],
-    languages: ['Português', 'Inglês']
+    skills: ['JavaScript', 'React', 'CSS', 'HTML', 'TypeScript', 'Git', 'Jest', 'Redux', 'Figma'],
+    languages: ['Português (Nativo)', 'Inglês (Avançado)', 'Espanhol (Intermediário)']
   });
 
   const handleBack = () => {

@@ -37,6 +37,12 @@ const Template4 = ({ data, onBack, onPrint, isGenerating }) => {
           <li key={index}>{skill}</li>
         ))}
       </ul>
+      <h2>Idiomas</h2>
+      <ul>
+        {data.languages.map((language, index) => (
+          <li key={index}>{language}</li>
+        ))}
+      </ul>
       <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
         <Button onClick={onBack} variant="outlined" color="primary" size="large" aria-label="Voltar e Editar">
           Voltar e Editar
@@ -72,7 +78,7 @@ const Template4Wrapper = (props) => {
       phone: '(11) 99999-9999',
       address: 'Rua Exemplo, 123, São Paulo, SP',
       linkedin: 'linkedin.com/in/joaosilva',
-      objective: 'Contribuir com minhas habilidades em desenvolvimento web.'
+      objective: 'Busco uma posição desafiadora como Desenvolvedor Frontend para aplicar meus conhecimentos em React e contribuir para o crescimento da empresa.'
     },
     education: [
       {
@@ -80,7 +86,14 @@ const Template4Wrapper = (props) => {
         course: 'Bacharelado em Ciência da Computação',
         startDate: '2015-01-01',
         endDate: '2019-12-31',
-        description: 'Formação sólida em desenvolvimento de software.'
+        description: 'Formação sólida em desenvolvimento de software, participação em projetos de pesquisa e iniciação científica.'
+      },
+      {
+        institution: 'Escola Técnica Estadual',
+        course: 'Técnico em Informática',
+        startDate: '2012-01-01',
+        endDate: '2014-12-31',
+        description: 'Curso técnico com foco em lógica de programação, redes e manutenção de computadores.'
       }
     ],
     experience: [
@@ -89,10 +102,18 @@ const Template4Wrapper = (props) => {
         position: 'Desenvolvedor Frontend',
         startDate: '2020-01-01',
         endDate: '2023-12-31',
-        description: 'Desenvolvimento de interfaces responsivas.'
+        description: 'Desenvolvimento de interfaces responsivas em React, integração com APIs REST, testes automatizados e colaboração com equipe ágil.'
+      },
+      {
+        company: 'Tech Solutions',
+        position: 'Estagiário de Desenvolvimento',
+        startDate: '2018-06-01',
+        endDate: '2019-12-31',
+        description: 'Apoio no desenvolvimento de sistemas internos, manutenção de aplicações em JavaScript e suporte a usuários.'
       }
     ],
-    skills: ['JavaScript', 'React', 'CSS']
+    skills: ['JavaScript', 'React', 'CSS', 'HTML', 'TypeScript', 'Git', 'Jest', 'Redux', 'Figma'],
+    languages: ['Português (Nativo)', 'Inglês (Avançado)', 'Espanhol (Intermediário)']
   });
 
   const handleBack = () => {
