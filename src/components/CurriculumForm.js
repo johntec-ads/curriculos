@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, TextField, Button, Box, Typography, IconButton, Alert, Snackbar } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -19,7 +20,8 @@ function CurriculumForm() {
       phone: '',
       address: '',
       linkedin: '',
-      objective: ''
+      objective: '',
+      photoUrl: ''
     },
     education: [{
       institution: '',
@@ -35,10 +37,12 @@ function CurriculumForm() {
       endDate: '',
       description: ''
     }],
-    skills: ['']
+    skills: [''],
+    languages: ['']
   });
   const [errors, setErrors] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [photo, setPhoto] = useState(null);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -53,6 +57,24 @@ function CurriculumForm() {
         [name]: value
       }
     }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result);
+        setFormData(prev => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            photoUrl: reader.result
+          }
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleEducationChange = (index, field, value) => {
@@ -83,7 +105,7 @@ function CurriculumForm() {
   const addNewField = (section) => {
     setFormData(prev => ({
       ...prev,
-      [section]: [...prev[section], section === 'skills' ? '' : section === 'education' ? {
+      [section]: [...prev[section], section === 'skills' || section === 'languages' ? '' : section === 'education' ? {
         institution: '',
         course: '',
         startDate: '',
@@ -180,6 +202,26 @@ function CurriculumForm() {
         <Typography variant="h4" gutterBottom>Informações Pessoais</Typography>
         
         <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
+          {/* Upload de Foto */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+              variant="outlined"
+              component="label"
+              startIcon={<PhotoCamera />}
+              aria-label="Enviar foto do candidato"
+            >
+              Enviar Foto
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handlePhotoChange}
+              />
+            </Button>
+            {photo && (
+              <img src={photo} alt="Foto do candidato" style={{ width: 64, height: 64, borderRadius: '50%' }} />
+            )}
+          </Box>
           <TextField
             fullWidth
             label="Nome Completo"
@@ -378,6 +420,40 @@ function CurriculumForm() {
           sx={{ mb: 4 }}
         >
           Adicionar Habilidade
+        </Button>
+
+        {/* Seção de Idiomas */}
+        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>Idiomas</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+          {(formData.languages || ['']).map((lang, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TextField
+                label={`Idioma ${index + 1}`}
+                value={lang}
+                onChange={e => {
+                  const newLangs = [...(formData.languages || [''])];
+                  newLangs[index] = e.target.value;
+                  setFormData(prev => ({ ...prev, languages: newLangs }));
+                }}
+                size="small"
+              />
+              <IconButton onClick={() => {
+                setFormData(prev => ({
+                  ...prev,
+                  languages: (prev.languages || ['']).filter((_, i) => i !== index)
+                }));
+              }} color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </Box>
+        <Button
+          startIcon={<AddIcon />}
+          onClick={() => setFormData(prev => ({ ...prev, languages: [...(prev.languages || ['']), ''] }))}
+          sx={{ mb: 4 }}
+        >
+          Adicionar Idioma
         </Button>
 
         <Box sx={{ mt: 4, display: 'flex', gap: 2 }}>
