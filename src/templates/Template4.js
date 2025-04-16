@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Button, Box } from '@mui/material';
 
@@ -71,59 +70,13 @@ Template4.propTypes = {
 
 const Template4Wrapper = (props) => {
   const navigate = useNavigate();
-  const [data] = useState({
-    personalInfo: {
-      name: 'João da Silva',
-      email: 'joao.silva@example.com',
-      phone: '(11) 99999-9999',
-      address: 'Rua Exemplo, 123, São Paulo, SP',
-      linkedin: 'linkedin.com/in/joaosilva',
-      objective: 'Busco uma posição desafiadora como Desenvolvedor Frontend para aplicar meus conhecimentos em React e contribuir para o crescimento da empresa.'
-    },
-    education: [
-      {
-        institution: 'Universidade Exemplo',
-        course: 'Bacharelado em Ciência da Computação',
-        startDate: '2015-01-01',
-        endDate: '2019-12-31',
-        description: 'Formação sólida em desenvolvimento de software, participação em projetos de pesquisa e iniciação científica.'
-      },
-      {
-        institution: 'Escola Técnica Estadual',
-        course: 'Técnico em Informática',
-        startDate: '2012-01-01',
-        endDate: '2014-12-31',
-        description: 'Curso técnico com foco em lógica de programação, redes e manutenção de computadores.'
-      }
-    ],
-    experience: [
-      {
-        company: 'Empresa Exemplo',
-        position: 'Desenvolvedor Frontend',
-        startDate: '2020-01-01',
-        endDate: '2023-12-31',
-        description: 'Desenvolvimento de interfaces responsivas em React, integração com APIs REST, testes automatizados e colaboração com equipe ágil.'
-      },
-      {
-        company: 'Tech Solutions',
-        position: 'Estagiário de Desenvolvimento',
-        startDate: '2018-06-01',
-        endDate: '2019-12-31',
-        description: 'Apoio no desenvolvimento de sistemas internos, manutenção de aplicações em JavaScript e suporte a usuários.'
-      }
-    ],
-    skills: ['JavaScript', 'React', 'CSS', 'HTML', 'TypeScript', 'Git', 'Jest', 'Redux', 'Figma'],
-    languages: ['Português (Nativo)', 'Inglês (Avançado)', 'Espanhol (Intermediário)']
-  });
-
   const handleBack = () => {
     navigate(-1);
   };
   const handlePrint = () => {
     window.print();
   };
-
-  return <Template4 data={data} onBack={handleBack} onPrint={handlePrint} isGenerating={false} {...props} />;
+  return <Template4 {...props} onBack={handleBack} onPrint={handlePrint} isGenerating={false} />;
 };
 
 export default Template4Wrapper;
