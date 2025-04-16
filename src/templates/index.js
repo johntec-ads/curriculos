@@ -2,6 +2,9 @@
 import Template1 from './Template1';
 import Template2 from './Template2';
 import Template3 from './Template3';
+import Template4 from './Template4';
+import Template5 from './Template5';
+import Template6 from './Template6';
 
 export { default as Template1Wrapper } from './Template1';
 export { default as Template2Wrapper } from './Template2';
@@ -31,6 +34,24 @@ const templateDefinitions = {
     name: 'Minimalista',
     thumbnail: placeholderImage,
     description: 'Layout limpo e elegante com duas colunas'
+  },
+  template4: {
+    id: 'template4',
+    name: 'Simples',
+    thumbnail: placeholderImage,
+    description: 'Modelo simples e direto ao ponto'
+  },
+  template5: {
+    id: 'template5',
+    name: 'Organizado',
+    thumbnail: placeholderImage,
+    description: 'Modelo com design limpo e organizado'
+  },
+  template6: {
+    id: 'template6',
+    name: 'Moderno com Foto',
+    thumbnail: placeholderImage,
+    description: 'Barra lateral colorida, foto e layout profissional'
   }
 };
 
@@ -47,6 +68,18 @@ export const templates = [
   {
     ...templateDefinitions.template3,
     component: Template3
+  },
+  {
+    ...templateDefinitions.template4,
+    component: Template4
+  },
+  {
+    ...templateDefinitions.template5,
+    component: Template5
+  },
+  {
+    ...templateDefinitions.template6,
+    component: Template6
   }
 ];
 

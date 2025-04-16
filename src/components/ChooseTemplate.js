@@ -1,14 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Grid, Card, CardContent, CardActions, Button, CardMedia } from '@mui/material';
-
-const templates = [
-  { id: 1, name: 'Modelo 1', description: 'Um modelo clássico e profissional.', image: '/images/template1.png' },
-  { id: 2, name: 'Modelo 2', description: 'Um modelo moderno e criativo.', image: '/images/template2.png' },
-  { id: 3, name: 'Modelo 3', description: 'Um modelo minimalista e elegante.', image: '/images/template3.png' },
-  { id: 4, name: 'Modelo 4', description: 'Um modelo com foco em habilidades técnicas.', image: '/images/template4.png' },
-  { id: 5, name: 'Modelo 5', description: 'Um modelo com design limpo e organizado.', image: '/images/template5.png' },
-];
+import { templates } from '../templates';
 
 function ChooseTemplate() {
   const navigate = useNavigate();
@@ -29,7 +22,7 @@ function ChooseTemplate() {
               <CardMedia
                 component="img"
                 height="140"
-                image={template.image}
+                image={template.thumbnail}
                 alt={`Preview do ${template.name}`}
               />
               <CardContent>
@@ -41,10 +34,10 @@ function ChooseTemplate() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => handleSelectTemplate(template.id)}>
+                <Button size="small" onClick={() => handleSelectTemplate(template.id)} aria-label={`Selecionar modelo ${template.name}`}>
                   Selecionar
                 </Button>
-                <Button size="small" onClick={() => navigate(`/template${template.id}`)}>
+                <Button size="small" onClick={() => navigate(`/${template.id}`)} aria-label={`Visualizar modelo ${template.name}`}>
                   Visualizar
                 </Button>
               </CardActions>

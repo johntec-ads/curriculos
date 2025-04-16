@@ -1,7 +1,69 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Button, Box } from '@mui/material';
 
-const Template5Wrapper = () => {
+const Template5 = ({ data, onBack, onPrint, isGenerating }) => {
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ color: '#1976d2' }}>{data.personalInfo.name}</h1>
+      <p><strong>Email:</strong> {data.personalInfo.email}</p>
+      <p><strong>Telefone:</strong> {data.personalInfo.phone}</p>
+      <p><strong>Endereço:</strong> {data.personalInfo.address}</p>
+      <p><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</p>
+      <h2>Objetivo</h2>
+      <p>{data.personalInfo.objective}</p>
+      <h2>Educação</h2>
+      {data.education.map((edu, index) => (
+        <div key={index}>
+          <p><strong>Instituição:</strong> {edu.institution}</p>
+          <p><strong>Curso:</strong> {edu.course}</p>
+          <p><strong>Período:</strong> {edu.startDate} - {edu.endDate}</p>
+          <p>{edu.description}</p>
+        </div>
+      ))}
+      <h2>Experiência</h2>
+      {data.experience.map((exp, index) => (
+        <div key={index}>
+          <p><strong>Empresa:</strong> {exp.company}</p>
+          <p><strong>Cargo:</strong> {exp.position}</p>
+          <p><strong>Período:</strong> {exp.startDate} - {exp.endDate}</p>
+          <p>{exp.description}</p>
+        </div>
+      ))}
+      <h2>Habilidades</h2>
+      <ul>
+        {data.skills.map((skill, index) => (
+          <li key={index}>{skill}</li>
+        ))}
+      </ul>
+      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Button onClick={onBack} variant="outlined" color="primary" size="large" aria-label="Voltar e Editar">
+          Voltar e Editar
+        </Button>
+        <Button
+          onClick={onPrint}
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={isGenerating}
+          aria-label="Gerar PDF"
+        >
+          Gerar PDF
+        </Button>
+      </Box>
+    </div>
+  );
+};
+
+Template5.propTypes = {
+  data: PropTypes.object.isRequired,
+  onBack: PropTypes.func.isRequired,
+  onPrint: PropTypes.func.isRequired,
+  isGenerating: PropTypes.bool.isRequired,
+};
+
+const Template5Wrapper = (props) => {
   const navigate = useNavigate();
   const [data] = useState({
     personalInfo: {
@@ -36,43 +98,11 @@ const Template5Wrapper = () => {
   const handleBack = () => {
     navigate(-1);
   };
+  const handlePrint = () => {
+    window.print();
+  };
 
-  return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ color: '#1976d2' }}>{data.personalInfo.name}</h1>
-      <p><strong>Email:</strong> {data.personalInfo.email}</p>
-      <p><strong>Telefone:</strong> {data.personalInfo.phone}</p>
-      <p><strong>Endereço:</strong> {data.personalInfo.address}</p>
-      <p><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</p>
-      <h2>Objetivo</h2>
-      <p>{data.personalInfo.objective}</p>
-      <h2>Educação</h2>
-      {data.education.map((edu, index) => (
-        <div key={index}>
-          <p><strong>Instituição:</strong> {edu.institution}</p>
-          <p><strong>Curso:</strong> {edu.course}</p>
-          <p><strong>Período:</strong> {edu.startDate} - {edu.endDate}</p>
-          <p>{edu.description}</p>
-        </div>
-      ))}
-      <h2>Experiência</h2>
-      {data.experience.map((exp, index) => (
-        <div key={index}>
-          <p><strong>Empresa:</strong> {exp.company}</p>
-          <p><strong>Cargo:</strong> {exp.position}</p>
-          <p><strong>Período:</strong> {exp.startDate} - {exp.endDate}</p>
-          <p>{exp.description}</p>
-        </div>
-      ))}
-      <h2>Habilidades</h2>
-      <ul>
-        {data.skills.map((skill, index) => (
-          <li key={index}>{skill}</li>
-        ))}
-      </ul>
-      <button onClick={handleBack} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#1976d2', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Voltar</button>
-    </div>
-  );
+  return <Template5 data={data} onBack={handleBack} onPrint={handlePrint} isGenerating={false} {...props} />;
 };
 
 export default Template5Wrapper;
