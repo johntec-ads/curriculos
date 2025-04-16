@@ -32,9 +32,15 @@ function Preview() {
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
     if (data) {
-      const parsedData = JSON.parse(data);
-      setCurriculumData(parsedData);
-      setSelectedTemplate(parsedData.template || 'template1');
+      try {
+        const parsedData = JSON.parse(data);
+        setCurriculumData(parsedData);
+        setSelectedTemplate(parsedData.template || 'template1');
+      } catch (error) {
+        console.error('Erro ao analisar os dados do localStorage:', error);
+        alert('Os dados armazenados estão corrompidos. Por favor, reinicie o processo.');
+        localStorage.removeItem('curriculumData');
+      }
     }
   }, []);
 

@@ -44,6 +44,9 @@ function ChooseTemplate() {
                 <Button size="small" onClick={() => handleSelectTemplate(template.id)}>
                   Selecionar
                 </Button>
+                <Button size="small" onClick={() => navigate(`/template${template.id}`)}>
+                  Visualizar
+                </Button>
               </CardActions>
             </Card>
           </Grid>

@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   const formatDate = (date) => {
@@ -155,4 +156,18 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   );
 });
 
-export default Template1;
+const Template1Wrapper = (props) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/choose-template');
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return <Template1 {...props} onBack={handleBack} onPrint={handlePrint} />;
+};
+
+export default Template1Wrapper;

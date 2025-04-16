@@ -204,4 +204,36 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   );
 });
 
-export default Template3;
+const fakeData = {
+  personalInfo: {
+    name: 'Carlos Souza',
+    email: 'carlos.souza@email.com',
+    phone: '(31) 99876-5432',
+    address: 'Praça Exemplo, 789, Belo Horizonte, MG',
+    linkedin: 'linkedin.com/in/carlossouza',
+    objective: 'Desenvolver soluções inovadoras em engenharia de software.'
+  },
+  education: [
+    {
+      institution: 'Instituto Exemplo',
+      course: 'Engenharia de Software',
+      startDate: '2014-01-01',
+      endDate: '2018-12-31',
+      description: 'Foco em arquitetura de software e metodologias ágeis.'
+    }
+  ],
+  experience: [
+    {
+      company: 'Tech Solutions',
+      position: 'Engenheiro de Software',
+      startDate: '2019-01-01',
+      endDate: '2025-12-31',
+      description: 'Desenvolvimento de sistemas escaláveis e integração de APIs.'
+    }
+  ],
+  skills: ['Python', 'Django', 'REST APIs', 'SQL', 'AWS']
+};
+
+export default function Template3Wrapper(props) {
+  return <Template3 {...props} data={fakeData} />;
+}

@@ -165,4 +165,36 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   );
 });
 
-export default Template2;
+const fakeData = {
+  personalInfo: {
+    name: 'Maria Oliveira',
+    email: 'maria.oliveira@email.com',
+    phone: '(21) 91234-5678',
+    address: 'Avenida Exemplo, 456, Rio de Janeiro, RJ',
+    linkedin: 'linkedin.com/in/mariaoliveira',
+    objective: 'Aprimorar minhas habilidades em design gráfico e contribuir para projetos criativos.'
+  },
+  education: [
+    {
+      institution: 'Faculdade Exemplo',
+      course: 'Design Gráfico',
+      startDate: '2016-01-01',
+      endDate: '2020-12-31',
+      description: 'Especialização em design digital e branding.'
+    }
+  ],
+  experience: [
+    {
+      company: 'Agência Criativa',
+      position: 'Designer Gráfico',
+      startDate: '2021-01-01',
+      endDate: '2024-12-31',
+      description: 'Criação de identidades visuais e materiais publicitários.'
+    }
+  ],
+  skills: ['Photoshop', 'Illustrator', 'Figma', 'InDesign', 'Branding']
+};
+
+export default function Template2Wrapper(props) {
+  return <Template2 {...props} data={fakeData} />;
+}
