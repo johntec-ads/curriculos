@@ -18,22 +18,29 @@ function ChooseTemplate() {
       <Grid container spacing={4}>
         {templates.map((template) => (
           <Grid item xs={12} sm={6} md={4} key={template.id}>
-            <Card>
+            <Card sx={{ height: 420, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxSizing: 'border-box' }}>
               <CardMedia
                 component="img"
-                height="140"
                 image={template.thumbnail}
                 alt={`Preview do ${template.name}`}
+                sx={{
+                  height: 180,
+                  width: '100%',
+                  objectFit: 'cover',
+                  bgcolor: '#f5f5f5',
+                  borderBottom: '1px solid #eee',
+                  flexShrink: 0
+                }}
               />
-              <CardContent>
-                <Typography variant="h5" component="div">
+              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 100, maxHeight: 120, overflow: 'hidden' }}>
+                <Typography variant="h5" component="div" align="center" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
                   {template.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" align="center" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', maxHeight: 40 }}>
                   {template.description}
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}>
                 <Button size="small" onClick={() => handleSelectTemplate(template.id)} aria-label={`Selecionar modelo ${template.name}`}>
                   Selecionar
                 </Button>

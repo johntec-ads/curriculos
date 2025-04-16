@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Box } from '@mui/material';
+import { Paper, Button, Box } from '@mui/material';
 
 const Template5 = ({ data, onBack, onPrint, isGenerating }) => {
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <Paper sx={{ width: '210mm', minHeight: '297mm', margin: '32px auto', p: 4, fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ color: '#1976d2' }}>{data.personalInfo.name}</h1>
       <p><strong>Email:</strong> {data.personalInfo.email}</p>
       <p><strong>Telefone:</strong> {data.personalInfo.phone}</p>
@@ -52,7 +52,7 @@ const Template5 = ({ data, onBack, onPrint, isGenerating }) => {
           Gerar PDF
         </Button>
       </Box>
-    </div>
+    </Paper>
   );
 };
 

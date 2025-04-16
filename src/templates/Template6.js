@@ -65,6 +65,19 @@ const Template6 = ({ data, onBack, onPrint, isGenerating }) => {
             </Box>
           ))}
         </Box>
+        {/* Idiomas */}
+        {data.languages && data.languages.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ color: '#1976d2' }}>Idiomas</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+              {data.languages.map((lang, idx) => (
+                <Typography key={idx} variant="body2" sx={{ bgcolor: '#f5f5f5', borderRadius: 1, px: 2, py: 0.5 }}>
+                  {lang}
+                </Typography>
+              ))}
+            </Box>
+          </Box>
+        )}
         <Box sx={{ textAlign: 'center', mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
           <Button onClick={onBack} variant="outlined" color="primary" size="large" aria-label="Voltar e Editar">Voltar e Editar</Button>
           <Button onClick={onPrint} variant="contained" color="primary" size="large" disabled={isGenerating} aria-label="Gerar PDF">Gerar PDF</Button>
@@ -111,7 +124,8 @@ const Template6Wrapper = (props) => {
         description: 'Desenvolvimento de interfaces responsivas.'
       }
     ],
-    skills: ['JavaScript', 'React', 'CSS']
+    skills: ['JavaScript', 'React', 'CSS'],
+    languages: ['Português', 'Inglês']
   });
 
   const handleBack = () => {
