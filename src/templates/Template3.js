@@ -1,5 +1,7 @@
 import { forwardRef } from 'react';
 import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   const formatDate = (date) => {
@@ -204,36 +206,47 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   );
 });
 
-const fakeData = {
-  personalInfo: {
-    name: 'Carlos Souza',
-    email: 'carlos.souza@email.com',
-    phone: '(31) 99876-5432',
-    address: 'Praça Exemplo, 789, Belo Horizonte, MG',
-    linkedin: 'linkedin.com/in/carlossouza',
-    objective: 'Desenvolver soluções inovadoras em engenharia de software.'
-  },
-  education: [
-    {
-      institution: 'Instituto Exemplo',
-      course: 'Engenharia de Software',
-      startDate: '2014-01-01',
-      endDate: '2018-12-31',
-      description: 'Foco em arquitetura de software e metodologias ágeis.'
-    }
-  ],
-  experience: [
-    {
-      company: 'Tech Solutions',
-      position: 'Engenheiro de Software',
-      startDate: '2019-01-01',
-      endDate: '2025-12-31',
-      description: 'Desenvolvimento de sistemas escaláveis e integração de APIs.'
-    }
-  ],
-  skills: ['Python', 'Django', 'REST APIs', 'SQL', 'AWS']
-};
-
 export default function Template3Wrapper(props) {
-  return <Template3 {...props} data={fakeData} />;
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    personalInfo: {
+      name: 'João da Silva',
+      email: 'joao.silva@example.com',
+      phone: '(11) 99999-9999',
+      address: 'Rua Exemplo, 123, São Paulo, SP',
+      linkedin: 'linkedin.com/in/joaosilva',
+      objective: 'Contribuir com minhas habilidades em desenvolvimento web.'
+    },
+    education: [
+      {
+        institution: 'Universidade Exemplo',
+        course: 'Bacharelado em Ciência da Computação',
+        startDate: '2015-01-01',
+        endDate: '2019-12-31',
+        description: 'Formação sólida em desenvolvimento de software.'
+      }
+    ],
+    experience: [
+      {
+        company: 'Empresa Exemplo',
+        position: 'Desenvolvedor Frontend',
+        startDate: '2020-01-01',
+        endDate: '2023-12-31',
+        description: 'Desenvolvimento de interfaces responsivas.'
+      }
+    ],
+    skills: ['JavaScript', 'React', 'CSS']
+  });
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  return (
+    <Template3
+      {...props}
+      data={data}
+      onBack={handleBack}
+    />
+  );
 }

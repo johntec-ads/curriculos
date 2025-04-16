@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
   const formatDate = (date) => {
@@ -158,16 +159,52 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
 
 const Template1Wrapper = (props) => {
   const navigate = useNavigate();
+  const [data, setData] = useState({
+    personalInfo: {
+      name: 'João da Silva',
+      email: 'joao.silva@example.com',
+      phone: '(11) 99999-9999',
+      address: 'Rua Exemplo, 123, São Paulo, SP',
+      linkedin: 'linkedin.com/in/joaosilva',
+      objective: 'Contribuir com minhas habilidades em desenvolvimento web.'
+    },
+    education: [
+      {
+        institution: 'Universidade Exemplo',
+        course: 'Bacharelado em Ciência da Computação',
+        startDate: '2015-01-01',
+        endDate: '2019-12-31',
+        description: 'Formação sólida em desenvolvimento de software.'
+      }
+    ],
+    experience: [
+      {
+        company: 'Empresa Exemplo',
+        position: 'Desenvolvedor Frontend',
+        startDate: '2020-01-01',
+        endDate: '2023-12-31',
+        description: 'Desenvolvimento de interfaces responsivas.'
+      }
+    ],
+    skills: ['JavaScript', 'React', 'CSS']
+  });
 
   const handleBack = () => {
-    navigate('/choose-template');
+    navigate(-1);
   };
 
   const handlePrint = () => {
     window.print();
   };
 
-  return <Template1 {...props} onBack={handleBack} onPrint={handlePrint} />;
+  return (
+    <Template1
+      {...props}
+      data={data}
+      onBack={handleBack}
+      onPrint={handlePrint}
+    />
+  );
 };
 
 export default Template1Wrapper;
