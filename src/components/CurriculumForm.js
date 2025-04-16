@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, TextField, Button, Box, Typography, IconButton, Alert, Snackbar } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 function CurriculumForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const selectedTemplate = queryParams.get('template');
+
+  console.log('Modelo Selecionado:', selectedTemplate);
+
   const [formData, setFormData] = useState({
     personalInfo: {
       name: '',

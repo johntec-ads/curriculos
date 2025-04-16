@@ -37,7 +37,7 @@ function Home() {
 
         <Button
           component={Link}
-          to="/create"
+          to="/choose-template"
           variant="contained"
           color="primary"
           size="large"

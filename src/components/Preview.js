@@ -53,18 +53,18 @@ function Preview() {
     setIsGenerating(true);
     try {
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1.5, // Reduzindo a escala para diminuir o tamanho do PDF
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', 0.8); // Usando JPEG com qualidade reduzida
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Mantendo a proporção
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`);
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
