@@ -16,8 +16,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
 import { getTemplateById, templates } from '../templates';
 
 function Preview() {
@@ -26,7 +24,6 @@ function Preview() {
   const [curriculumData, setCurriculumData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
@@ -43,14 +40,6 @@ function Preview() {
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (curriculumData) {
-      setIsDataLoaded(true);
-    } else {
-      setIsDataLoaded(false);
-    }
-  }, [curriculumData]);
 
   const handlePrint = async () => {
     const element = printRef.current;
