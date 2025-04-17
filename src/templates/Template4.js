@@ -1,9 +1,9 @@
 import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
+import { Paper, Typography, Box, Button } from '@mui/material';
 
-const Template4 = forwardRef(({ data, onBack, onPrint, isGenerating }, ref) => {
+const Template4 = forwardRef(({ data, onBack, onPrint }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -129,21 +129,11 @@ const Template4 = forwardRef(({ data, onBack, onPrint, isGenerating }, ref) => {
           variant="contained"
           color="primary"
           size="large"
-          disabled={isGenerating}
           aria-label="Gerar PDF"
         >
           Gerar PDF
         </Button>
       </Box>
-
-      <Backdrop open={isGenerating}>
-        <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress color="inherit" />
-          <Typography sx={{ mt: 2, color: 'white' }}>
-            Gerando PDF...
-          </Typography>
-        </Box>
-      </Backdrop>
     </>
   );
 });
@@ -152,7 +142,6 @@ Template4.propTypes = {
   data: PropTypes.object.isRequired,
   onBack: PropTypes.func.isRequired,
   onPrint: PropTypes.func.isRequired,
-  isGenerating: PropTypes.bool.isRequired,
 };
 
 const Template4Wrapper = (props) => {
@@ -160,10 +149,7 @@ const Template4Wrapper = (props) => {
   const handleBack = () => {
     navigate(-1);
   };
-  const handlePrint = () => {
-    window.print();
-  };
-  return <Template4 ref={null} {...props} onBack={handleBack} onPrint={handlePrint} isGenerating={false} />;
+  return <Template4 {...props} onBack={handleBack} />;
 };
 
 export default Template4Wrapper;

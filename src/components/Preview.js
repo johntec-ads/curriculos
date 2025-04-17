@@ -14,8 +14,7 @@ import {
   Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
 
 function Preview() {
@@ -24,7 +23,6 @@ function Preview() {
   const [curriculumData, setCurriculumData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
@@ -41,33 +39,10 @@ function Preview() {
     }
   }, []);
 
-  const handlePrint = async () => {
-    const element = printRef.current;
-    if (!element) return;
-
-    setIsGenerating(true);
-    try {
-      const canvas = await html2canvas(element, {
-        scale: 1.5, // Reduzindo a escala para diminuir o tamanho do PDF
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.8); // Usando JPEG com qualidade reduzida
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Mantendo a proporção
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`);
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      alert('Erro ao gerar o PDF. Tente novamente.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}`,
+  });
 
   const handleBack = () => {
     navigate('/create');
@@ -108,7 +83,6 @@ function Preview() {
         data={curriculumData}
         onPrint={handlePrint}
         onBack={handleBack}
-        isGenerating={isGenerating}
       />
 
       <Dialog 

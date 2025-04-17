@@ -1,8 +1,8 @@
 import { forwardRef } from 'react';
-import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
+import { Paper, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
+const Template2 = forwardRef(({ data, onPrint, onBack }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -172,20 +172,10 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
           variant="contained" 
           color="primary"
           size="large"
-          disabled={isGenerating}
         >
           Gerar PDF
         </Button>
       </Box>
-
-      <Backdrop open={isGenerating}>
-        <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress color="inherit" />
-          <Typography sx={{ mt: 2, color: 'white' }}>
-            Gerando PDF...
-          </Typography>
-        </Box>
-      </Backdrop>
     </>
   );
 });

@@ -1,9 +1,9 @@
 import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Paper, Box, Typography, Button, Avatar, Divider, Backdrop, CircularProgress } from '@mui/material';
+import { Paper, Box, Typography, Button, Avatar, Divider } from '@mui/material';
 
-const Template6 = forwardRef(({ data, onBack, onPrint, isGenerating }, ref) => {
+const Template6 = forwardRef(({ data, onBack, onPrint }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -143,21 +143,11 @@ const Template6 = forwardRef(({ data, onBack, onPrint, isGenerating }, ref) => {
           variant="contained"
           color="primary"
           size="large"
-          disabled={isGenerating}
           aria-label="Gerar PDF"
         >
           Gerar PDF
         </Button>
       </Box>
-
-      <Backdrop open={isGenerating}>
-        <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress color="inherit" />
-          <Typography sx={{ mt: 2, color: 'white' }}>
-            Gerando PDF...
-          </Typography>
-        </Box>
-      </Backdrop>
     </>
   );
 });
@@ -166,7 +156,6 @@ Template6.propTypes = {
   data: PropTypes.object.isRequired,
   onBack: PropTypes.func.isRequired,
   onPrint: PropTypes.func.isRequired,
-  isGenerating: PropTypes.bool.isRequired,
 };
 
 const Template6Wrapper = (props) => {
@@ -174,10 +163,7 @@ const Template6Wrapper = (props) => {
   const handleBack = () => {
     navigate(-1);
   };
-  const handlePrint = () => {
-    window.print();
-  };
-  return <Template6 ref={null} {...props} onBack={handleBack} onPrint={handlePrint} isGenerating={false} />;
+  return <Template6 {...props} onBack={handleBack} />;
 };
 
 export default Template6Wrapper;
