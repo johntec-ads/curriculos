@@ -29,24 +29,30 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
           width: '210mm', 
           minHeight: '297mm', 
           margin: '32px auto', 
-          p: 4, 
+          p: 0, // Remove padding do Paper
           backgroundColor: '#fff', 
           boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
           position: 'relative', 
           overflow: 'hidden', 
-          fontFamily: 'Arial, sans-serif' 
+          fontFamily: 'Arial, sans-serif',
+          display: 'flex',
+          flexDirection: 'row',
         }}
       >
-        {/* Coluna Lateral */}
+        {/* Barra lateral ocupa 100% da altura do Paper */}
         <Box sx={{ 
           width: '240px', 
           bgcolor: '#1976d2', 
           color: 'white', 
           p: 3, 
-          borderRadius: 1, 
-          flexShrink: 0 
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          minHeight: '297mm',
+          height: '100%',
+          borderRadius: 0,
         }}>
-          {/* Foto Placeholder */}
+          {/* Foto do usuário */}
           <Box 
             sx={{
               width: 150,
@@ -56,12 +62,20 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
               margin: '0 auto 20px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              overflow: 'hidden',
             }}
           >
-            <Typography variant="body2" color="primary">Foto</Typography>
+            {data?.personalInfo?.photoUrl ? (
+              <img
+                src={data.personalInfo.photoUrl}
+                alt="Foto do candidato"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            ) : (
+              <Typography variant="body2" color="primary">Foto</Typography>
+            )}
           </Box>
-
           {/* Informações de Contato */}
           <Typography variant="h6" gutterBottom>Contato</Typography>
           <Box sx={{ mb: 3 }}>
@@ -72,7 +86,6 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
               <Typography variant="body2">LinkedIn: {data.personalInfo.linkedin}</Typography>
             )}
           </Box>
-
           {/* Habilidades */}
           <Typography variant="h6" gutterBottom>Habilidades</Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -82,7 +95,6 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
               </Typography>
             ))}
           </Box>
-
           {/* Idiomas */}
           <Typography variant="h6" gutterBottom>Idiomas</Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -95,11 +107,10 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
         </Box>
 
         {/* Conteúdo Principal */}
-        <Box>
+        <Box sx={{ flex: 1, p: 4 }}>
           <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>
             {data.personalInfo.name}
           </Typography>
-
           {/* Objetivo */}
           {data.personalInfo.objective && (
             <Box sx={{ mb: 4 }}>
@@ -109,7 +120,6 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
               <Typography>{data.personalInfo.objective}</Typography>
             </Box>
           )}
-
           {/* Experiência */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
@@ -130,7 +140,6 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
               </Box>
             ))}
           </Box>
-
           {/* Educação */}
           <Box>
             <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>

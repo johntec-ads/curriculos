@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, TextField, Button, Box, Typography, IconButton, Alert, Snackbar } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import Cropper from 'react-easy-crop';
+import Slider from '@mui/material/Slider';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -38,11 +44,32 @@ function CurriculumForm() {
       description: ''
     }],
     skills: [''],
-    languages: ['']
+    languages: [''],
+    template: selectedTemplate || 'template1' // Adiciona o template selecionado
   });
   const [errors, setErrors] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [photo, setPhoto] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+
+  useEffect(() => {
+    // Carrega dados do localStorage se existirem
+    const data = localStorage.getItem('curriculumData');
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        setFormData(prev => ({ ...prev, ...parsed }));
+        if (parsed.personalInfo && parsed.personalInfo.photoUrl) {
+          setPhoto(parsed.personalInfo.photoUrl);
+        }
+      } catch (e) {
+        // Se der erro, ignora e segue com formulário limpo
+      }
+    }
+  }, []);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -59,21 +86,61 @@ function CurriculumForm() {
     }));
   };
 
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhoto(reader.result);
-        setFormData(prev => ({
-          ...prev,
-          personalInfo: {
-            ...prev.personalInfo,
-            photoUrl: reader.result
-          }
-        }));
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  async function getCroppedImg(imageSrc, crop) {
+    const createImage = (url) => new Promise((resolve, reject) => {
+      const image = new window.Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', error => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(
+      image,
+      crop.x,
+      crop.y,
+      crop.width,
+      crop.height,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+    return canvas.toDataURL('image/jpeg');
+  }
+
+  const handleCropSave = async () => {
+    if (photo && croppedAreaPixels) {
+      const croppedImg = await getCroppedImg(photo, croppedAreaPixels);
+      setFormData(prev => ({
+        ...prev,
+        personalInfo: {
+          ...prev.personalInfo,
+          photoUrl: croppedImg
+        }
+      }));
+      setPhoto(croppedImg);
+      setShowCropper(false);
     }
   };
 
@@ -174,7 +241,8 @@ function CurriculumForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      localStorage.setItem('curriculumData', JSON.stringify(formData));
+      // Salva o template junto com os dados
+      localStorage.setItem('curriculumData', JSON.stringify({ ...formData, template: selectedTemplate || 'template1' }));
       setSnackbarOpen(true); // Exibir feedback visual
       navigate('/preview');
     } else {
@@ -219,9 +287,39 @@ function CurriculumForm() {
               />
             </Button>
             {photo && (
-              <img src={photo} alt="Foto do candidato" style={{ width: 64, height: 64, borderRadius: '50%' }} />
+              <img src={photo} alt="Foto do candidato" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }} />
             )}
           </Box>
+          <Dialog open={showCropper} onClose={() => setShowCropper(false)} maxWidth="xs" fullWidth>
+            <DialogTitle>Enquadre sua foto</DialogTitle>
+            <DialogContent>
+              <Box sx={{ position: 'relative', width: '100%', height: 300, bgcolor: '#333' }}>
+                <Cropper
+                  image={photo}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                />
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <Typography gutterBottom>Zoom</Typography>
+                <Slider
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  onChange={(e, z) => setZoom(z)}
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowCropper(false)} color="secondary">Cancelar</Button>
+              <Button onClick={handleCropSave} color="primary" variant="contained">Salvar</Button>
+            </DialogActions>
+          </Dialog>
           <TextField
             fullWidth
             label="Nome Completo"
