@@ -10,7 +10,7 @@ const fakeData = {
     email: 'maria@email.com',
     phone: '(11) 99999-8888',
     address: 'Rua Exemplo, 123, São Paulo - SP',
-    linkedin: 'linkedin.com/in/mariasilva',
+    linkedin: 'linkedin.com/in/maria silva',
     objective: 'Busco uma posição de destaque na área de tecnologia.',
     photoUrl: ''
   },
