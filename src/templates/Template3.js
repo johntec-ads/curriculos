@@ -25,14 +25,16 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
     <>
       <Paper 
         ref={ref}
-        sx={{
-          width: '210mm',
-          minHeight: '297mm',
-          margin: '32px auto',
-          p: 4,
-          backgroundColor: '#fff',
-          position: 'relative',
-          fontFamily: 'Arial, sans-serif'
+        sx={{ 
+          width: '210mm', 
+          minHeight: '297mm', 
+          margin: '32px auto', 
+          p: 4, 
+          backgroundColor: '#fff', 
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+          position: 'relative', 
+          overflow: 'hidden', 
+          fontFamily: 'Arial, sans-serif' 
         }}
       >
         {/* Cabeçalho */}

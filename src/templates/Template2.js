@@ -25,21 +25,27 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating }, ref) => {
     <>
       <Paper 
         ref={ref}
-        sx={{
-          width: '210mm',
-          minHeight: '297mm',
-          margin: '32px auto',
-          p: 4,
-          backgroundColor: '#fff',
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr',
-          gap: 4,
-          position: 'relative',
-          fontFamily: 'Arial, sans-serif'
+        sx={{ 
+          width: '210mm', 
+          minHeight: '297mm', 
+          margin: '32px auto', 
+          p: 4, 
+          backgroundColor: '#fff', 
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+          position: 'relative', 
+          overflow: 'hidden', 
+          fontFamily: 'Arial, sans-serif' 
         }}
       >
         {/* Coluna Lateral */}
-        <Box sx={{ backgroundColor: '#1976d2', color: 'white', p: 3, borderRadius: 1 }}>
+        <Box sx={{ 
+          width: '240px', 
+          bgcolor: '#1976d2', 
+          color: 'white', 
+          p: 3, 
+          borderRadius: 1, 
+          flexShrink: 0 
+        }}>
           {/* Foto Placeholder */}
           <Box 
             sx={{

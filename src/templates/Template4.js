@@ -1,49 +1,127 @@
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Paper, Button, Box } from '@mui/material';
+import { Paper, Typography, Box, Button, Backdrop, CircularProgress } from '@mui/material';
 
-const Template4 = ({ data, onBack, onPrint, isGenerating }) => {
+const Template4 = forwardRef(({ data, onBack, onPrint, isGenerating }, ref) => {
+  const formatDate = (date) => {
+    if (!date) return 'Presente';
+    return new Date(date).toLocaleDateString('pt-BR', {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
+
+  if (!data) return null;
+
   return (
-    <Paper sx={{ width: '210mm', minHeight: '297mm', margin: '32px auto', p: 4, fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ color: '#1976d2' }}>{data.personalInfo.name}</h1>
-      <p><strong>Email:</strong> {data.personalInfo.email}</p>
-      <p><strong>Telefone:</strong> {data.personalInfo.phone}</p>
-      <p><strong>Endereço:</strong> {data.personalInfo.address}</p>
-      <p><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</p>
-      <h2>Objetivo</h2>
-      <p>{data.personalInfo.objective}</p>
-      <h2>Educação</h2>
-      {data.education.map((edu, index) => (
-        <div key={index}>
-          <p><strong>Instituição:</strong> {edu.institution}</p>
-          <p><strong>Curso:</strong> {edu.course}</p>
-          <p><strong>Período:</strong> {edu.startDate} - {edu.endDate}</p>
-          <p>{edu.description}</p>
-        </div>
-      ))}
-      <h2>Experiência</h2>
-      {data.experience.map((exp, index) => (
-        <div key={index}>
-          <p><strong>Empresa:</strong> {exp.company}</p>
-          <p><strong>Cargo:</strong> {exp.position}</p>
-          <p><strong>Período:</strong> {exp.startDate} - {exp.endDate}</p>
-          <p>{exp.description}</p>
-        </div>
-      ))}
-      <h2>Habilidades</h2>
-      <ul>
-        {data.skills.map((skill, index) => (
-          <li key={index}>{skill}</li>
+    <>
+      <Paper 
+        ref={ref}
+        sx={{ 
+          width: '210mm', 
+          minHeight: '297mm', 
+          margin: '32px auto', 
+          p: 4, 
+          backgroundColor: '#fff', 
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+          position: 'relative', 
+          overflow: 'hidden', 
+          fontFamily: 'Arial, sans-serif' 
+        }}
+      >
+        {/* Marca d'água */}
+        <Typography
+          sx={{
+            position: 'absolute',
+            bottom: '40px',
+            right: '20px',
+            transform: 'rotate(-45deg)',
+            color: 'rgba(0, 0, 0, 0.03)',
+            fontSize: '80px',
+            pointerEvents: 'none',
+            userSelect: 'none',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          JOHNTEC.ADS
+        </Typography>
+        
+        <Typography variant="h4" sx={{ color: '#1976d2', mb: 2 }}>{data.personalInfo.name}</Typography>
+        
+        <Box sx={{ mb: 3 }}>
+          <Typography><strong>Email:</strong> {data.personalInfo.email}</Typography>
+          <Typography><strong>Telefone:</strong> {data.personalInfo.phone}</Typography>
+          <Typography><strong>Endereço:</strong> {data.personalInfo.address}</Typography>
+          {data.personalInfo.linkedin && (
+            <Typography><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</Typography>
+          )}
+        </Box>
+        
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Objetivo</Typography>
+        <Typography paragraph>{data.personalInfo.objective}</Typography>
+        
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Educação</Typography>
+        {data.education.map((edu, index) => (
+          <Box key={index} sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">{edu.course}</Typography>
+            <Typography variant="subtitle2">{edu.institution}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+            </Typography>
+            <Typography paragraph>{edu.description}</Typography>
+          </Box>
         ))}
-      </ul>
-      <h2>Idiomas</h2>
-      <ul>
-        {data.languages.map((language, index) => (
-          <li key={index}>{language}</li>
+        
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Experiência</Typography>
+        {data.experience.map((exp, index) => (
+          <Box key={index} sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">{exp.position}</Typography>
+            <Typography variant="subtitle2">{exp.company}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+            </Typography>
+            <Typography paragraph>{exp.description}</Typography>
+          </Box>
         ))}
-      </ul>
+        
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Habilidades</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {data.skills.map((skill, index) => (
+            <Typography key={index} component="span" sx={{
+              bgcolor: '#e3f2fd',
+              px: 2,
+              py: 0.5,
+              borderRadius: 1
+            }}>
+              {skill}
+            </Typography>
+          ))}
+        </Box>
+        
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Idiomas</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {data.languages.map((language, index) => (
+            <Typography key={index} component="span" sx={{
+              bgcolor: '#e3f2fd',
+              px: 2,
+              py: 0.5,
+              borderRadius: 1
+            }}>
+              {language}
+            </Typography>
+          ))}
+        </Box>
+      </Paper>
+
       <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
-        <Button onClick={onBack} variant="outlined" color="primary" size="large" aria-label="Voltar e Editar">
+        <Button 
+          onClick={onBack} 
+          variant="outlined" 
+          color="primary" 
+          size="large" 
+          aria-label="Voltar e Editar"
+        >
           Voltar e Editar
         </Button>
         <Button
@@ -57,9 +135,18 @@ const Template4 = ({ data, onBack, onPrint, isGenerating }) => {
           Gerar PDF
         </Button>
       </Box>
-    </Paper>
+
+      <Backdrop open={isGenerating}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress color="inherit" />
+          <Typography sx={{ mt: 2, color: 'white' }}>
+            Gerando PDF...
+          </Typography>
+        </Box>
+      </Backdrop>
+    </>
   );
-};
+});
 
 Template4.propTypes = {
   data: PropTypes.object.isRequired,
@@ -76,7 +163,7 @@ const Template4Wrapper = (props) => {
   const handlePrint = () => {
     window.print();
   };
-  return <Template4 {...props} onBack={handleBack} onPrint={handlePrint} isGenerating={false} />;
+  return <Template4 ref={null} {...props} onBack={handleBack} onPrint={handlePrint} isGenerating={false} />;
 };
 
 export default Template4Wrapper;
