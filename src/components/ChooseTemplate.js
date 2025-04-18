@@ -1,55 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Grid, Card, CardContent, CardActions, Button, CardMedia, Box, Dialog, DialogContent } from '@mui/material';
-import { templates, getTemplateById } from '../templates';
-
-// Dados fictícios para visualização
-const fakeData = {
-  personalInfo: {
-    name: 'Maria da Silva',
-    email: 'maria@email.com',
-    phone: '(11) 99999-8888',
-    address: 'Rua Exemplo, 123, São Paulo - SP',
-    linkedin: 'linkedin.com/in/maria silva',
-    objective: 'Busco uma posição de destaque na área de tecnologia.',
-    photoUrl: ''
-  },
-  education: [
-    {
-      institution: 'Universidade Exemplo',
-      course: 'Análise e Desenvolvimento de Sistemas',
-      startDate: '2019-01-01',
-      endDate: '2022-12-01',
-      description: 'Formação sólida em desenvolvimento de software.'
-    }
-  ],
-  experience: [
-    {
-      company: 'Empresa Tech',
-      position: 'Desenvolvedora Frontend',
-      startDate: '2023-01-01',
-      endDate: '',
-      description: 'Atuação com React, JavaScript e integração com APIs.'
-    }
-  ],
-  skills: ['JavaScript', 'React', 'CSS', 'Git'],
-  languages: ['Português', 'Inglês']
-};
+import { Container, Typography, Grid, Card, CardContent, CardActions, Button, CardMedia, Box } from '@mui/material';
+import { templates } from '../templates';
 
 function ChooseTemplate() {
   const navigate = useNavigate();
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const handleSelectTemplate = (templateId) => {
     navigate(`/create?template=${templateId}`);
-  };
-
-  const handleOpenPreview = (template) => {
-    setSelectedTemplate(template);
-  };
-
-  const handleClosePreview = () => {
-    setSelectedTemplate(null);
   };
 
   return (
@@ -75,7 +33,7 @@ function ChooseTemplate() {
               }}>
                 <Box sx={{
                   width: '100%',
-                  height: 160,
+                  height: 280,
                   overflow: 'hidden',
                   bgcolor: '#f5f5f5',
                   borderBottom: '1px solid #eee',
@@ -88,9 +46,8 @@ function ChooseTemplate() {
                     image={template.thumbnail}
                     alt={`Preview do ${template.name}`}
                     sx={{
-                      width: 'auto',
+                      width: '100%',
                       height: '100%',
-                      maxWidth: '100%',
                       objectFit: 'contain',
                       bgcolor: '#f5f5f5'
                     }}
@@ -137,18 +94,9 @@ function ChooseTemplate() {
                     color="primary"
                     onClick={() => handleSelectTemplate(template.id)}
                     aria-label={`Selecionar modelo ${template.name}`}
-                    sx={{ minWidth: 100 }}
+                    fullWidth
                   >
                     Selecionar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleOpenPreview(template)}
-                    aria-label={`Visualizar modelo ${template.name}`}
-                    sx={{ minWidth: 100, ml: 1 }}
-                  >
-                    Visualizar
                   </Button>
                 </CardActions>
               </Card>
@@ -156,38 +104,6 @@ function ChooseTemplate() {
           ))}
         </Grid>
       </Box>
-
-      {/* Modal de Visualização */}
-      {selectedTemplate && (
-        <Dialog open={!!selectedTemplate} onClose={handleClosePreview} maxWidth="md" fullWidth>
-          <DialogContent>
-            <Typography variant="h5" align="center" gutterBottom>
-              {selectedTemplate.name}
-            </Typography>
-            {/* Renderização do template real com dados fictícios */}
-            {(() => {
-              const TemplateComponent = getTemplateById(selectedTemplate.id)?.component;
-              if (TemplateComponent) {
-                return (
-                  <Box sx={{ my: 2 }}>
-                    <TemplateComponent data={fakeData} onBack={() => {}} onPrint={() => {}} isGenerating={false} />
-                  </Box>
-                );
-              }
-              return (
-                <img
-                  src={selectedTemplate.thumbnail}
-                  alt={`Preview do ${selectedTemplate.name}`}
-                  style={{ width: '100%', borderRadius: '8px' }}
-                />
-              );
-            })()}
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-              {selectedTemplate.description}
-            </Typography>
-          </DialogContent>
-        </Dialog>
-      )}
     </Container>
   );
 }

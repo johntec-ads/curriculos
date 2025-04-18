@@ -10,6 +10,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -49,11 +50,13 @@ function CurriculumForm() {
   });
   const [errors, setErrors] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [photo, setPhoto] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
+  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
 
   useEffect(() => {
     // Carrega dados do localStorage se existirem
@@ -243,11 +246,70 @@ function CurriculumForm() {
     if (validateForm()) {
       // Salva o template junto com os dados
       localStorage.setItem('curriculumData', JSON.stringify({ ...formData, template: selectedTemplate || 'template1' }));
+      setSnackbarMessage("Dados salvos com sucesso!");
       setSnackbarOpen(true); // Exibir feedback visual
       navigate('/preview');
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  // Função para limpar o formulário
+  const handleClearForm = () => {
+    // Mantém apenas o template selecionado
+    const initialFormState = {
+      personalInfo: {
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        linkedin: '',
+        objective: '',
+        photoUrl: ''
+      },
+      education: [{
+        institution: '',
+        course: '',
+        startDate: '',
+        endDate: '',
+        description: ''
+      }],
+      experience: [{
+        company: '',
+        position: '',
+        startDate: '',
+        endDate: '',
+        description: ''
+      }],
+      skills: [''],
+      languages: [''],
+      template: selectedTemplate || 'template1'
+    };
+
+    // Reseta o estado do formulário
+    setFormData(initialFormState);
+    setPhoto(null);
+    setErrors({});
+    
+    // Remove os dados do localStorage
+    localStorage.removeItem('curriculumData');
+    
+    // Mostra feedback ao usuário
+    setSnackbarMessage("Formulário limpo com sucesso!");
+    setSnackbarOpen(true);
+
+    // Fecha o diálogo de confirmação
+    setShowClearConfirmation(false);
+  };
+
+  // Função para abrir o diálogo de confirmação
+  const openClearConfirmation = () => {
+    setShowClearConfirmation(true);
+  };
+
+  // Função para fechar o diálogo de confirmação
+  const closeClearConfirmation = () => {
+    setShowClearConfirmation(false);
   };
 
   return (
@@ -257,8 +319,33 @@ function CurriculumForm() {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        message="Dados salvos com sucesso!"
+        message={snackbarMessage}
       />
+
+      {/* Diálogo de confirmação para limpar formulário */}
+      <Dialog
+        open={showClearConfirmation}
+        onClose={closeClearConfirmation}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Limpar Formulário
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Tem certeza que deseja limpar todos os dados do formulário? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeClearConfirmation} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleClearForm} color="error" autoFocus>
+            Limpar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {Object.keys(errors).length > 0 && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -562,6 +649,15 @@ function CurriculumForm() {
             size="large"
           >
             Cancelar
+          </Button>
+          <Button 
+            type="button" 
+            onClick={openClearConfirmation}
+            variant="outlined" 
+            color="error" 
+            size="large"
+          >
+            Limpar Formulário
           </Button>
           <Button 
             type="submit" 
