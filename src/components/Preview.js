@@ -1,4 +1,3 @@
-import { useEffect, useState, useRef } from 'react';
 import { 
   Container, 
   Box, 
@@ -19,14 +18,12 @@ import {
   TextField,
   Snackbar,
   Alert,
-  Divider,
   Tabs,
   Tab
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
-import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -34,6 +31,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import EmailIcon from '@mui/icons-material/Email';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useState, useRef, useEffect } from 'react';
 
 function Preview() {
   const navigate = useNavigate();
@@ -73,7 +71,7 @@ function Preview() {
   };
   
   // Funções de compartilhamento
-  const handleShareDialogOpen = () => {
+  const handleShareButtonClick = () => {
     // Gera a URL e atualiza os estados antes de abrir o diálogo
     const url = generateShareUrl();
     setShareUrl(url);
@@ -277,6 +275,15 @@ function Preview() {
           disabled={isGeneratingPdf}
         >
           Escolher Outro Modelo
+        </Button>
+        <Button
+          onClick={handleShareButtonClick}
+          variant="outlined"
+          color="info"
+          size="large"
+          disabled={isGeneratingPdf}
+        >
+          Compartilhar
         </Button>
         <Button
           onClick={handlePrint}

@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Paper, Typography, Box, Button, Grid, Divider } from '@mui/material';
+import { Paper, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -9,14 +9,6 @@ const Template5 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
     return new Date(date).toLocaleDateString('pt-BR', {
       year: 'numeric',
       month: 'long'
-    });
-  };
-
-  const sortByDate = (items) => {
-    return [...items].sort((a, b) => {
-      const dateA = new Date(a.startDate);
-      const dateB = new Date(b.startDate);
-      return dateB - dateA;
     });
   };
 

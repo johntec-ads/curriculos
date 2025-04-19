@@ -22,9 +22,6 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
 
   if (!data) return null;
 
-  // Variáveis para garantir adaptabilidade
-  const hasManyLanguages = (data?.languages?.length || 0) > 3;
-
   return (
     <>
       <Paper 
