@@ -12,17 +12,33 @@ import {
   Box,
   Dialog,
   DialogContent,
-  IconButton
+  IconButton,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { templates } from '../templates';
+import { useAuth } from '../context/AuthContext';
+import Authentication from './Authentication';
 
 function ChooseTemplate() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
   const handleSelectTemplate = (templateId) => {
-    navigate(`/create?template=${templateId}`);
+    if (currentUser) {
+      navigate(`/create?template=${templateId}`);
+    } else {
+      // Se usuário não estiver logado, salvar o template selecionado e mostrar diálogo de login
+      setSelectedTemplateId(templateId);
+      setIsAuthDialogOpen(true);
+    }
   };
 
   const handleOpenImage = (imageUrl) => {
@@ -31,6 +47,27 @@ function ChooseTemplate() {
 
   const handleCloseImage = () => {
     setSelectedImage(null);
+  };
+
+  const handleCloseAuthDialog = () => {
+    setIsAuthDialogOpen(false);
+  };
+
+  const handleAfterLogin = () => {
+    setSnackbarMessage("Login realizado com sucesso!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
+    
+    // Após login bem-sucedido, navegar para a página de criação com o template selecionado
+    if (selectedTemplateId) {
+      setTimeout(() => {
+        navigate(`/create?template=${selectedTemplateId}`);
+      }, 1000);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -176,6 +213,30 @@ function ChooseTemplate() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Componente de autenticação */}
+      <Authentication
+        open={isAuthDialogOpen}
+        onClose={handleCloseAuthDialog}
+        afterLogin={handleAfterLogin}
+      />
+
+      {/* Snackbar para feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

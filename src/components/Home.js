@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { 
   Container, 
   Typography, 
@@ -14,7 +15,9 @@ import {
   Snackbar,
   Alert,
   Divider,
-  Paper
+  Paper,
+  Avatar,
+  Chip
 } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -23,8 +26,11 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import EmailIcon from '@mui/icons-material/Email';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 import { QRCodeCanvas } from 'qrcode.react';
-import { useState } from 'react';
+import Authentication from './Authentication';
+import { useAuth } from '../context/AuthContext';
 
 function Home() {
   // Estados para compartilhamento
@@ -32,7 +38,10 @@ function Home() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const appUrl = window.location.origin;
+  
+  const { currentUser, logout } = useAuth();
   
   // Funções para compartilhamento
   const handleShareDialogOpen = () => {
@@ -103,17 +112,85 @@ function Home() {
     }
   };
 
+  const handleOpenAuthDialog = () => {
+    setIsAuthDialogOpen(true);
+  };
+
+  const handleCloseAuthDialog = () => {
+    setIsAuthDialogOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setSnackbarMessage("Você saiu da sua conta");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      setSnackbarMessage("Erro ao sair da conta");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
   return (
     <Container maxWidth="sm">
       <Box 
         sx={{
-          marginTop: 8,
+          marginTop: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 3
         }}
       >
+        {/* Área de usuário */}
+        {currentUser ? (
+          <Paper
+            elevation={1}
+            sx={{
+              p: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              borderRadius: 2
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar
+                src={currentUser.photoURL}
+                alt={currentUser.displayName || currentUser.email}
+              >
+                {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : currentUser.email[0].toUpperCase()}
+              </Avatar>
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
+                  {currentUser.displayName || 'Usuário'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {currentUser.email}
+                </Typography>
+              </Box>
+            </Box>
+            <Tooltip title="Sair">
+              <IconButton onClick={handleLogout} color="default">
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+          </Paper>
+        ) : (
+          <Button
+            startIcon={<LoginIcon />}
+            variant="outlined"
+            onClick={handleOpenAuthDialog}
+            sx={{ alignSelf: 'flex-end' }}
+          >
+            Entrar
+          </Button>
+        )}
+
         {/* Logo e Identificação */}
         <Typography 
           variant="h3" 
@@ -135,17 +212,28 @@ function Home() {
           Crie seu currículo profissional de forma rápida e fácil. 
           Escolha entre diversos templates e exporte em PDF.
         </Typography>
-
-        <Button
-          component={Link}
-          to="/choose-template"
-          variant="contained"
-          color="primary"
-          size="large"
-          sx={{ minWidth: '200px' }}
-        >
-          Criar Novo Currículo
-        </Button>
+        
+        {/* CTA para criar currículo */}
+        <Box sx={{ mt: 2, width: '100%' }}>
+          {!currentUser && (
+            <Chip 
+              color="warning" 
+              label="Entre para salvar seus currículos" 
+              sx={{ mb: 2, width: '100%' }} 
+            />
+          )}
+          
+          <Button
+            component={Link}
+            to="/choose-template"
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ minWidth: '200px', width: '100%' }}
+          >
+            Criar Novo Currículo
+          </Button>
+        </Box>
         
         {/* Botão de compartilhamento */}
         <Button
@@ -153,7 +241,7 @@ function Home() {
           color="primary"
           startIcon={<ShareIcon />}
           onClick={handleShareDialogOpen}
-          sx={{ minWidth: '200px' }}
+          sx={{ minWidth: '200px', width: '100%' }}
         >
           Compartilhar Aplicativo
         </Button>
@@ -287,6 +375,17 @@ function Home() {
           <Button onClick={handleShareDialogClose}>Fechar</Button>
         </DialogActions>
       </Dialog>
+      
+      {/* Componente de autenticação */}
+      <Authentication
+        open={isAuthDialogOpen}
+        onClose={handleCloseAuthDialog}
+        afterLogin={() => {
+          setSnackbarMessage("Login realizado com sucesso!");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+        }}
+      />
       
       {/* Snackbar para feedback */}
       <Snackbar
