@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Grid, Card, CardContent, CardActions, Button, CardMedia, Box } from '@mui/material';
+import { 
+  Container, 
+  Typography, 
+  Grid, 
+  Card, 
+  CardContent, 
+  CardActions, 
+  Button, 
+  CardMedia, 
+  Box,
+  Dialog,
+  DialogContent,
+  IconButton
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { templates } from '../templates';
 
 function ChooseTemplate() {
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleSelectTemplate = (templateId) => {
     navigate(`/create?template=${templateId}`);
+  };
+
+  const handleOpenImage = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+
+  const handleCloseImage = () => {
+    setSelectedImage(null);
   };
 
   return (
@@ -39,8 +62,12 @@ function ChooseTemplate() {
                   borderBottom: '1px solid #eee',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleOpenImage(template.thumbnail)}
+                aria-label={`Ver imagem ampliada do modelo ${template.name}`}
+                >
                   <CardMedia
                     component="img"
                     image={template.thumbnail}
@@ -104,6 +131,51 @@ function ChooseTemplate() {
           ))}
         </Grid>
       </Box>
+
+      {/* Dialog para visualização ampliada da imagem */}
+      <Dialog 
+        open={!!selectedImage} 
+        onClose={handleCloseImage}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent sx={{ 
+          p: 1, 
+          position: 'relative', 
+          display: 'flex', 
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflowY: 'hidden',
+          bgcolor: 'rgba(0,0,0,0.03)'
+        }}>
+          <IconButton
+            aria-label="Fechar visualização"
+            onClick={handleCloseImage}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+              bgcolor: 'rgba(255,255,255,0.8)',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,1)',
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Box 
+            component="img"
+            src={selectedImage}
+            alt="Visualização ampliada do modelo de currículo"
+            sx={{
+              maxHeight: '80vh',
+              maxWidth: '100%',
+              objectFit: 'contain'
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }
