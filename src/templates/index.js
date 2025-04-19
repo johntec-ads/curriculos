@@ -13,7 +13,7 @@ export { default as Template4Wrapper } from './Template4';
 export { default as Template5Wrapper } from './Template5';
 
 // Caminho para as imagens dos templates
-const templateImagePath = "/images/templates/";
+const templateImagePath = "/images/";
 
 // Primeiro definimos os templates como um objeto para evitar problemas de hoisting
 const templateDefinitions = {
