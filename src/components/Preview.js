@@ -68,22 +68,40 @@ function Preview() {
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+      {/* Apenas mostramos o componente de template, sem passar as funções de botões */}
+      <TemplateComponent 
+        ref={printRef}
+        data={curriculumData}
+        isGenerating={false}
+      />
+
+      {/* Todos os botões de ação ficam aqui agora */}
+      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Button 
+          onClick={handleBack} 
+          variant="outlined" 
+          color="primary" 
+          size="large"
+        >
+          Voltar e Editar
+        </Button>
         <Button
           variant="outlined"
-          color="primary"
+          color="secondary"
+          size="large"
           onClick={() => setIsTemplateDialogOpen(true)}
         >
           Escolher Outro Modelo
         </Button>
+        <Button
+          onClick={handlePrint}
+          variant="contained" 
+          color="primary"
+          size="large"
+        >
+          Gerar PDF
+        </Button>
       </Box>
-
-      <TemplateComponent 
-        ref={printRef}
-        data={curriculumData}
-        onPrint={handlePrint}
-        onBack={handleBack}
-      />
 
       <Dialog 
         open={isTemplateDialogOpen} 

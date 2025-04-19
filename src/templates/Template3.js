@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Template3 = forwardRef(({ data, onPrint, onBack }, ref) => {
+const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -212,19 +212,21 @@ const Template3 = forwardRef(({ data, onPrint, onBack }, ref) => {
         </Box>
       </Paper>
 
-      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
-        <Button onClick={onBack} variant="outlined" color="primary" size="large">
-          Voltar e Editar
-        </Button>
-        <Button
-          onClick={onPrint}
-          variant="contained" 
-          color="primary"
-          size="large"
-        >
-          Gerar PDF
-        </Button>
-      </Box>
+      {!isGenerating && onPrint && onBack && (
+        <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Button onClick={onBack} variant="outlined" color="primary" size="large">
+            Voltar e Editar
+          </Button>
+          <Button
+            onClick={onPrint}
+            variant="contained" 
+            color="primary"
+            size="large"
+          >
+            Gerar PDF
+          </Button>
+        </Box>
+      )}
     </>
   );
 });
@@ -237,7 +239,7 @@ export default function Template3Wrapper(props) {
   return (
     <Template3
       {...props}
-      onBack={handleBack}
+      onBack={props.onBack || handleBack}
     />
   );
 }

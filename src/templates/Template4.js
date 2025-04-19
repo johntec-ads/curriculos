@@ -1,9 +1,9 @@
 import { forwardRef } from 'react';
+import { Paper, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Paper, Typography, Box, Button } from '@mui/material';
 
-const Template4 = forwardRef(({ data, onBack, onPrint }, ref) => {
+const Template4 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -16,7 +16,7 @@ const Template4 = forwardRef(({ data, onBack, onPrint }, ref) => {
 
   return (
     <>
-      <Paper 
+      <Paper
         ref={ref}
         sx={{ 
           width: '210mm', 
@@ -114,42 +114,42 @@ const Template4 = forwardRef(({ data, onBack, onPrint }, ref) => {
         </Box>
       </Paper>
 
-      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
-        <Button 
-          onClick={onBack} 
-          variant="outlined" 
-          color="primary" 
-          size="large" 
-          aria-label="Voltar e Editar"
-        >
-          Voltar e Editar
-        </Button>
-        <Button
-          onClick={onPrint}
-          variant="contained"
-          color="primary"
-          size="large"
-          aria-label="Gerar PDF"
-        >
-          Gerar PDF
-        </Button>
-      </Box>
+      {/* Só renderiza os botões se NÃO estiver na página de preview */}
+      {!isGenerating && onPrint && onBack && (
+        <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Button onClick={onBack} variant="outlined" color="primary" size="large">
+            Voltar e Editar
+          </Button>
+          <Button
+            onClick={onPrint}
+            variant="contained" 
+            color="primary"
+            size="large"
+          >
+            Gerar PDF
+          </Button>
+        </Box>
+      )}
     </>
   );
 });
 
 Template4.propTypes = {
   data: PropTypes.object.isRequired,
-  onBack: PropTypes.func.isRequired,
-  onPrint: PropTypes.func.isRequired,
+  onBack: PropTypes.func,
+  onPrint: PropTypes.func,
+  isGenerating: PropTypes.bool
 };
 
-const Template4Wrapper = (props) => {
+export default function Template4Wrapper(props) {
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
   };
-  return <Template4 {...props} onBack={handleBack} />;
-};
-
-export default Template4Wrapper;
+  return (
+    <Template4
+      {...props}
+      onBack={props.onBack || handleBack}
+    />
+  );
+}

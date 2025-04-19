@@ -1,14 +1,22 @@
 import { forwardRef } from 'react';
+import { Paper, Typography, Box, Button, Avatar, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Paper, Box, Typography, Button, Avatar, Divider } from '@mui/material';
 
-const Template6 = forwardRef(({ data, onBack, onPrint }, ref) => {
+const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, ref) => {
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
       year: 'numeric',
       month: 'long'
+    });
+  };
+
+  const sortByDate = (items) => {
+    return [...items].sort((a, b) => {
+      const dateA = new Date(a.startDate);
+      const dateB = new Date(b.startDate);
+      return dateB - dateA;
     });
   };
 
@@ -22,12 +30,14 @@ const Template6 = forwardRef(({ data, onBack, onPrint }, ref) => {
           width: '210mm', 
           minHeight: '297mm', 
           margin: '32px auto', 
-          p: 4, 
+          p: 0, // Remove padding do Paper
           backgroundColor: '#fff', 
           boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
           position: 'relative', 
           overflow: 'hidden', 
-          fontFamily: 'Arial, sans-serif' 
+          fontFamily: 'Arial, sans-serif',
+          display: 'flex',
+          flexDirection: 'row',
         }}
       >
         {/* Marca d'água */}
@@ -128,26 +138,22 @@ const Template6 = forwardRef(({ data, onBack, onPrint }, ref) => {
         </Box>
       </Paper>
 
-      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
-        <Button 
-          onClick={onBack} 
-          variant="outlined" 
-          color="primary" 
-          size="large" 
-          aria-label="Voltar e Editar"
-        >
-          Voltar e Editar
-        </Button>
-        <Button
-          onClick={onPrint}
-          variant="contained"
-          color="primary"
-          size="large"
-          aria-label="Gerar PDF"
-        >
-          Gerar PDF
-        </Button>
-      </Box>
+      {/* Só renderiza os botões se NÃO estiver na página de preview */}
+      {!isGenerating && onPrint && onBack && (
+        <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+          <Button onClick={onBack} variant="outlined" color="primary" size="large">
+            Voltar e Editar
+          </Button>
+          <Button
+            onClick={onPrint}
+            variant="contained" 
+            color="primary"
+            size="large"
+          >
+            Gerar PDF
+          </Button>
+        </Box>
+      )}
     </>
   );
 });
@@ -156,14 +162,18 @@ Template6.propTypes = {
   data: PropTypes.object.isRequired,
   onBack: PropTypes.func.isRequired,
   onPrint: PropTypes.func.isRequired,
+  isGenerating: PropTypes.bool,
 };
 
-const Template6Wrapper = (props) => {
+export default function Template6Wrapper(props) {
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
   };
-  return <Template6 {...props} onBack={handleBack} />;
-};
-
-export default Template6Wrapper;
+  return (
+    <Template6
+      {...props}
+      onBack={props.onBack || handleBack}
+    />
+  );
+}
