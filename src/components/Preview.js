@@ -10,13 +10,30 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   Grid,
   Button,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  TextField,
+  Snackbar,
+  Alert,
+  Divider,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
+import ShareIcon from '@mui/icons-material/Share';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import EmailIcon from '@mui/icons-material/Email';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import { QRCodeCanvas } from 'qrcode.react';
 
 function Preview() {
   const navigate = useNavigate();
@@ -26,10 +43,117 @@ function Preview() {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [printError, setPrintError] = useState(null);
+  
+  // Estados para compartilhamento
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [tabValue, setTabValue] = useState(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  
+  // Gera uma URL de compartilhamento usando localStorage e base64
+  const generateShareUrl = () => {
+    try {
+      // Cria uma cópia dos dados para evitar referências circulares
+      const shareData = {...curriculumData};
+      // Converte para string e depois para base64
+      const encodedData = btoa(encodeURIComponent(JSON.stringify(shareData)));
+      // Cria URL com os dados codificados
+      const url = `${window.location.origin}/preview?shared=${encodedData}`;
+      setShareUrl(url);
+      return url;
+    } catch (error) {
+      console.error("Erro ao gerar URL de compartilhamento:", error);
+      setSnackbarMessage("Erro ao gerar link de compartilhamento");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return "";
+    }
+  };
+  
+  // Funções de compartilhamento
+  const handleShareDialogOpen = () => {
+    const url = generateShareUrl();
+    setIsShareDialogOpen(true);
+  };
 
+  const handleCopyToClipboard = () => {
+    try {
+      navigator.clipboard.writeText(shareUrl);
+      setSnackbarMessage("Link copiado para a área de transferência!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Erro ao copiar o link");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  // Compartilhamento para redes sociais
+  const shareToWhatsApp = () => {
+    const text = `Confira meu currículo: ${shareUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareToFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareToTwitter = () => {
+    const text = `Confira meu currículo profissional ${shareUrl}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareByEmail = () => {
+    const subject = `Currículo de ${curriculumData.personalInfo.name}`;
+    const body = `Olá,\n\nGostaria de compartilhar meu currículo com você.\n\nAcesse o link: ${shareUrl}\n\nAtenciosamente,\n${curriculumData.personalInfo.name}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  // Verifica se há dados compartilhados na URL
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
-    if (data) {
+    const queryParams = new URLSearchParams(window.location.search);
+    const sharedData = queryParams.get('shared');
+    
+    if (sharedData) {
+      try {
+        // Decodifica os dados compartilhados
+        const decodedData = JSON.parse(decodeURIComponent(atob(sharedData)));
+        setCurriculumData(decodedData);
+        setSelectedTemplate(decodedData.template || 'template1');
+        // Salva localmente para permitir edição
+        localStorage.setItem('curriculumData', JSON.stringify(decodedData));
+      } catch (error) {
+        console.error('Erro ao decodificar dados compartilhados:', error);
+        // Se falhar, tenta carregar os dados locais
+        if (data) {
+          try {
+            const parsedData = JSON.parse(data);
+            setCurriculumData(parsedData);
+            setSelectedTemplate(parsedData.template || 'template1');
+          } catch (error) {
+            console.error('Erro ao analisar os dados do localStorage:', error);
+            alert('Os dados armazenados estão corrompidos. Por favor, reinicie o processo.');
+            localStorage.removeItem('curriculumData');
+          }
+        }
+      }
+    } else if (data) {
       try {
         const parsedData = JSON.parse(data);
         setCurriculumData(parsedData);
@@ -160,6 +284,14 @@ function Preview() {
         >
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          onClick={handleShareDialogOpen}
+        >
+          Compartilhar
+        </Button>
       </Box>
 
       {printError && (
@@ -219,6 +351,86 @@ function Preview() {
           </Grid>
         </DialogContent>
       </Dialog>
+
+      {/* Diálogo de compartilhamento */}
+      <Dialog
+        open={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Compartilhar Currículo</DialogTitle>
+        <DialogContent>
+          <Tabs value={tabValue} onChange={handleTabChange} centered>
+            <Tab label="Link" />
+            <Tab label="QR Code" />
+          </Tabs>
+          {tabValue === 0 && (
+            <Box sx={{ mt: 2 }}>
+              <TextField
+                fullWidth
+                value={shareUrl}
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <IconButton onClick={handleCopyToClipboard}>
+                      <ContentCopyIcon />
+                    </IconButton>
+                  )
+                }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
+                <Tooltip title="WhatsApp">
+                  <IconButton onClick={shareToWhatsApp}>
+                    <WhatsAppIcon color="success" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Facebook">
+                  <IconButton onClick={shareToFacebook}>
+                    <FacebookIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Twitter">
+                  <IconButton onClick={shareToTwitter}>
+                    <TwitterIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="LinkedIn">
+                  <IconButton onClick={shareToLinkedIn}>
+                    <LinkedInIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Email">
+                  <IconButton onClick={shareByEmail}>
+                    <EmailIcon color="error" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+          )}
+          {tabValue === 1 && (
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <QRCodeCanvas value={shareUrl} size={256} />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsShareDialogOpen(false)} color="primary">
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
