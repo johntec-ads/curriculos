@@ -11,6 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
+import TutorialGuide from './TutorialGuide'; // Importando o componente de tutorial
 
 function CurriculumForm() {
   const navigate = useNavigate();
@@ -346,6 +347,9 @@ function CurriculumForm() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Componente de Tutorial/Dicas */}
+      <TutorialGuide />
 
       {Object.keys(errors).length > 0 && (
         <Alert severity="error" sx={{ mb: 2 }}>
