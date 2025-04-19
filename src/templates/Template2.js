@@ -21,15 +21,20 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
 
   if (!data) return null;
 
+  // Calcular o layout da barra lateral com base no conteúdo
+  const hasLargePhoto = !!data?.personalInfo?.photoUrl;
+  const hasManySkills = (data?.skills?.length || 0) > 5;
+  const hasManyLanguages = (data?.languages?.length || 0) > 3;
+
   return (
     <>
       <Paper 
         ref={ref}
         sx={{ 
           width: '210mm', 
-          minHeight: '297mm', 
-          margin: '32px auto', 
-          p: 0, // Remove padding do Paper
+          height: '297mm',
+          margin: isGenerating ? 0 : '32px auto', 
+          p: 0,
           backgroundColor: '#fff', 
           boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
           position: 'relative', 
@@ -37,9 +42,10 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           fontFamily: 'Arial, sans-serif',
           display: 'flex',
           flexDirection: 'row',
+          pageBreakAfter: 'always',
         }}
       >
-        {/* Barra lateral ocupa 100% da altura do Paper */}
+        {/* Barra lateral limitada à altura exata do PDF A4 */}
         <Box sx={{ 
           width: '240px', 
           bgcolor: '#1976d2', 
@@ -47,23 +53,23 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           p: 3, 
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          minHeight: '297mm',
           height: '100%',
-          borderRadius: 0,
+          overflow: 'hidden',
+          position: 'relative',
         }}>
-          {/* Foto do usuário */}
+          {/* Foto do usuário - com tamanho adaptativo */}
           <Box 
             sx={{
-              width: 150,
-              height: 150,
+              width: hasLargePhoto ? 120 : 100,
+              height: hasLargePhoto ? 120 : 100,
               borderRadius: '50%',
               backgroundColor: '#fff',
-              margin: '0 auto 20px',
+              margin: '10px auto',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
+              flexShrink: 0,
             }}
           >
             {data?.personalInfo?.photoUrl ? (
@@ -76,38 +82,115 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
               <Typography variant="body2" color="primary">Foto</Typography>
             )}
           </Box>
+          
           {/* Informações de Contato */}
-          <Typography variant="h6" gutterBottom>Contato</Typography>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body2">{data?.personalInfo?.email}</Typography>
-            <Typography variant="body2">{data?.personalInfo?.phone}</Typography>
-            <Typography variant="body2">{data?.personalInfo?.address}</Typography>
+          <Typography variant="h6" sx={{ mt: 1, mb: 1, fontSize: '1rem', fontWeight: 'bold' }}>Contato</Typography>
+          <Box sx={{ mb: 2, width: '100%' }}>
+            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.email}</Typography>
+            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.phone}</Typography>
+            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.address}</Typography>
             {data?.personalInfo?.linkedin && (
-              <Typography variant="body2">LinkedIn: {data.personalInfo.linkedin}</Typography>
+              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                LinkedIn: {data.personalInfo.linkedin}
+              </Typography>
             )}
           </Box>
-          {/* Habilidades */}
-          <Typography variant="h6" gutterBottom>Habilidades</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {data.skills.map((skill, index) => (
-              <Typography key={index} variant="body2">
-                • {skill}
-              </Typography>
-            ))}
-          </Box>
-          {/* Idiomas */}
-          <Typography variant="h6" gutterBottom>Idiomas</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {data.languages.map((language, index) => (
-              <Typography key={index} variant="body2">
-                • {language}
-              </Typography>
-            ))}
-          </Box>
+          
+          {/* Habilidades e Idiomas - lado a lado quando há muitos */}
+          {hasManyLanguages ? (
+            <Box sx={{ display: 'flex', width: '100%', flex: 1, overflow: 'hidden' }}>
+              {/* Habilidades */}
+              <Box sx={{ width: '50%', pr: 1 }}>
+                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Habilidades</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: 0.5,
+                  overflow: 'auto',
+                  maxHeight: 'calc(100% - 30px)',
+                }}>
+                  {data.skills.map((skill, index) => (
+                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                      • {skill}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+
+              {/* Idiomas */}
+              <Box sx={{ width: '50%', pl: 1 }}>
+                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: 0.5,
+                  overflow: 'auto',
+                  maxHeight: 'calc(100% - 30px)',
+                }}>
+                  {data.languages.map((language, index) => (
+                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                      • {language}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              {/* Layout tradicional - um abaixo do outro */}
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1, mt: 1 }}>Habilidades</Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 0.5,
+                mb: 2,
+                maxHeight: hasManySkills ? '120px' : '150px',
+                overflow: 'auto',
+              }}>
+                {data.skills.map((skill, index) => (
+                  <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    • {skill}
+                  </Typography>
+                ))}
+              </Box>
+              
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 0.5,
+                maxHeight: '80px',
+                overflow: 'auto',
+              }}>
+                {data.languages.map((language, index) => (
+                  <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    • {language}
+                  </Typography>
+                ))}
+              </Box>
+            </>
+          )}
+          
+          {/* Marca d'água na barra lateral */}
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: '15px',
+              left: '0',
+              width: '100%',
+              textAlign: 'center',
+              fontSize: '0.7rem',
+              opacity: 0.5,
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          >
+            JOHNTEC.ADS
+          </Typography>
         </Box>
 
         {/* Conteúdo Principal */}
-        <Box sx={{ flex: 1, p: 4 }}>
+        <Box sx={{ flex: 1, p: 4, overflow: 'auto' }}>
           <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>
             {data.personalInfo.name}
           </Typography>

@@ -58,7 +58,26 @@ function Preview() {
       setPrintError(error.message || 'Erro ao gerar o PDF');
       setIsGeneratingPdf(false);
     },
-    removeAfterPrint: true
+    removeAfterPrint: true,
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        html, body {
+          height: 100%;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden;
+        }
+      }
+    `
   });
 
   const handleBack = () => {
@@ -96,9 +115,9 @@ function Preview() {
 
   return (
     <Container maxWidth="md">
-      {/* Conteúdo imprimível */}
+      {/* Conteúdo imprimível com estilo otimizado para PDF */}
       <div style={{ display: 'none' }}>
-        <div ref={printRef}>
+        <div ref={printRef} style={{ position: 'relative' }}>
           <TemplateComponent 
             data={curriculumData}
             isGenerating={true}
