@@ -47,6 +47,7 @@ function Preview() {
   // Estados para compartilhamento
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [qrCodeValue, setQrCodeValue] = useState(''); // Estado específico para o QR Code
   const [tabValue, setTabValue] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -61,7 +62,6 @@ function Preview() {
       const encodedData = btoa(encodeURIComponent(JSON.stringify(shareData)));
       // Cria URL com os dados codificados
       const url = `${window.location.origin}/preview?shared=${encodedData}`;
-      setShareUrl(url);
       return url;
     } catch (error) {
       console.error("Erro ao gerar URL de compartilhamento:", error);
@@ -74,7 +74,10 @@ function Preview() {
   
   // Funções de compartilhamento
   const handleShareDialogOpen = () => {
+    // Gera a URL e atualiza os estados antes de abrir o diálogo
     const url = generateShareUrl();
+    setShareUrl(url);
+    setQrCodeValue(url); // O QR Code usa a mesma URL que o link
     setIsShareDialogOpen(true);
   };
 
@@ -284,14 +287,6 @@ function Preview() {
         >
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          onClick={handleShareDialogOpen}
-        >
-          Compartilhar
-        </Button>
       </Box>
 
       {printError && (
@@ -409,8 +404,42 @@ function Preview() {
             </Box>
           )}
           {tabValue === 1 && (
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <QRCodeCanvas value={shareUrl} size={256} />
+            <Box sx={{ textAlign: 'center', mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              {qrCodeValue ? (
+                <>
+                  <QRCodeCanvas 
+                    value={qrCodeValue} 
+                    size={256}
+                    level="H"
+                    includeMargin={true}
+                    id="qr-code-canvas"
+                  />
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                    Escaneie este código QR para visualizar o currículo
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      const canvas = document.getElementById('qr-code-canvas');
+                      if (canvas) {
+                        const pngUrl = canvas.toDataURL('image/png')
+                          .replace('image/png', 'image/octet-stream');
+                        let downloadLink = document.createElement('a');
+                        downloadLink.href = pngUrl;
+                        downloadLink.download = `curriculo-qrcode-${curriculumData?.personalInfo?.name || 'novo'}.png`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                      }
+                    }}
+                  >
+                    Baixar QR Code
+                  </Button>
+                </>
+              ) : (
+                <Typography>Não foi possível gerar o QR Code</Typography>
+              )}
             </Box>
           )}
         </DialogContent>
