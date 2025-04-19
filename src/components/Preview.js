@@ -11,7 +11,8 @@ import {
   DialogTitle,
   DialogContent,
   Grid,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
@@ -23,6 +24,8 @@ function Preview() {
   const [curriculumData, setCurriculumData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [printError, setPrintError] = useState(null);
 
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
@@ -42,6 +45,20 @@ function Preview() {
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     documentTitle: `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}`,
+    onBeforePrint: () => {
+      console.log("Preparando para impressão...");
+      setIsGeneratingPdf(true);
+    },
+    onAfterPrint: () => {
+      console.log("Impressão concluída!");
+      setIsGeneratingPdf(false);
+    },
+    onPrintError: (error) => {
+      console.error("Erro de impressão:", error);
+      setPrintError(error.message || 'Erro ao gerar o PDF');
+      setIsGeneratingPdf(false);
+    },
+    removeAfterPrint: true
   });
 
   const handleBack = () => {
@@ -64,24 +81,45 @@ function Preview() {
   const templateData = getTemplateById(selectedTemplate);
   const TemplateComponent = templateData?.component;
 
-  if (!TemplateComponent) return <div>Template não encontrado</div>;
+  if (!curriculumData || !TemplateComponent) {
+    return (
+      <Container maxWidth="md">
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <CircularProgress />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Carregando currículo...
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md">
-      {/* Apenas mostramos o componente de template, sem passar as funções de botões */}
+      {/* Conteúdo imprimível */}
+      <div style={{ display: 'none' }}>
+        <div ref={printRef}>
+          <TemplateComponent 
+            data={curriculumData}
+            isGenerating={true}
+          />
+        </div>
+      </div>
+
+      {/* Versão visível para o usuário */}
       <TemplateComponent 
-        ref={printRef}
         data={curriculumData}
         isGenerating={false}
       />
 
-      {/* Todos os botões de ação ficam aqui agora */}
-      <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+      {/* Botões de ação */}
+      <Box sx={{ textAlign: 'center', mb: 4, mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
         <Button 
-          onClick={handleBack} 
+          onClick={handleBack}
           variant="outlined" 
-          color="primary" 
+          color="primary"
           size="large"
+          disabled={isGeneratingPdf}
         >
           Voltar e Editar
         </Button>
@@ -90,6 +128,7 @@ function Preview() {
           color="secondary"
           size="large"
           onClick={() => setIsTemplateDialogOpen(true)}
+          disabled={isGeneratingPdf}
         >
           Escolher Outro Modelo
         </Button>
@@ -98,11 +137,19 @@ function Preview() {
           variant="contained" 
           color="primary"
           size="large"
+          disabled={isGeneratingPdf}
         >
-          Gerar PDF
+          {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
       </Box>
 
+      {printError && (
+        <Typography color="error" align="center" sx={{ mb: 2 }}>
+          {printError}
+        </Typography>
+      )}
+
+      {/* Diálogo para escolha de template */}
       <Dialog 
         open={isTemplateDialogOpen} 
         onClose={() => setIsTemplateDialogOpen(false)}
