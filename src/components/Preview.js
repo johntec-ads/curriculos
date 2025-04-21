@@ -9,28 +9,15 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   Grid,
   Button,
   CircularProgress,
-  IconButton,
-  Tooltip,
-  TextField,
   Snackbar,
-  Alert,
-  Tabs,
-  Tab
+  Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import EmailIcon from '@mui/icons-material/Email';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import { QRCodeCanvas } from 'qrcode.react';
 import { useState, useRef, useEffect } from 'react';
 
 function Preview() {
@@ -41,91 +28,15 @@ function Preview() {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [printError, setPrintError] = useState(null);
-  
-  // Estados para compartilhamento
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
-  const [qrCodeValue, setQrCodeValue] = useState(''); // Estado específico para o QR Code
-  const [tabValue, setTabValue] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   
-  // Gera uma URL de compartilhamento usando localStorage e base64
-  const generateShareUrl = () => {
-    try {
-      // Cria uma cópia dos dados para evitar referências circulares
-      const shareData = {...curriculumData};
-      // Converte para string e depois para base64
-      const encodedData = btoa(encodeURIComponent(JSON.stringify(shareData)));
-      // Cria URL com os dados codificados
-      const url = `${window.location.origin}/preview?shared=${encodedData}`;
-      return url;
-    } catch (error) {
-      console.error("Erro ao gerar URL de compartilhamento:", error);
-      setSnackbarMessage("Erro ao gerar link de compartilhamento");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-      return "";
-    }
-  };
-  
-  // Funções de compartilhamento
-  const handleShareButtonClick = () => {
-    // Gera a URL e atualiza os estados antes de abrir o diálogo
-    const url = generateShareUrl();
-    setShareUrl(url);
-    setQrCodeValue(url); // O QR Code usa a mesma URL que o link
-    setIsShareDialogOpen(true);
-  };
-
-  const handleCopyToClipboard = () => {
-    try {
-      navigator.clipboard.writeText(shareUrl);
-      setSnackbarMessage("Link copiado para a área de transferência!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      setSnackbarMessage("Erro ao copiar o link");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
-  // Compartilhamento para redes sociais
-  const shareToWhatsApp = () => {
-    const text = `Confira meu currículo: ${shareUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  const shareToFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareToTwitter = () => {
-    const text = `Confira meu currículo profissional ${shareUrl}`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  const shareToLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-  };
-
-  const shareByEmail = () => {
-    const subject = `Currículo de ${curriculumData.personalInfo.name}`;
-    const body = `Olá,\n\nGostaria de compartilhar meu currículo com você.\n\nAcesse o link: ${shareUrl}\n\nAtenciosamente,\n${curriculumData.personalInfo.name}`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  // Verifica se há dados compartilhados na URL
+  // Verifica se há dados na URL ou localStorage
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
     const queryParams = new URLSearchParams(window.location.search);
@@ -277,15 +188,6 @@ function Preview() {
           Escolher Outro Modelo
         </Button>
         <Button
-          onClick={handleShareButtonClick}
-          variant="outlined"
-          color="info"
-          size="large"
-          disabled={isGeneratingPdf}
-        >
-          Compartilhar
-        </Button>
-        <Button
           onClick={handlePrint}
           variant="contained" 
           color="primary"
@@ -352,109 +254,6 @@ function Preview() {
             ))}
           </Grid>
         </DialogContent>
-      </Dialog>
-
-      {/* Diálogo de compartilhamento */}
-      <Dialog
-        open={isShareDialogOpen}
-        onClose={() => setIsShareDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Compartilhar Currículo</DialogTitle>
-        <DialogContent>
-          <Tabs value={tabValue} onChange={handleTabChange} centered>
-            <Tab label="Link" />
-            <Tab label="QR Code" />
-          </Tabs>
-          {tabValue === 0 && (
-            <Box sx={{ mt: 2 }}>
-              <TextField
-                fullWidth
-                value={shareUrl}
-                InputProps={{
-                  readOnly: true,
-                  endAdornment: (
-                    <IconButton onClick={handleCopyToClipboard}>
-                      <ContentCopyIcon />
-                    </IconButton>
-                  )
-                }}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
-                <Tooltip title="WhatsApp">
-                  <IconButton onClick={shareToWhatsApp}>
-                    <WhatsAppIcon color="success" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Facebook">
-                  <IconButton onClick={shareToFacebook}>
-                    <FacebookIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Twitter">
-                  <IconButton onClick={shareToTwitter}>
-                    <TwitterIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="LinkedIn">
-                  <IconButton onClick={shareToLinkedIn}>
-                    <LinkedInIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Email">
-                  <IconButton onClick={shareByEmail}>
-                    <EmailIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-          )}
-          {tabValue === 1 && (
-            <Box sx={{ textAlign: 'center', mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              {qrCodeValue ? (
-                <>
-                  <QRCodeCanvas 
-                    value={qrCodeValue} 
-                    size={256}
-                    level="H"
-                    includeMargin={true}
-                    id="qr-code-canvas"
-                  />
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                    Escaneie este código QR para visualizar o currículo
-                  </Typography>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {
-                      const canvas = document.getElementById('qr-code-canvas');
-                      if (canvas) {
-                        const pngUrl = canvas.toDataURL('image/png')
-                          .replace('image/png', 'image/octet-stream');
-                        let downloadLink = document.createElement('a');
-                        downloadLink.href = pngUrl;
-                        downloadLink.download = `curriculo-qrcode-${curriculumData?.personalInfo?.name || 'novo'}.png`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                      }
-                    }}
-                  >
-                    Baixar QR Code
-                  </Button>
-                </>
-              ) : (
-                <Typography>Não foi possível gerar o QR Code</Typography>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsShareDialogOpen(false)} color="primary">
-            Fechar
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Snackbar */}
