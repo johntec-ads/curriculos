@@ -1,8 +1,12 @@
 import { forwardRef } from 'react';
-import { Paper, Typography, Box, Button } from '@mui/material';
+import { Paper, Typography, Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, ref) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
@@ -31,9 +35,9 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
       <Paper 
         ref={ref}
         sx={{ 
-          width: '210mm', 
-          height: '297mm',
-          margin: isGenerating ? 0 : '32px auto', 
+          width: { xs: '100%', md: '210mm' }, 
+          height: { xs: 'auto', md: '297mm' },
+          margin: isGenerating ? 0 : { xs: '16px auto', md: '32px auto' }, 
           p: 0,
           backgroundColor: '#fff', 
           boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
@@ -41,27 +45,42 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           overflow: 'hidden', 
           fontFamily: 'Arial, sans-serif',
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: { xs: 'column', sm: 'row' },
           pageBreakAfter: 'always',
         }}
       >
-        {/* Barra lateral limitada à altura exata do PDF A4 */}
+        {/* Barra lateral adaptativa */}
         <Box sx={{ 
-          width: '240px', 
+          width: { xs: '100%', sm: '240px' }, 
           bgcolor: '#1976d2', 
           color: 'white', 
-          p: 3, 
+          p: { xs: 2, sm: 3 }, 
           display: 'flex',
           flexDirection: 'column',
-          height: '100%',
+          height: { xs: 'auto', sm: '100%' },
           overflow: 'hidden',
           position: 'relative',
         }}>
+          {/* Cabeçalho para mobile - somente visível em telas pequenas */}
+          {isMobile && (
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                color: 'white', 
+                mb: 2, 
+                textAlign: 'center',
+                fontWeight: 'bold'
+              }}
+            >
+              {data.personalInfo.name}
+            </Typography>
+          )}
+          
           {/* Foto do usuário - com tamanho adaptativo */}
           <Box 
             sx={{
-              width: hasLargePhoto ? 120 : 100,
-              height: hasLargePhoto ? 120 : 100,
+              width: { xs: hasLargePhoto ? 100 : 80, sm: hasLargePhoto ? 120 : 100 },
+              height: { xs: hasLargePhoto ? 100 : 80, sm: hasLargePhoto ? 120 : 100 },
               borderRadius: '50%',
               backgroundColor: '#fff',
               margin: '10px auto',
@@ -84,33 +103,100 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           </Box>
           
           {/* Informações de Contato */}
-          <Typography variant="h6" sx={{ mt: 1, mb: 1, fontSize: '1rem', fontWeight: 'bold' }}>Contato</Typography>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              mt: 1, 
+              mb: 1, 
+              fontSize: { xs: '0.95rem', sm: '1rem' }, 
+              fontWeight: 'bold' 
+            }}
+          >
+            Contato
+          </Typography>
           <Box sx={{ mb: 2, width: '100%' }}>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.email}</Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.phone}</Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.address}</Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                mb: 0.5,
+                wordBreak: 'break-word'
+              }}
+            >
+              {data?.personalInfo?.email}
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                mb: 0.5 
+              }}
+            >
+              {data?.personalInfo?.phone}
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                mb: 0.5 
+              }}
+            >
+              {data?.personalInfo?.address}
+            </Typography>
             {data?.personalInfo?.linkedin && (
-              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                  wordBreak: 'break-word' 
+                }}
+              >
                 LinkedIn: {data.personalInfo.linkedin}
               </Typography>
             )}
           </Box>
           
-          {/* Habilidades e Idiomas - lado a lado quando há muitos */}
-          {hasManyLanguages ? (
-            <Box sx={{ display: 'flex', width: '100%', flex: 1, overflow: 'hidden' }}>
+          {/* Layout adaptativo para habilidades e idiomas */}
+          {(isMobile || hasManyLanguages) ? (
+            <Box sx={{ 
+              display: 'flex', 
+              width: '100%', 
+              flex: isMobile ? 'none' : 1, 
+              overflow: 'hidden',
+              flexDirection: { xs: 'column', sm: 'row' }
+            }}>
               {/* Habilidades */}
-              <Box sx={{ width: '50%', pr: 1 }}>
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Habilidades</Typography>
+              <Box sx={{ 
+                width: { xs: '100%', sm: '50%' }, 
+                pr: { xs: 0, sm: 1 },
+                mb: { xs: 2, sm: 0 }
+              }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontSize: { xs: '0.95rem', sm: '1rem' }, 
+                    fontWeight: 'bold', 
+                    mb: 1 
+                  }}
+                >
+                  Habilidades
+                </Typography>
                 <Box sx={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
                   gap: 0.5,
                   overflow: 'auto',
-                  maxHeight: 'calc(100% - 30px)',
+                  maxHeight: { xs: '120px', sm: 'calc(100% - 30px)' },
                 }}>
                   {data.skills.map((skill, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    <Typography 
+                      key={index} 
+                      variant="body2" 
+                      sx={{ 
+                        fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                        lineHeight: 1.2 
+                      }}
+                    >
                       • {skill}
                     </Typography>
                   ))}
@@ -118,17 +204,36 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
               </Box>
 
               {/* Idiomas */}
-              <Box sx={{ width: '50%', pl: 1 }}>
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+              <Box sx={{ 
+                width: { xs: '100%', sm: '50%' }, 
+                pl: { xs: 0, sm: 1 } 
+              }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontSize: { xs: '0.95rem', sm: '1rem' }, 
+                    fontWeight: 'bold', 
+                    mb: 1 
+                  }}
+                >
+                  Idiomas
+                </Typography>
                 <Box sx={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
                   gap: 0.5,
                   overflow: 'auto',
-                  maxHeight: 'calc(100% - 30px)',
+                  maxHeight: { xs: '120px', sm: 'calc(100% - 30px)' },
                 }}>
                   {data.languages.map((language, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    <Typography 
+                      key={index} 
+                      variant="body2" 
+                      sx={{ 
+                        fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                        lineHeight: 1.2 
+                      }}
+                    >
                       • {language}
                     </Typography>
                   ))}
@@ -138,7 +243,17 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           ) : (
             <>
               {/* Layout tradicional - um abaixo do outro */}
-              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1, mt: 1 }}>Habilidades</Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontSize: { xs: '0.95rem', sm: '1rem' }, 
+                  fontWeight: 'bold', 
+                  mb: 1, 
+                  mt: 1 
+                }}
+              >
+                Habilidades
+              </Typography>
               <Box sx={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -148,13 +263,29 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 overflow: 'auto',
               }}>
                 {data.skills.map((skill, index) => (
-                  <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                  <Typography 
+                    key={index} 
+                    variant="body2" 
+                    sx={{ 
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                      lineHeight: 1.2 
+                    }}
+                  >
                     • {skill}
                   </Typography>
                 ))}
               </Box>
               
-              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontSize: { xs: '0.95rem', sm: '1rem' }, 
+                  fontWeight: 'bold', 
+                  mb: 1 
+                }}
+              >
+                Idiomas
+              </Typography>
               <Box sx={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -163,7 +294,14 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 overflow: 'auto',
               }}>
                 {data.languages.map((language, index) => (
-                  <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                  <Typography 
+                    key={index} 
+                    variant="body2" 
+                    sx={{ 
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }, 
+                      lineHeight: 1.2 
+                    }}
+                  >
                     • {language}
                   </Typography>
                 ))}
@@ -183,6 +321,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
               opacity: 0.5,
               pointerEvents: 'none',
               userSelect: 'none',
+              display: { xs: 'none', sm: 'block' }
             }}
           >
             JOHNTEC.ADS
@@ -190,56 +329,137 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
         </Box>
 
         {/* Conteúdo Principal */}
-        <Box sx={{ flex: 1, p: 4, overflow: 'auto' }}>
-          <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>
-            {data.personalInfo.name}
-          </Typography>
+        <Box sx={{ 
+          flex: 1, 
+          p: { xs: 2, sm: 3, md: 4 }, 
+          overflow: 'auto' 
+        }}>
+          {/* Nome - oculto em mobile (já aparece na parte de cima) */}
+          {!isMobile && (
+            <Typography 
+              variant="h4" 
+              gutterBottom 
+              sx={{ 
+                color: '#1976d2',
+                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
+                wordBreak: 'break-word'
+              }}
+            >
+              {data.personalInfo.name}
+            </Typography>
+          )}
+          
           {/* Objetivo */}
           {data.personalInfo.objective && (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
+            <Box sx={{ mb: { xs: 3, md: 4 } }}>
+              <Typography 
+                variant="h6" 
+                gutterBottom 
+                sx={{ 
+                  color: '#1976d2',
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                }}
+              >
                 Objetivo Profissional
               </Typography>
-              <Typography>{data.personalInfo.objective}</Typography>
+              <Typography sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                {data.personalInfo.objective}
+              </Typography>
             </Box>
           )}
+          
           {/* Experiência */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
+          <Box sx={{ mb: { xs: 3, md: 4 } }}>
+            <Typography 
+              variant="h6" 
+              gutterBottom 
+              sx={{ 
+                color: '#1976d2',
+                fontSize: { xs: '1.1rem', sm: '1.25rem' }
+              }}
+            >
               Experiência Profissional
             </Typography>
             {sortByDate(data.experience).map((exp, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    fontWeight: 'bold',
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                    wordBreak: 'break-word'
+                  }}
+                >
                   {exp.position}
                 </Typography>
-                <Typography variant="subtitle2" color="primary">
+                <Typography 
+                  variant="subtitle2" 
+                  color="primary"
+                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                >
                   {exp.company}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography 
+                  variant="body2" 
+                  color="textSecondary"
+                  sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                >
                   {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
                 </Typography>
-                <Typography variant="body2">{exp.description}</Typography>
+                <Typography 
+                  variant="body2"
+                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                >
+                  {exp.description}
+                </Typography>
               </Box>
             ))}
           </Box>
+          
           {/* Educação */}
           <Box>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
+            <Typography 
+              variant="h6" 
+              gutterBottom 
+              sx={{ 
+                color: '#1976d2',
+                fontSize: { xs: '1.1rem', sm: '1.25rem' }
+              }}
+            >
               Educação
             </Typography>
             {data.education.map((edu, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    fontWeight: 'bold',
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                    wordBreak: 'break-word'
+                  }}
+                >
                   {edu.course}
                 </Typography>
-                <Typography variant="subtitle2" color="primary">
+                <Typography 
+                  variant="subtitle2" 
+                  color="primary"
+                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                >
                   {edu.institution}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography 
+                  variant="body2" 
+                  color="textSecondary"
+                  sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                >
                   {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                 </Typography>
-                <Typography variant="body2">{edu.description}</Typography>
+                <Typography 
+                  variant="body2"
+                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                >
+                  {edu.description}
+                </Typography>
               </Box>
             ))}
           </Box>
@@ -248,8 +468,22 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
 
       {/* Só renderiza os botões se NÃO estiver na página de preview */}
       {!isGenerating && onPrint && onBack && (
-        <Box sx={{ textAlign: 'center', mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
-          <Button onClick={onBack} variant="outlined" color="primary" size="large">
+        <Box sx={{ 
+          textAlign: 'center', 
+          mb: 4, 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2, 
+          justifyContent: 'center',
+          px: 2
+        }}>
+          <Button 
+            onClick={onBack} 
+            variant="outlined" 
+            color="primary" 
+            size="large" 
+            fullWidth={isMobile}
+          >
             Voltar e Editar
           </Button>
           <Button
@@ -257,6 +491,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             variant="contained" 
             color="primary"
             size="large"
+            fullWidth={isMobile}
           >
             Gerar PDF
           </Button>

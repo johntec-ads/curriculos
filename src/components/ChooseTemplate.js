@@ -15,7 +15,9 @@ import {
   DialogActions,
   IconButton,
   Snackbar,
-  Alert
+  Alert,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { templates } from '../templates';
@@ -25,6 +27,10 @@ import Authentication from './Authentication';
 function ChooseTemplate() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState(null);
@@ -72,29 +78,37 @@ function ChooseTemplate() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ mb: 4 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom 
+        sx={{ 
+          mb: { xs: 2, sm: 3, md: 4 },
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+        }}
+      >
         Escolha um Modelo de Currículo
       </Typography>
       <Box sx={{ px: { xs: 0, sm: 1, md: 2 } }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
           {templates.map((template) => (
             <Grid item xs={12} sm={6} md={4} key={template.id}>
               <Card sx={{
-                height: 420,
+                height: { xs: 'auto', sm: 400, md: 420 },
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 boxShadow: '0px 3px 6px rgba(0,0,0,0.1)',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                 '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: '0px 6px 12px rgba(0,0,0,0.2)'
+                  transform: { xs: 'none', sm: 'scale(1.03)', md: 'scale(1.05)' },
+                  boxShadow: { xs: '0px 3px 6px rgba(0,0,0,0.1)', sm: '0px 6px 12px rgba(0,0,0,0.2)' }
                 }
               }}>
                 <Box sx={{
                   width: '100%',
-                  height: 280,
+                  height: { xs: 200, sm: 250, md: 280 },
                   overflow: 'hidden',
                   bgcolor: '#f5f5f5',
                   borderBottom: '1px solid #eee',
@@ -120,36 +134,49 @@ function ChooseTemplate() {
                 </Box>
                 <CardContent sx={{
                   flexGrow: 1,
-                  p: 2,
+                  p: { xs: 1.5, sm: 2 },
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  minHeight: 80
+                  minHeight: { xs: 70, sm: 80 }
                 }}>
-                  <Typography variant="h6" component="h2" align="center" gutterBottom sx={{
-                    fontWeight: 'bold',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 1,
-                    WebkitBoxOrient: 'vertical'
-                  }}>
+                  <Typography 
+                    variant="h6" 
+                    component="h2" 
+                    align="center" 
+                    gutterBottom 
+                    sx={{
+                      fontWeight: 'bold',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: 'vertical',
+                      fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                    }}
+                  >
                     {template.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" align="center" sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    height: '2.5em'
-                  }}>
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary" 
+                    align="center" 
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      height: { xs: '2.6em', sm: '2.5em' },
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                    }}
+                  >
                     {template.description}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{
                   justifyContent: 'center',
-                  p: 2,
+                  p: { xs: 1.5, sm: 2 },
                   pt: 0,
                   borderTop: '1px solid #f0f0f0',
                   mt: 'auto'
@@ -160,6 +187,7 @@ function ChooseTemplate() {
                     onClick={() => handleSelectTemplate(template.id)}
                     aria-label={`Selecionar modelo ${template.name}`}
                     fullWidth
+                    size={isMobile ? "medium" : "large"}
                   >
                     Selecionar
                   </Button>
@@ -176,9 +204,16 @@ function ChooseTemplate() {
         onClose={handleCloseImage}
         maxWidth="md"
         fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            width: '100%',
+            maxWidth: { xs: '95%', sm: '90%', md: '900px' },
+            margin: { xs: '10px', sm: '16px', md: '32px' }
+          }
+        }}
       >
         <DialogContent sx={{ 
-          p: 1, 
+          p: { xs: 1, sm: 1, md: 1 }, 
           position: 'relative', 
           display: 'flex', 
           justifyContent: 'center',
@@ -191,13 +226,14 @@ function ChooseTemplate() {
             onClick={handleCloseImage}
             sx={{
               position: 'absolute',
-              right: 8,
-              top: 8,
+              right: { xs: 4, sm: 8 },
+              top: { xs: 4, sm: 8 },
               color: (theme) => theme.palette.grey[500],
               bgcolor: 'rgba(255,255,255,0.8)',
               '&:hover': {
                 bgcolor: 'rgba(255,255,255,1)',
-              }
+              },
+              zIndex: 10
             }}
           >
             <CloseIcon />
@@ -207,18 +243,26 @@ function ChooseTemplate() {
             src={selectedImage}
             alt="Visualização ampliada do modelo de currículo"
             sx={{
-              maxHeight: '80vh',
+              maxHeight: { xs: '70vh', sm: '80vh' },
               maxWidth: '100%',
               objectFit: 'contain'
             }}
           />
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', py: 2, bgcolor: 'rgba(0,0,0,0.03)' }}>
+        <DialogActions sx={{ 
+          justifyContent: 'center', 
+          py: { xs: 1.5, sm: 2 }, 
+          bgcolor: 'rgba(0,0,0,0.03)',
+          px: { xs: 1, sm: 2 }
+        }}>
           <Button 
             variant="contained" 
             onClick={handleCloseImage} 
             color="primary"
-            sx={{ minWidth: 120 }}
+            sx={{ 
+              minWidth: { xs: 100, sm: 120 },
+              width: isMobile ? "100%" : "auto"
+            }}
           >
             Fechar
           </Button>
@@ -237,7 +281,10 @@ function ChooseTemplate() {
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ 
+          vertical: 'bottom', 
+          horizontal: isMobile ? 'center' : 'right' 
+        }}
       >
         <Alert 
           onClose={handleCloseSnackbar} 

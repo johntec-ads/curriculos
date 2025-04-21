@@ -15,7 +15,9 @@ import {
   IconButton,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
@@ -25,6 +27,8 @@ import CloseIcon from '@mui/icons-material/Close';
 
 function Preview() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const printRef = useRef(null);
   const [curriculumData, setCurriculumData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
@@ -91,11 +95,21 @@ function Preview() {
     onAfterPrint: () => {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
+      
+      // Feedback ao usuário
+      setSnackbarMessage("PDF gerado com sucesso!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     },
     onPrintError: (error) => {
       console.error("Erro de impressão:", error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
       setIsGeneratingPdf(false);
+      
+      // Feedback ao usuário
+      setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     },
     removeAfterPrint: true,
     pageStyle: `
@@ -134,6 +148,11 @@ function Preview() {
       template: templateId
     }));
     setIsTemplateDialogOpen(false);
+    
+    // Feedback ao usuário
+    setSnackbarMessage("Modelo alterado com sucesso!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
   };
 
   const templateData = getTemplateById(selectedTemplate);
@@ -141,8 +160,8 @@ function Preview() {
 
   if (!curriculumData || !TemplateComponent) {
     return (
-      <Container maxWidth="md">
-        <Box sx={{ textAlign: 'center', py: 8 }}>
+      <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+        <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6, md: 8 } }}>
           <CircularProgress />
           <Typography variant="h6" sx={{ mt: 2 }}>
             Carregando currículo...
@@ -153,7 +172,7 @@ function Preview() {
   }
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
       {/* Conteúdo imprimível com estilo otimizado para PDF */}
       <div style={{ display: 'none' }}>
         <div ref={printRef} style={{ position: 'relative' }}>
@@ -171,13 +190,23 @@ function Preview() {
       />
 
       {/* Botões de ação */}
-      <Box sx={{ textAlign: 'center', mb: 4, mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        mt: 3, 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: 2, 
+        justifyContent: 'center',
+        px: { xs: 2, sm: 0 }
+      }}>
         <Button 
           onClick={handleBack}
           variant="outlined" 
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
+          fullWidth={isMobile}
         >
           Voltar e Editar
         </Button>
@@ -187,6 +216,7 @@ function Preview() {
           size="large"
           onClick={() => setIsTemplateDialogOpen(true)}
           disabled={isGeneratingPdf}
+          fullWidth={isMobile}
           sx={{ 
             borderWidth: 2,
             '&:hover': {
@@ -204,6 +234,7 @@ function Preview() {
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
+          fullWidth={isMobile}
           sx={{ 
             fontWeight: 'bold',
             boxShadow: '0 4px 6px rgba(25, 118, 210, 0.25)',
@@ -228,8 +259,18 @@ function Preview() {
         onClose={() => setIsTemplateDialogOpen(false)}
         maxWidth="md"
         fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            width: '100%',
+            maxWidth: { xs: '95%', sm: '80%', md: '900px' }
+          }
+        }}
       >
-        <DialogTitle sx={{ position: 'relative', pr: 6 }}>
+        <DialogTitle sx={{ 
+          position: 'relative', 
+          pr: 6,
+          fontSize: { xs: '1.1rem', sm: '1.25rem' }
+        }}>
           Escolha um Modelo de Currículo
           <IconButton
             aria-label="Fechar"
@@ -244,24 +285,30 @@ function Preview() {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <Grid container spacing={3}>
+        <DialogContent sx={{ p: { xs: 1, sm: 2 } }}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {templates.map((template) => (
               <Grid item xs={12} sm={6} md={4} key={template.id}>
                 <Card 
                   sx={{ 
                     border: selectedTemplate === template.id ? '2px solid #1976d2' : '1px solid #e0e0e0',
                     transition: 'all 0.2s ease',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
+                      transform: { xs: 'none', sm: 'translateY(-4px)' },
                       boxShadow: 3
                     }
                   }}
                 >
-                  <CardActionArea onClick={() => handleTemplateChange(template.id)}>
+                  <CardActionArea 
+                    onClick={() => handleTemplateChange(template.id)}
+                    sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+                  >
                     <CardMedia
                       component="img"
-                      height="320"
+                      height={isMobile ? "200" : "320"}
                       image={template.thumbnail}
                       alt={template.name}
                       sx={{
@@ -270,13 +317,23 @@ function Preview() {
                         filter: selectedTemplate === template.id ? 'none' : 'grayscale(40%)'
                       }}
                     />
-                    <CardContent>
-                      <Typography gutterBottom variant="h6" component="div" sx={{ 
-                        color: selectedTemplate === template.id ? '#1976d2' : 'inherit' 
-                      }}>
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography 
+                        gutterBottom 
+                        variant="h6" 
+                        component="div" 
+                        sx={{ 
+                          color: selectedTemplate === template.id ? '#1976d2' : 'inherit',
+                          fontSize: { xs: '1rem', sm: '1.25rem' }
+                        }}
+                      >
                         {template.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                      >
                         {template.description}
                       </Typography>
                     </CardContent>
@@ -286,11 +343,28 @@ function Preview() {
             ))}
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
-          <Button onClick={() => setIsTemplateDialogOpen(false)} color="primary" size="large" variant="outlined">
+        <DialogActions sx={{ 
+          p: { xs: 1.5, sm: 2 }, 
+          justifyContent: { xs: 'center', sm: 'space-between' },
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 }
+        }}>
+          <Button 
+            onClick={() => setIsTemplateDialogOpen(false)} 
+            color="primary" 
+            size="large" 
+            variant="outlined"
+            fullWidth={isMobile}
+          >
             Cancelar
           </Button>
-          <Button onClick={() => setIsTemplateDialogOpen(false)} color="primary" size="large" variant="contained">
+          <Button 
+            onClick={() => setIsTemplateDialogOpen(false)} 
+            color="primary" 
+            size="large" 
+            variant="contained"
+            fullWidth={isMobile}
+          >
             Fechar
           </Button>
         </DialogActions>
@@ -301,8 +375,17 @@ function Preview() {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ 
+          vertical: 'bottom', 
+          horizontal: isMobile ? 'center' : 'right' 
+        }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
