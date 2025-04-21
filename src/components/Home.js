@@ -251,8 +251,11 @@ function Home() {
             maxWidth: '280px'
           }}
         >
-          <Typography variant="subtitle2" sx={{ mb: 2, textAlign: 'center' }}>
-            Escaneie para acessar o gerador de currículos
+          <Typography variant="subtitle1" sx={{ mb: 1, textAlign: 'center', fontWeight: 'medium' }}>
+            Compartilhe com amigos!
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
+            Mostre este QR code para quem precisa criar um currículo
           </Typography>
           <QRCodeCanvas
             id="home-page-qrcode"
