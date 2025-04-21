@@ -26,194 +26,139 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
 
   return (
     <>
-      <Paper
-        ref={ref}
+      {/* Wrapper container responsivo - apenas ajusta a forma como o currículo é visualizado na tela */}
+      <Box 
         sx={{ 
-          width: { xs: '100%', sm: '100%', md: '210mm' }, 
-          minHeight: { xs: 'auto', md: '297mm' },
-          margin: isGenerating ? 0 : { xs: '16px auto', sm: '16px auto', md: '32px auto' }, 
-          p: { xs: 2, sm: 3, md: 4 }, 
-          backgroundColor: '#fff', 
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
-          position: 'relative', 
-          overflow: 'hidden', 
-          fontFamily: 'Arial, sans-serif',
-          fontSize: { xs: '0.9rem', sm: '1rem' }
+          overflowX: 'auto',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          py: { xs: 1, sm: 2 }
         }}
       >
-        {/* Marca d'água */}
-        <Typography
-          sx={{
-            position: 'absolute',
-            bottom: '40px',
-            right: '20px',
-            transform: 'rotate(-45deg)',
-            color: 'rgba(0, 0, 0, 0.03)',
-            fontSize: { xs: '60px', sm: '80px' },
-            pointerEvents: 'none',
-            userSelect: 'none',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          JOHNTEC.ADS
-        </Typography>
-
-        {/* Cabeçalho */}
-        <Typography 
-          variant="h4" 
-          gutterBottom 
+        {/* Template do currículo com dimensões fixas A4 para garantir consistência no PDF */}
+        <Paper
+          ref={ref}
           sx={{ 
-            borderBottom: '2px solid #1976d2',
-            fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.125rem' },
-            wordBreak: 'break-word'
+            width: '210mm', 
+            minHeight: '297mm', 
+            margin: isGenerating ? 0 : '0 auto', 
+            p: 4, 
+            backgroundColor: '#fff', 
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+            position: 'relative', 
+            overflow: 'hidden', 
+            fontFamily: 'Arial, sans-serif' 
           }}
         >
-          {data?.personalInfo?.name || 'Nome não informado'}
-        </Typography>
+          {/* Marca d'água */}
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: '40px',
+              right: '20px',
+              transform: 'rotate(-45deg)',
+              color: 'rgba(0, 0, 0, 0.03)',
+              fontSize: '80px',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            JOHNTEC.ADS
+          </Typography>
 
-        <Box sx={{ mb: 3 }}>
-          <Typography sx={{ wordBreak: 'break-word' }}>{data?.personalInfo?.email}</Typography>
-          <Typography>{data?.personalInfo?.phone}</Typography>
-          <Typography>{data?.personalInfo?.address}</Typography>
-          {data?.personalInfo?.linkedin && (
-            <Typography sx={{ wordBreak: 'break-word' }}>LinkedIn: {data.personalInfo.linkedin}</Typography>
+          {/* Cabeçalho */}
+          <Typography variant="h4" gutterBottom sx={{ borderBottom: '2px solid #1976d2' }}>
+            {data?.personalInfo?.name || 'Nome não informado'}
+          </Typography>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography>{data?.personalInfo?.email}</Typography>
+            <Typography>{data?.personalInfo?.phone}</Typography>
+            <Typography>{data?.personalInfo?.address}</Typography>
+            {data?.personalInfo?.linkedin && (
+              <Typography>LinkedIn: {data.personalInfo.linkedin}</Typography>
+            )}
+          </Box>
+
+          {/* Objetivo */}
+          {data?.personalInfo?.objective && (
+            <>
+              <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+                Objetivo Profissional
+              </Typography>
+              <Typography paragraph>{data.personalInfo.objective}</Typography>
+            </>
           )}
-        </Box>
 
-        {/* Objetivo */}
-        {data?.personalInfo?.objective && (
-          <>
-            <Typography 
-              variant="h6" 
-              gutterBottom 
-              sx={{ 
-                color: '#1976d2', 
-                mt: 3,
-                fontSize: { xs: '1.1rem', sm: '1.25rem' }
-              }}
-            >
-              Objetivo Profissional
-            </Typography>
-            <Typography paragraph>{data.personalInfo.objective}</Typography>
-          </>
-        )}
-
-        {/* Experiência */}
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            color: '#1976d2', 
-            mt: 3,
-            fontSize: { xs: '1.1rem', sm: '1.25rem' }
-          }}
-        >
-          Experiência Profissional
-        </Typography>
-        {sortByDate(data?.experience || []).map((exp, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            <Typography 
-              variant="subtitle1" 
-              sx={{ 
-                fontWeight: 'bold',
-                fontSize: { xs: '1rem', sm: '1.1rem' },
-                wordBreak: 'break-word'
-              }}
-            >
-              {exp.company} - {exp.position}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
-            </Typography>
-            <Typography>{exp.description}</Typography>
-          </Box>
-        ))}
-
-        {/* Educação */}
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            color: '#1976d2', 
-            mt: 3,
-            fontSize: { xs: '1.1rem', sm: '1.25rem' }
-          }}
-        >
-          Educação
-        </Typography>
-        {(data?.education || []).map((edu, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            <Typography 
-              variant="subtitle1" 
-              sx={{ 
-                fontWeight: 'bold',
-                fontSize: { xs: '1rem', sm: '1.1rem' },
-                wordBreak: 'break-word'
-              }}
-            >
-              {edu.course}
-            </Typography>
-            <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
-              {edu.institution} ({formatDate(edu.startDate)} - {formatDate(edu.endDate)})
-            </Typography>
-            <Typography>{edu.description}</Typography>
-          </Box>
-        ))}
-
-        {/* Habilidades */}
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            color: '#1976d2', 
-            mt: 3,
-            fontSize: { xs: '1.1rem', sm: '1.25rem' }
-          }}
-        >
-          Habilidades
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {(data?.skills || []).map((skill, index) => (
-            <Typography key={index} component="span" sx={{
-              bgcolor: '#e3f2fd',
-              px: 2,
-              py: 0.5,
-              borderRadius: 1,
-              fontSize: { xs: '0.85rem', sm: '1rem' },
-              margin: '2px'
-            }}>
-              {skill}
-            </Typography>
+          {/* Experiência */}
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+            Experiência Profissional
+          </Typography>
+          {sortByDate(data?.experience || []).map((exp, index) => (
+            <Box key={index} sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                {exp.company} - {exp.position}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+              </Typography>
+              <Typography>{exp.description}</Typography>
+            </Box>
           ))}
-        </Box>
 
-        {/* Idiomas */}
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            color: '#1976d2', 
-            mt: 3,
-            fontSize: { xs: '1.1rem', sm: '1.25rem' }
-          }}
-        >
-          Idiomas
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {(data?.languages || []).map((language, index) => (
-            <Typography key={index} component="span" sx={{
-              bgcolor: '#e3f2fd',
-              px: 2,
-              py: 0.5,
-              borderRadius: 1,
-              fontSize: { xs: '0.85rem', sm: '1rem' },
-              margin: '2px'
-            }}>
-              {language}
-            </Typography>
+          {/* Educação */}
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+            Educação
+          </Typography>
+          {(data?.education || []).map((edu, index) => (
+            <Box key={index} sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                {edu.course}
+              </Typography>
+              <Typography variant="body2">
+                {edu.institution} ({formatDate(edu.startDate)} - {formatDate(edu.endDate)})
+              </Typography>
+              <Typography>{edu.description}</Typography>
+            </Box>
           ))}
-        </Box>
-      </Paper>
+
+          {/* Habilidades */}
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+            Habilidades
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {(data?.skills || []).map((skill, index) => (
+              <Typography key={index} component="span" sx={{
+                bgcolor: '#e3f2fd',
+                px: 2,
+                py: 0.5,
+                borderRadius: 1
+              }}>
+                {skill}
+              </Typography>
+            ))}
+          </Box>
+
+          {/* Idiomas */}
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+            Idiomas
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {(data?.languages || []).map((language, index) => (
+              <Typography key={index} component="span" sx={{
+                bgcolor: '#e3f2fd',
+                px: 2,
+                py: 0.5,
+                borderRadius: 1
+              }}>
+                {language}
+              </Typography>
+            ))}
+          </Box>
+        </Paper>
+      </Box>
 
       {/* Só renderiza os botões se NÃO estiver na página de preview (isGenerating = false) */}
       {!isGenerating && onPrint && onBack && (
