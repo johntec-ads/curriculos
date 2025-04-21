@@ -27,11 +27,12 @@ const BuyMeACoffee = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const pixKey = "johntec.ads@gmail.com"; // Chave PIX (email)
-  const receiverName = "John Marcelo de Almeida";
-  const city = "Apucarana-PR";
-
-  // Gera URL para o QR Code PIX usando o serviço pix.com.br
+  // Usando nome mais genérico e apenas primeiro nome para maior privacidade
+  const pixKey = "johntec.ads@gmail.com"; 
+  const receiverName = "John - Desenvolvedor"; // Nome mais genérico
+  const city = "PR"; // Apenas estado, sem cidade específica
+  
+  // Gera URL para o QR Code PIX usando o serviço externo
   useEffect(() => {
     if (open && selectedValue) {
       setIsLoading(true);
@@ -43,7 +44,7 @@ const BuyMeACoffee = () => {
         valor: selectedValue.toFixed(2),
         saida: 'qr',
         chave: pixKey,
-        mensagem: 'Apoio ao desenvolvedor'
+        mensagem: 'Doação - Gerador de Currículos'
       });
       
       // URL do serviço externo que gera QR codes PIX
@@ -108,7 +109,7 @@ const BuyMeACoffee = () => {
         fullWidth
       >
         <DialogTitle id="coffee-dialog-title">
-          Pague-me um Cafezinho
+          Apoie este Projeto
           <IconButton
             aria-label="close"
             onClick={handleClose}
@@ -125,7 +126,7 @@ const BuyMeACoffee = () => {
         <DialogContent>
           <DialogContentText>
             Este gerador de currículos é completamente gratuito e sem anúncios.
-            Se ele foi útil para você, considere pagar um cafezinho para apoiar o desenvolvimento.
+            Se ele foi útil para você, considere fazer uma contribuição para apoiar o desenvolvimento.
           </DialogContentText>
           
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 3 }}>
@@ -200,7 +201,7 @@ const BuyMeACoffee = () => {
                       }}
                     />
                     <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                      <strong>Nome:</strong> {receiverName}
+                      <strong>Destinatário:</strong> Desenvolvedor
                     </Typography>
                     <Typography variant="caption" display="block">
                       <strong>Valor:</strong> R$ {selectedValue},00
@@ -254,25 +255,20 @@ const BuyMeACoffee = () => {
               </Typography>
             </Box>
             
+            {/* Card com informações mais genéricas */}
             <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#e3f2fd', borderRadius: 1, mt: 2 }}>
               <Typography variant="body2" fontWeight="medium" color="primary">
-                Dados do recebedor:
+                Sua contribuição
               </Typography>
               <Typography variant="body2">
-                <strong>Nome:</strong> {receiverName}
-              </Typography>
-              <Typography variant="body2">
-                <strong>Cidade:</strong> {city}
-              </Typography>
-              <Typography variant="body2">
-                <strong>Chave PIX:</strong> {pixKey}
+                Ao fazer uma doação, você ajuda a manter este gerador de currículos disponível gratuitamente para todos.
               </Typography>
             </Box>
           </Box>
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Sua contribuição ajuda a manter este projeto disponível e gratuito para todos.
+              Obrigado por apoiar desenvolvedores independentes!
             </Typography>
           </Box>
         </DialogContent>
