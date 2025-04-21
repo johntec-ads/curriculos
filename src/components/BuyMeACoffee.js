@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Dialog,
@@ -12,24 +12,46 @@ import {
   Divider,
   TextField,
   Tooltip,
-  Paper
+  Paper,
+  CircularProgress
 } from '@mui/material';
 import CoffeeIcon from '@mui/icons-material/LocalCafe';
 import CloseIcon from '@mui/icons-material/Close';
 import PixIcon from '@mui/icons-material/Pix';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { QRCodeCanvas } from 'qrcode.react';
 
 const BuyMeACoffee = () => {
   const [open, setOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
   const [selectedValue, setSelectedValue] = useState(null);
-  const pixKey = "johntec.ads@gmail.com"; // Chave PIX (email)
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Formatação correta da chave PIX para QR Code
-  const getPixQRCode = () => {
-    return `PIX:${pixKey}`;
-  };
+  const pixKey = "johntec.ads@gmail.com"; // Chave PIX (email)
+  const receiverName = "John Marcelo de Almeida";
+  const city = "Apucarana-PR";
+
+  // Gera URL para o QR Code PIX usando o serviço pix.com.br
+  useEffect(() => {
+    if (open && selectedValue) {
+      setIsLoading(true);
+      
+      // Parâmetros para o QR Code PIX
+      const params = new URLSearchParams({
+        nome: receiverName,
+        cidade: city,
+        valor: selectedValue.toFixed(2),
+        saida: 'qr',
+        chave: pixKey,
+        mensagem: 'Apoio ao desenvolvedor'
+      });
+      
+      // URL do serviço externo que gera QR codes PIX
+      const qrUrl = `https://gerarqrcodepix.com.br/api/v1/?${params.toString()}`;
+      setQrCodeUrl(qrUrl);
+      setIsLoading(false);
+    }
+  }, [open, selectedValue]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -151,7 +173,58 @@ const BuyMeACoffee = () => {
               <PixIcon sx={{ mr: 1 }} /> Transferência PIX
             </Typography>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ textAlign: 'center', my: 2 }}>
+              <Typography variant="body1" fontWeight="medium">
+                Escolha um valor acima e use um dos métodos abaixo:
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', my: 2 }}>
+              <Typography variant="body1" fontWeight="medium" sx={{ mb: 1 }}>
+                Método 1: QR Code PIX
+              </Typography>
+              
+              <Paper elevation={1} sx={{ textAlign: 'center', p: 2, borderRadius: 1, minHeight: 200, width: '100%', maxWidth: 250, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                {isLoading ? (
+                  <CircularProgress size={60} />
+                ) : selectedValue ? (
+                  <Box>
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="QR Code PIX" 
+                      style={{ width: 180, height: 180 }} 
+                      onError={(e) => {
+                        e.target.onerror = null; 
+                        e.target.style.display = 'none';
+                        e.target.parentNode.innerHTML += '<Typography color="error">Não foi possível carregar o QR Code. Por favor, use a chave PIX abaixo.</Typography>';
+                      }}
+                    />
+                    <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                      <strong>Nome:</strong> {receiverName}
+                    </Typography>
+                    <Typography variant="caption" display="block">
+                      <strong>Valor:</strong> R$ {selectedValue},00
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Typography color="text.secondary">
+                    Selecione um valor acima para gerar o QR Code
+                  </Typography>
+                )}
+              </Paper>
+            </Box>
+            
+            <Divider sx={{ my: 2 }}>
+              <Typography variant="body2" color="text.secondary">ou</Typography>
+            </Divider>
+            
+            <Box sx={{ textAlign: 'center', my: 2 }}>
+              <Typography variant="body1" fontWeight="medium" sx={{ mb: 1 }}>
+                Método 2: Chave PIX manual
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -168,34 +241,31 @@ const BuyMeACoffee = () => {
               </Tooltip>
             </Box>
             
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <Paper elevation={1} sx={{ textAlign: 'center', p: 2, borderRadius: 1 }}>
-                <QRCodeCanvas
-                  id="pix-qrcode"
-                  value={getPixQRCode()} // Usando o formato correto com prefixo PIX
-                  size={180}
-                  bgColor={"#ffffff"}
-                  fgColor={"#000000"}
-                  level={"H"}
-                  includeMargin={true}
-                />
-                <Typography variant="caption" display="block" sx={{ mt: 1, fontWeight: 'medium' }}>
-                  Escaneie ou copie a chave PIX acima
-                </Typography>
-                {selectedValue && (
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-                    Valor sugerido: R$ {selectedValue},00
-                  </Typography>
-                )}
-              </Paper>
+            <Box sx={{ textAlign: 'center', my: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 1 }}>
+              <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
+                Como fazer sua contribuição:
+              </Typography>
+              <Typography variant="body2" align="left" component="div" sx={{ maxWidth: 400, margin: '0 auto' }}>
+                1. Abra o aplicativo do seu banco<br />
+                2. Escolha a opção de pagamento via PIX<br />
+                3. Escaneie o QR Code acima ou copie e cole a chave PIX<br />
+                4. Confira o valor e os dados do recebedor<br />
+                5. Conclua a transferência
+              </Typography>
             </Box>
             
-            <Box sx={{ textAlign: 'center', my: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                1. Abra o aplicativo do seu banco<br />
-                2. Escolha a opção PIX<br />
-                3. Use o QR code ou copie a chave acima<br />
-                4. Informe o valor que deseja contribuir
+            <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#e3f2fd', borderRadius: 1, mt: 2 }}>
+              <Typography variant="body2" fontWeight="medium" color="primary">
+                Dados do recebedor:
+              </Typography>
+              <Typography variant="body2">
+                <strong>Nome:</strong> {receiverName}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Cidade:</strong> {city}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Chave PIX:</strong> {pixKey}
               </Typography>
             </Box>
           </Box>
