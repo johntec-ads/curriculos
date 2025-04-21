@@ -11,21 +11,25 @@ import {
   Typography,
   Divider,
   TextField,
-  Tooltip
+  Tooltip,
+  Paper
 } from '@mui/material';
 import CoffeeIcon from '@mui/icons-material/LocalCafe';
 import CloseIcon from '@mui/icons-material/Close';
 import PixIcon from '@mui/icons-material/Pix';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { QRCodeCanvas } from 'qrcode.react';
 
 const BuyMeACoffee = () => {
   const [open, setOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
-  const pixKey = "johntec.ads@gmail.com"; // Substitua pela sua chave PIX
-  // Informações opcionais para outras formas de pagamento
-  const paypalLink = "https://www.paypal.com/donate?hosted_button_id=SEUPIXAQUI"; // Substitua com seu link
+  const [selectedValue, setSelectedValue] = useState(null);
+  const pixKey = "johntec.ads@gmail.com"; // Chave PIX (email)
+  
+  // Formatação correta da chave PIX para QR Code
+  const getPixQRCode = () => {
+    return `PIX:${pixKey}`;
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -46,6 +50,10 @@ const BuyMeACoffee = () => {
         setCopySuccess('Falha ao copiar');
       }
     );
+  };
+
+  const handleValueSelection = (value) => {
+    setSelectedValue(value);
   };
 
   return (
@@ -100,14 +108,39 @@ const BuyMeACoffee = () => {
           
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 3 }}>
             <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
-              Quanto custa seu apoio?
+              Quanto deseja contribuir?
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, width: '100%', flexWrap: 'wrap' }}>
-              <Button variant="outlined">R$ 5</Button>
-              <Button variant="contained" color="primary">R$ 10</Button>
-              <Button variant="outlined">R$ 15</Button>
-              <Button variant="outlined">R$ 20</Button>
+              <Button 
+                variant={selectedValue === 5 ? "contained" : "outlined"}
+                onClick={() => handleValueSelection(5)}
+              >
+                R$ 5
+              </Button>
+              <Button 
+                variant={selectedValue === 10 ? "contained" : "outlined"}
+                onClick={() => handleValueSelection(10)}
+              >
+                R$ 10
+              </Button>
+              <Button 
+                variant={selectedValue === 15 ? "contained" : "outlined"}
+                onClick={() => handleValueSelection(15)}
+              >
+                R$ 15
+              </Button>
+              <Button 
+                variant={selectedValue === 20 ? "contained" : "outlined"}
+                onClick={() => handleValueSelection(20)}
+              >
+                R$ 20
+              </Button>
             </Box>
+            {selectedValue && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Sua contribuição de R$ {selectedValue},00 é muito apreciada!
+              </Typography>
+            )}
           </Box>
           
           <Divider sx={{ my: 2 }} />
@@ -136,38 +169,41 @@ const BuyMeACoffee = () => {
             </Box>
             
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+              <Paper elevation={1} sx={{ textAlign: 'center', p: 2, borderRadius: 1 }}>
                 <QRCodeCanvas
-                  value={`pix:${pixKey}`}
-                  size={150}
+                  id="pix-qrcode"
+                  value={getPixQRCode()} // Usando o formato correto com prefixo PIX
+                  size={180}
                   bgColor={"#ffffff"}
                   fgColor={"#000000"}
                   level={"H"}
-                  includeMargin={false}
+                  includeMargin={true}
                 />
-                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                  Escaneie para fazer a transferência
+                <Typography variant="caption" display="block" sx={{ mt: 1, fontWeight: 'medium' }}>
+                  Escaneie ou copie a chave PIX acima
                 </Typography>
-              </Box>
+                {selectedValue && (
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                    Valor sugerido: R$ {selectedValue},00
+                  </Typography>
+                )}
+              </Paper>
+            </Box>
+            
+            <Box sx={{ textAlign: 'center', my: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                1. Abra o aplicativo do seu banco<br />
+                2. Escolha a opção PIX<br />
+                3. Use o QR code ou copie a chave acima<br />
+                4. Informe o valor que deseja contribuir
+              </Typography>
             </Box>
           </Box>
-          
-          {/* PayPal ou outros métodos */}
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', mb: 2 }}>
-              <CreditCardIcon sx={{ mr: 1 }} /> Outras formas de pagamento
+
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Sua contribuição ajuda a manter este projeto disponível e gratuito para todos.
             </Typography>
-            
-            <Button 
-              variant="contained" 
-              color="primary" 
-              fullWidth 
-              href={paypalLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Doar com PayPal
-            </Button>
           </Box>
         </DialogContent>
         <DialogActions>
