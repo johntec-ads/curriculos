@@ -9,8 +9,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   Grid,
   Button,
+  IconButton,
   CircularProgress,
   Snackbar,
   Alert
@@ -19,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
 import { useState, useRef, useEffect } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 
 function Preview() {
   const navigate = useNavigate();
@@ -180,10 +183,18 @@ function Preview() {
         </Button>
         <Button
           variant="outlined"
-          color="secondary"
+          color="primary"
           size="large"
           onClick={() => setIsTemplateDialogOpen(true)}
           disabled={isGeneratingPdf}
+          sx={{ 
+            borderWidth: 2,
+            '&:hover': {
+              borderWidth: 2,
+              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+            },
+            fontWeight: 'medium'
+          }}
         >
           Escolher Outro Modelo
         </Button>
@@ -193,6 +204,13 @@ function Preview() {
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
+          sx={{ 
+            fontWeight: 'bold',
+            boxShadow: '0 4px 6px rgba(25, 118, 210, 0.25)',
+            '&:hover': {
+              boxShadow: '0 6px 10px rgba(25, 118, 210, 0.3)',
+            }
+          }}
         >
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
@@ -211,7 +229,21 @@ function Preview() {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Escolha um Modelo de Currículo</DialogTitle>
+        <DialogTitle sx={{ position: 'relative', pr: 6 }}>
+          Escolha um Modelo de Currículo
+          <IconButton
+            aria-label="Fechar"
+            onClick={() => setIsTemplateDialogOpen(false)}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <Grid container spacing={3}>
             {templates.map((template) => (
@@ -254,6 +286,14 @@ function Preview() {
             ))}
           </Grid>
         </DialogContent>
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button onClick={() => setIsTemplateDialogOpen(false)} color="primary" size="large" variant="outlined">
+            Cancelar
+          </Button>
+          <Button onClick={() => setIsTemplateDialogOpen(false)} color="primary" size="large" variant="contained">
+            Fechar
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Snackbar */}
