@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Button,
@@ -28,8 +28,11 @@ function Authentication({ open, onClose, afterLogin }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [forgotPassword, setForgotPassword] = useState(false);
+  const [operationCompleted, setOperationCompleted] = useState(false);
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
+  const timeoutIdRef = useRef(null);
   
-  const { login, signup, loginWithGoogle, resetPassword } = useAuth();
+  const { login, signup, loginWithGoogle, resetPassword, currentUser } = useAuth();
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
@@ -57,7 +60,9 @@ function Authentication({ open, onClose, afterLogin }) {
     try {
       setError('');
       setLoading(true);
+      setOperationCompleted(false);
       await login(email, password);
+      setOperationCompleted(true);
       setSuccess('Login realizado com sucesso!');
       setTimeout(() => {
         onClose();
@@ -103,7 +108,9 @@ function Authentication({ open, onClose, afterLogin }) {
     try {
       setError('');
       setLoading(true);
+      setOperationCompleted(false);
       await signup(email, password);
+      setOperationCompleted(true);
       setSuccess('Conta criada com sucesso!');
       setTimeout(() => {
         onClose();
@@ -125,13 +132,17 @@ function Authentication({ open, onClose, afterLogin }) {
     try {
       setError('');
       setLoading(true);
+      setOperationCompleted(false);
+      setIsGoogleLogin(true); // Marcar que está em processo de login com Google
+      
+      console.log("Iniciando login com Google via popup...");
       await loginWithGoogle();
-      onClose();
-      if (afterLogin) afterLogin();
+      // Não precisamos fazer nada aqui, pois o useEffect que monitora currentUser cuidará do fechamento do modal
+      
     } catch (error) {
-      console.error(error);
+      console.error("Erro capturado no handleGoogleLogin:", error);
       setError('Erro ao fazer login com Google. Tente novamente');
-    } finally {
+      setIsGoogleLogin(false);
       setLoading(false);
     }
   };
@@ -147,7 +158,9 @@ function Authentication({ open, onClose, afterLogin }) {
     try {
       setError('');
       setLoading(true);
+      setOperationCompleted(false);
       await resetPassword(email);
+      setOperationCompleted(true);
       setSuccess('Email de redefinição enviado. Verifique sua caixa de entrada');
     } catch (error) {
       console.error(error);
@@ -161,10 +174,66 @@ function Authentication({ open, onClose, afterLogin }) {
     }
   };
 
+  // Fechar o modal automaticamente se o usuário for autenticado
+  useEffect(() => {
+    if (currentUser && (loading || isGoogleLogin)) {
+      console.log("Usuário autenticado detectado:", currentUser.email);
+      setOperationCompleted(true);
+      setLoading(false);
+      setIsGoogleLogin(false);
+      
+      // Limpar qualquer temporizador pendente
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+        timeoutIdRef.current = null;
+      }
+      
+      // Fechar o modal imediatamente
+      console.log("Fechando modal após autenticação bem-sucedida");
+      onClose();
+      if (afterLogin) afterLogin();
+    }
+  }, [currentUser, loading, isGoogleLogin, onClose, afterLogin]);
+
+  // Temporizador de segurança revisado
+  useEffect(() => {
+    if (loading && !isGoogleLogin) {
+      console.log("Iniciando temporizador de segurança...");
+      
+      // Limpar qualquer temporizador existente
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+      
+      timeoutIdRef.current = setTimeout(() => {
+        if (!operationCompleted) {
+          console.log("Temporizador de segurança acionado - operação não concluída");
+          setLoading(false);
+          
+          // Verificar novamente se o usuário foi autenticado
+          if (currentUser) {
+            console.log("Usuário já está autenticado, fechando modal");
+            onClose();
+            if (afterLogin) afterLogin();
+          } else {
+            setError('A operação demorou muito tempo. Por favor, tente novamente.');
+          }
+        }
+      }, 5000);
+    }
+    
+    return () => {
+      if (timeoutIdRef.current) {
+        console.log("Limpando temporizador de segurança");
+        clearTimeout(timeoutIdRef.current);
+      }
+    };
+  }, [loading, operationCompleted, currentUser, onClose, afterLogin, isGoogleLogin]);
+
   return (
     <Dialog
       open={open}
-      onClose={loading ? null : onClose}
+      onClose={onClose} // Sempre permitir fechar o diálogo
       maxWidth="sm"
       fullWidth
     >
@@ -173,7 +242,7 @@ function Authentication({ open, onClose, afterLogin }) {
         <IconButton
           aria-label="close"
           onClick={onClose}
-          disabled={loading}
+          // Permitir fechar o diálogo mesmo durante o carregamento
           sx={{
             position: 'absolute',
             right: 8,

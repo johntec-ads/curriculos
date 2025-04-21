@@ -23,19 +23,36 @@ export function AuthProvider({ children }) {
 
   // Registrar novo usuário com email e senha
   async function signup(email, password) {
+    let userCredential = null;
+    console.log("Iniciando processo de registro...");
+    
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Primeiro, criar a conta de autenticação
+      console.log("Criando conta de autenticação...");
+      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Conta de autenticação criada com sucesso.");
       
-      // Criar um documento para o usuário no Firestore
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        email: email,
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
-      });
+      try {
+        // Depois, tentar criar o documento no Firestore
+        console.log("Criando documento de usuário no Firestore...");
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          email: email,
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+        });
+        console.log("Documento de usuário criado com sucesso.");
+      } catch (firestoreError) {
+        // Se falhar ao criar documento no Firestore, registrar o erro mas não falhar o signup
+        console.error("Erro ao criar documento de usuário:", firestoreError);
+        // Podemos tentar novamente mais tarde quando o usuário fizer login
+      }
       
+      console.log("Processo de registro concluído com sucesso.");
       return userCredential;
-    } catch (error) {
-      throw error;
+    } catch (authError) {
+      // Erros na criação da conta de autenticação são propagados
+      console.error("Erro na autenticação durante registro:", authError);
+      throw authError;
     }
   }
 
@@ -47,32 +64,44 @@ export function AuthProvider({ children }) {
   // Login com Google
   async function loginWithGoogle() {
     try {
+      console.log("Iniciando login com Google...");
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
+      console.log("Login com Google realizado com sucesso para:", result.user.email);
       
       // Verificar se é a primeira vez que o usuário faz login
-      const userRef = doc(db, "users", result.user.uid);
-      const userDoc = await getDoc(userRef);
-      
-      if (!userDoc.exists()) {
-        // Criar um documento para o usuário no Firestore
-        await setDoc(userRef, {
-          email: result.user.email,
-          displayName: result.user.displayName,
-          photoURL: result.user.photoURL,
-          createdAt: serverTimestamp(),
-          lastLogin: serverTimestamp(),
-        });
-      } else {
-        // Atualizar último login
-        await setDoc(userRef, {
-          lastLogin: serverTimestamp()
-        }, { merge: true });
+      try {
+        const userRef = doc(db, "users", result.user.uid);
+        const userDoc = await getDoc(userRef);
+        
+        if (!userDoc.exists()) {
+          console.log("Primeiro login do usuário, criando documento no Firestore...");
+          // Criar um documento para o usuário no Firestore
+          await setDoc(userRef, {
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp(),
+          });
+          console.log("Documento do usuário criado com sucesso.");
+        } else {
+          // Atualizar último login
+          await setDoc(userRef, {
+            lastLogin: serverTimestamp()
+          }, { merge: true });
+          console.log("Último login atualizado no Firestore.");
+        }
+      } catch (firestoreError) {
+        // Se falhar ao interagir com Firestore, registrar o erro mas não falhar o login
+        console.error("Erro ao interagir com o Firestore durante login com Google:", firestoreError);
       }
       
       return result;
-    } catch (error) {
-      throw error;
+    } catch (authError) {
+      // Erros na autenticação com o Google são propagados
+      console.error("Erro durante autenticação com Google:", authError);
+      throw authError;
     }
   }
 
@@ -104,16 +133,20 @@ export function AuthProvider({ children }) {
 
   // Acompanhar mudanças no estado de autenticação
   useEffect(() => {
+    console.log("Configurando listener de autenticação...");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("Estado de autenticação alterado:", user ? `Usuário logado: ${user.email}` : "Usuário deslogado");
       setCurrentUser(user);
       setLoading(false);
       
       // Se houver um usuário logado, atualizar último login
       if (user) {
         try {
+          console.log("Atualizando último login no Firestore...");
           await setDoc(doc(db, "users", user.uid), {
             lastLogin: serverTimestamp()
           }, { merge: true });
+          console.log("Último login atualizado com sucesso.");
         } catch (error) {
           console.error("Erro ao atualizar último login:", error);
         }
