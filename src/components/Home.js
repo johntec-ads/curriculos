@@ -215,14 +215,6 @@ function Home() {
         
         {/* CTA para criar currículo */}
         <Box sx={{ mt: 2, width: '100%' }}>
-          {!currentUser && (
-            <Chip 
-              color="warning" 
-              label="Entre para salvar seus currículos" 
-              sx={{ mb: 2, width: '100%' }} 
-            />
-          )}
-          
           <Button
             component={Link}
             to="/choose-template"
