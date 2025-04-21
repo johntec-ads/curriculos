@@ -12,6 +12,7 @@ import {
   Box,
   Dialog,
   DialogContent,
+  DialogActions,
   IconButton,
   Snackbar,
   Alert
@@ -212,6 +213,16 @@ function ChooseTemplate() {
             }}
           />
         </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', py: 2, bgcolor: 'rgba(0,0,0,0.03)' }}>
+          <Button 
+            variant="contained" 
+            onClick={handleCloseImage} 
+            color="primary"
+            sx={{ minWidth: 120 }}
+          >
+            Fechar
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Componente de autenticação */}
