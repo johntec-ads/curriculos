@@ -9,6 +9,7 @@ import Template3Wrapper from './templates/Template3';
 import { Template4Wrapper, Template5Wrapper } from './templates';
 import { AuthProvider } from './context/AuthContext';
 import BuyMeACoffee from './components/BuyMeACoffee';
+import VersionInfo from './components/VersionInfo';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/template5" element={<Template5Wrapper />} />
         </Routes>
         <BuyMeACoffee />
+        <VersionInfo position="bottomRight" />
       </BrowserRouter>
     </AuthProvider>
   );
