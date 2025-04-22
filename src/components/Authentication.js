@@ -13,7 +13,9 @@ import {
   Alert,
   Tabs,
   Tab,
-  CircularProgress
+  CircularProgress,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -31,8 +33,27 @@ function Authentication({ open, onClose, afterLogin }) {
   const [operationCompleted, setOperationCompleted] = useState(false);
   const [isGoogleLogin, setIsGoogleLogin] = useState(false);
   const timeoutIdRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
-  const { login, signup, loginWithGoogle, resetPassword, currentUser } = useAuth();
+  const { login, signup, loginWithGoogle, resetPassword, currentUser, redirectInProgress } = useAuth();
+
+  // Fechar modal quando o redirecionamento para login Google for iniciado em dispositivos móveis
+  useEffect(() => {
+    if (redirectInProgress) {
+      console.log("Redirecionamento em progresso, fechando modal...");
+      onClose();
+    }
+  }, [redirectInProgress, onClose]);
+
+  // Reset do estado quando o modal é aberto/fechado
+  useEffect(() => {
+    if (open) {
+      setError('');
+      setSuccess('');
+      setIsGoogleLogin(false);
+    }
+  }, [open]);
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
@@ -133,17 +154,28 @@ function Authentication({ open, onClose, afterLogin }) {
       setError('');
       setLoading(true);
       setOperationCompleted(false);
-      setIsGoogleLogin(true); // Marcar que está em processo de login com Google
+      setIsGoogleLogin(true);
       
-      console.log("Iniciando login com Google via popup...");
+      console.log("Iniciando login com Google...");
       await loginWithGoogle();
-      // Não precisamos fazer nada aqui, pois o useEffect que monitora currentUser cuidará do fechamento do modal
       
+      // Se não for redirecionamento (desktop), vamos fechar o modal após login bem-sucedido
+      // Em dispositivos móveis, o redirecionamento já fechará o modal através do useEffect
+      if (!redirectInProgress) {
+        setSuccess('Login com Google realizado com sucesso!');
+        setTimeout(() => {
+          onClose();
+          if (afterLogin) afterLogin();
+        }, 1000);
+      }
     } catch (error) {
       console.error("Erro capturado no handleGoogleLogin:", error);
       setError('Erro ao fazer login com Google. Tente novamente');
       setIsGoogleLogin(false);
-      setLoading(false);
+    } finally {
+      if (!redirectInProgress) {
+        setLoading(false);
+      }
     }
   };
 
@@ -197,7 +229,7 @@ function Authentication({ open, onClose, afterLogin }) {
 
   // Temporizador de segurança revisado
   useEffect(() => {
-    if (loading && !isGoogleLogin) {
+    if (loading && !isGoogleLogin && !redirectInProgress) {
       console.log("Iniciando temporizador de segurança...");
       
       // Limpar qualquer temporizador existente
@@ -228,21 +260,28 @@ function Authentication({ open, onClose, afterLogin }) {
         clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [loading, operationCompleted, currentUser, onClose, afterLogin, isGoogleLogin]);
+  }, [loading, operationCompleted, currentUser, onClose, afterLogin, isGoogleLogin, redirectInProgress]);
 
   return (
     <Dialog
       open={open}
-      onClose={onClose} // Sempre permitir fechar o diálogo
+      onClose={onClose}
       maxWidth="sm"
       fullWidth
+      PaperProps={{
+        sx: {
+          width: '100%',
+          maxWidth: { xs: '95%', sm: '450px' },
+          m: { xs: 1, sm: 2 },
+          p: { xs: 1, sm: 2 }
+        }
+      }}
     >
       <DialogTitle>
         {forgotPassword ? 'Recuperar Senha' : 'Acesse sua Conta'}
         <IconButton
           aria-label="close"
           onClick={onClose}
-          // Permitir fechar o diálogo mesmo durante o carregamento
           sx={{
             position: 'absolute',
             right: 8,
@@ -426,8 +465,12 @@ function Authentication({ open, onClose, afterLogin }) {
               startIcon={<GoogleIcon />}
               onClick={handleGoogleLogin}
               disabled={loading}
+              sx={{
+                py: 1,
+                fontSize: { xs: '0.95rem', sm: '1rem' }
+              }}
             >
-              Continuar com Google
+              {isMobile ? 'Entrar com Google' : 'Continuar com Google'}
             </Button>
           </>
         )}

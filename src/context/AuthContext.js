@@ -6,7 +6,9 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
@@ -20,6 +22,15 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [redirectInProgress, setRedirectInProgress] = useState(false);
+
+  // Detecta se é um dispositivo móvel
+  const isMobileDevice = () => {
+    return (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (window.innerWidth <= 768)
+    );
+  };
 
   // Registrar novo usuário com email e senha
   async function signup(email, password) {
@@ -27,13 +38,11 @@ export function AuthProvider({ children }) {
     console.log("Iniciando processo de registro...");
     
     try {
-      // Primeiro, criar a conta de autenticação
       console.log("Criando conta de autenticação...");
       userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("Conta de autenticação criada com sucesso.");
       
       try {
-        // Depois, tentar criar o documento no Firestore
         console.log("Criando documento de usuário no Firestore...");
         await setDoc(doc(db, "users", userCredential.user.uid), {
           email: email,
@@ -42,15 +51,12 @@ export function AuthProvider({ children }) {
         });
         console.log("Documento de usuário criado com sucesso.");
       } catch (firestoreError) {
-        // Se falhar ao criar documento no Firestore, registrar o erro mas não falhar o signup
         console.error("Erro ao criar documento de usuário:", firestoreError);
-        // Podemos tentar novamente mais tarde quando o usuário fizer login
       }
       
       console.log("Processo de registro concluído com sucesso.");
       return userCredential;
     } catch (authError) {
-      // Erros na criação da conta de autenticação são propagados
       console.error("Erro na autenticação durante registro:", authError);
       throw authError;
     }
@@ -66,47 +72,57 @@ export function AuthProvider({ children }) {
     try {
       console.log("Iniciando login com Google...");
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      console.log("Login com Google realizado com sucesso para:", result.user.email);
       
-      // Verificar se é a primeira vez que o usuário faz login
-      try {
-        const userRef = doc(db, "users", result.user.uid);
-        const userDoc = await getDoc(userRef);
+      if (isMobileDevice()) {
+        console.log("Dispositivo móvel detectado, usando redirecionamento...");
+        setRedirectInProgress(true);
+        localStorage.setItem('authRedirectInProgress', 'true');
+        await signInWithRedirect(auth, provider);
+        return null;
+      } else {
+        console.log("Dispositivo desktop detectado, usando popup...");
+        const result = await signInWithPopup(auth, provider);
+        console.log("Login com Google realizado com sucesso para:", result.user.email);
         
-        if (!userDoc.exists()) {
-          console.log("Primeiro login do usuário, criando documento no Firestore...");
-          // Criar um documento para o usuário no Firestore
-          await setDoc(userRef, {
-            email: result.user.email,
-            displayName: result.user.displayName,
-            photoURL: result.user.photoURL,
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp(),
-          });
-          console.log("Documento do usuário criado com sucesso.");
-        } else {
-          // Atualizar último login
-          await setDoc(userRef, {
-            lastLogin: serverTimestamp()
-          }, { merge: true });
-          console.log("Último login atualizado no Firestore.");
-        }
-      } catch (firestoreError) {
-        // Se falhar ao interagir com Firestore, registrar o erro mas não falhar o login
-        console.error("Erro ao interagir com o Firestore durante login com Google:", firestoreError);
+        await updateUserDataAfterLogin(result.user);
+        return result;
       }
-      
-      return result;
     } catch (authError) {
-      // Erros na autenticação com o Google são propagados
       console.error("Erro durante autenticação com Google:", authError);
       throw authError;
     }
   }
 
+  // Função auxiliar para atualizar dados do usuário após login
+  async function updateUserDataAfterLogin(user) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      
+      if (!userDoc.exists()) {
+        console.log("Primeiro login do usuário, criando documento no Firestore...");
+        await setDoc(userRef, {
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+        });
+        console.log("Documento do usuário criado com sucesso.");
+      } else {
+        await setDoc(userRef, {
+          lastLogin: serverTimestamp()
+        }, { merge: true });
+        console.log("Último login atualizado no Firestore.");
+      }
+    } catch (firestoreError) {
+      console.error("Erro ao interagir com o Firestore após login:", firestoreError);
+    }
+  }
+
   // Logout
   function logout() {
+    localStorage.removeItem('authRedirectInProgress');
     return signOut(auth);
   }
 
@@ -131,6 +147,33 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Verificar resultado do redirecionamento ao carregar
+  useEffect(() => {
+    async function checkRedirectResult() {
+      const redirectInProgress = localStorage.getItem('authRedirectInProgress') === 'true';
+      
+      if (redirectInProgress) {
+        console.log("Verificando resultado do redirecionamento de autenticação...");
+        try {
+          const result = await getRedirectResult(auth);
+          localStorage.removeItem('authRedirectInProgress');
+          
+          if (result && result.user) {
+            console.log("Login com Google por redirecionamento concluído com sucesso");
+            await updateUserDataAfterLogin(result.user);
+          }
+        } catch (error) {
+          console.error("Erro ao processar resultado do redirecionamento:", error);
+          localStorage.removeItem('authRedirectInProgress');
+        } finally {
+          setRedirectInProgress(false);
+        }
+      }
+    }
+    
+    checkRedirectResult();
+  }, []);
+
   // Acompanhar mudanças no estado de autenticação
   useEffect(() => {
     console.log("Configurando listener de autenticação...");
@@ -139,7 +182,6 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
       setLoading(false);
       
-      // Se houver um usuário logado, atualizar último login
       if (user) {
         try {
           console.log("Atualizando último login no Firestore...");
@@ -163,7 +205,8 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     logout,
     resetPassword,
-    updateUserData
+    updateUserData,
+    redirectInProgress
   };
 
   return (
