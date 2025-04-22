@@ -16,8 +16,7 @@ import {
   Alert,
   Divider,
   Paper,
-  Avatar,
-  Chip
+  Avatar
 } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';

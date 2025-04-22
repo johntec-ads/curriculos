@@ -29,7 +29,6 @@ function ChooseTemplate() {
   const { currentUser } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
