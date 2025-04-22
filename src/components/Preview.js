@@ -17,18 +17,26 @@ import {
   Snackbar,
   Alert,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Paper,
+  Tooltip,
+  Stack
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { getTemplateById, templates } from '../templates';
 import { useState, useRef, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 function Preview() {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const printRef = useRef(null);
   const [curriculumData, setCurriculumData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
@@ -38,12 +46,38 @@ function Preview() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
   
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  // Verifica se há dados na URL ou localStorage
+  useEffect(() => {
+    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 32;
+    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) * 0.7;
+    const widthRatio = viewportWidth / 794;
+    const heightRatio = viewportHeight / 1123;
+    const idealZoom = Math.min(widthRatio, heightRatio, 1);
+    setZoomLevel(Math.max(idealZoom * 0.9, 0.4));
+  }, [isMobile, isTablet]);
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.3));
+  };
+
+  const handleResetZoom = () => {
+    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 32;
+    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) * 0.7;
+    const widthRatio = viewportWidth / 794;
+    const heightRatio = viewportHeight / 1123;
+    const idealZoom = Math.min(widthRatio, heightRatio, 1);
+    setZoomLevel(Math.max(idealZoom * 0.9, 0.4));
+  };
+
   useEffect(() => {
     const data = localStorage.getItem('curriculumData');
     const queryParams = new URLSearchParams(window.location.search);
@@ -51,15 +85,12 @@ function Preview() {
     
     if (sharedData) {
       try {
-        // Decodifica os dados compartilhados
         const decodedData = JSON.parse(decodeURIComponent(atob(sharedData)));
         setCurriculumData(decodedData);
         setSelectedTemplate(decodedData.template || 'template1');
-        // Salva localmente para permitir edição
         localStorage.setItem('curriculumData', JSON.stringify(decodedData));
       } catch (error) {
         console.error('Erro ao decodificar dados compartilhados:', error);
-        // Se falhar, tenta carregar os dados locais
         if (data) {
           try {
             const parsedData = JSON.parse(data);
@@ -95,8 +126,6 @@ function Preview() {
     onAfterPrint: () => {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
-      
-      // Feedback ao usuário
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -105,8 +134,6 @@ function Preview() {
       console.error("Erro de impressão:", error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
       setIsGeneratingPdf(false);
-      
-      // Feedback ao usuário
       setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
@@ -148,8 +175,6 @@ function Preview() {
       template: templateId
     }));
     setIsTemplateDialogOpen(false);
-    
-    // Feedback ao usuário
     setSnackbarMessage("Modelo alterado com sucesso!");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
@@ -171,9 +196,11 @@ function Preview() {
     );
   }
 
+  const a4WidthInPixels = 794;
+  const a4HeightInPixels = 1123;
+
   return (
     <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-      {/* Conteúdo imprimível com estilo otimizado para PDF */}
       <div style={{ display: 'none' }}>
         <div ref={printRef} style={{ position: 'relative' }}>
           <TemplateComponent 
@@ -183,13 +210,110 @@ function Preview() {
         </div>
       </div>
 
-      {/* Versão visível para o usuário */}
-      <TemplateComponent 
-        data={curriculumData}
-        isGenerating={false}
-      />
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        gap: 1, 
+        mb: 2,
+        mt: 1,
+        backgroundColor: 'rgba(25, 118, 210, 0.08)',
+        borderRadius: 1,
+        py: 1,
+        px: 2
+      }}>
+        <InfoOutlinedIcon color="primary" fontSize="small" />
+        <Typography variant="body2" color="text.secondary">
+          Esta é uma visualização exata do formato A4 do seu currículo. Use os controles de zoom para melhor visualização.
+        </Typography>
+      </Box>
 
-      {/* Botões de ação */}
+      <Stack 
+        direction="row"
+        justifyContent="center" 
+        alignItems="center" 
+        spacing={1}
+        sx={{ mb: 2 }}
+      >
+        <Tooltip title="Diminuir zoom">
+          <IconButton onClick={handleZoomOut} color="primary" size="small">
+            <ZoomOutIcon />
+          </IconButton>
+        </Tooltip>
+        <Typography variant="body2" sx={{ 
+          minWidth: '48px', 
+          textAlign: 'center',
+          bgcolor: 'rgba(25, 118, 210, 0.04)',
+          borderRadius: 1,
+          py: 0.5,
+          px: 1
+        }}>
+          {Math.round(zoomLevel * 100)}%
+        </Typography>
+        <Tooltip title="Aumentar zoom">
+          <IconButton onClick={handleZoomIn} color="primary" size="small">
+            <ZoomInIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Ajustar à tela">
+          <IconButton onClick={handleResetZoom} color="primary" size="small">
+            <FullscreenIcon />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+
+      <Box sx={{ 
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pb: 2,
+        overflow: 'hidden'
+      }}>
+        <Box sx={{
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'auto',
+          overflowY: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          pb: 2,
+          maxHeight: {
+            xs: 'calc(100vh - 280px)',
+            sm: 'calc(100vh - 260px)',
+            md: 'calc(100vh - 240px)'
+          }
+        }}>
+          <Paper 
+            elevation={3} 
+            sx={{
+              margin: '0 auto',
+              width: `${a4WidthInPixels * zoomLevel}px`,
+              height: `${a4HeightInPixels * zoomLevel}px`,
+              position: 'relative',
+              border: '1px solid #ddd',
+              boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+              overflow: 'hidden'
+            }}
+          >
+            <Box sx={{ 
+              width: a4WidthInPixels,
+              height: a4HeightInPixels,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'top left',
+            }}>
+              <TemplateComponent 
+                data={curriculumData}
+                isGenerating={false}
+              />
+            </Box>
+          </Paper>
+        </Box>
+      </Box>
+
       <Box sx={{ 
         textAlign: 'center', 
         mb: 4, 
@@ -253,7 +377,6 @@ function Preview() {
         </Typography>
       )}
 
-      {/* Diálogo para escolha de template */}
       <Dialog 
         open={isTemplateDialogOpen} 
         onClose={() => setIsTemplateDialogOpen(false)}
@@ -370,7 +493,6 @@ function Preview() {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
