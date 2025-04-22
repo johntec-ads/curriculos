@@ -40,6 +40,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           justifyContent: 'center',
           py: { xs: 1, sm: 2 }
         }}
+        className={isGenerating ? "print-container" : "no-print-container"}
       >
         {/* Template do currículo com dimensões fixas A4 para garantir consistência no PDF */}
         <Paper 
@@ -58,6 +59,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             flexDirection: 'row',
             pageBreakAfter: 'always',
           }}
+          className={isGenerating ? "print-only" : ""}
         >
           {/* Barra lateral limitada à altura exata do PDF A4 */}
           <Box sx={{ 

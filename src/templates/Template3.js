@@ -35,6 +35,7 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           justifyContent: 'center',
           py: { xs: 1, sm: 2 }
         }}
+        className={isGenerating ? "print-container" : "no-print-container"}
       >
         {/* Template do currículo com dimensões fixas A4 para garantir consistência no PDF */}
         <Paper 
@@ -50,6 +51,7 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             overflow: 'hidden', 
             fontFamily: 'Arial, sans-serif' 
           }}
+          className={isGenerating ? "print-only" : ""}
         >
           {/* Cabeçalho */}
           <Box sx={{ 

@@ -142,6 +142,15 @@ function Preview() {
       
       // Força a aplicação de estilos corretos para impressão
       document.body.classList.add('printing-pdf');
+      
+      // Força que o elemento de impressão seja visível e com estilos adequados
+      if (printRef.current) {
+        printRef.current.style.visibility = 'visible';
+        printRef.current.style.display = 'block';
+        printRef.current.style.position = 'relative';
+        printRef.current.style.left = 'auto';
+        printRef.current.style.top = 'auto';
+      }
     },
     onAfterPrint: () => {
       console.log("Impressão concluída!");
@@ -203,8 +212,31 @@ function Preview() {
           padding: 0 !important;
           overflow: hidden;
         }
-        .no-print {
+        
+        body * {
+          visibility: hidden;
+        }
+        
+        #print-content,
+        #print-content * {
+          visibility: visible !important;
+          display: block;
+        }
+        
+        #print-content {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 210mm;
+          height: 297mm;
+        }
+        
+        .no-print, .no-print * {
           display: none !important;
+        }
+        
+        .print-only, .print-only * {
+          visibility: visible !important;
         }
       }
     `
@@ -359,6 +391,7 @@ function Preview() {
         {/* Elemento oculto apenas para impressão - este é o que será usado para gerar o PDF */}
         <Box 
           ref={printRef}
+          id="print-content"
           sx={{ 
             position: 'absolute',
             left: '-9999px',
@@ -368,10 +401,11 @@ function Preview() {
             overflow: 'hidden',
             display: 'block',
           }}
+          className="print-only"
         >
           <TemplateComponent 
             data={curriculumData}
-            isGenerating={isGeneratingPdf}
+            isGenerating={true}
           />
         </Box>
       </Box>

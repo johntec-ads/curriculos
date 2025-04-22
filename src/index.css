@@ -14,15 +14,18 @@ code {
 
 /* Estilos específicos para impressão */
 @media print {
+  /* Esconde tudo por padrão */
   body * {
     visibility: hidden;
   }
   
-  .printing-pdf, 
-  .printing-pdf * {
-    visibility: visible;
+  /* Mostra apenas o conteúdo de impressão e seus filhos */
+  #print-content,
+  #print-content * {
+    visibility: visible !important;
   }
   
+  /* Garante que elementos no-print permanecem escondidos */
   .no-print, 
   .no-print * {
     display: none !important;
@@ -61,5 +64,14 @@ code {
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
+  }
+  
+  /* Garantindo que todos os elementos dentro da área de impressão sejam visíveis */
+  .print-only,
+  .print-only * {
+    visibility: visible !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
