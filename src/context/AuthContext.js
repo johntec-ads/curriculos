@@ -24,23 +24,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [redirectInProgress, setRedirectInProgress] = useState(false);
 
-  // Detecta se é um dispositivo móvel
-  const isMobileDevice = () => {
-    // Verificação mais confiável para dispositivos móveis reais
-    // Evita falsos positivos quando o DevTools está aberto
-    const userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // Verifica se é uma tela pequena, mas ignora casos onde a janela foi redimensionada
-    // como quando o DevTools está aberto em modo responsivo
-    const isSmallScreen = window.innerWidth <= 768 && window.innerHeight <= 900;
-    
-    // Verifica se o navegador tem recursos de toque
-    const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    // Considera móvel apenas se tem user agent móvel ou (tela pequena E recursos de toque)
-    return userAgentMobile || (isSmallScreen && hasTouchScreen);
-  };
-
   // Registrar novo usuário com email e senha
   async function signup(email, password) {
     let userCredential = null;
@@ -86,39 +69,32 @@ export function AuthProvider({ children }) {
       provider.addScope('https://www.googleapis.com/auth/userinfo.email');
       provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       
-      // Adicionando configuração para melhorar compatibilidade em desenvolvimento local
+      // Adicionando configuração para melhorar compatibilidade
       provider.setCustomParameters({
         prompt: 'select_account',
-        login_hint: '',  // deixe vazio para evitar preenchimento automático
       });
       
-      // Verificando se estamos em localhost
-      const isLocalhost = window.location.hostname === 'localhost' || 
-                          window.location.hostname === '127.0.0.1';
-                          
-      // Em localhost, sempre use popup para evitar problemas com redirecionamento
-      if (isLocalhost || !isMobileDevice()) {
-        console.log("Usando popup para autenticação...");
-        try {
-          const result = await signInWithPopup(auth, provider);
-          console.log("Login com Google realizado com sucesso para:", result.user.email);
-          
-          await updateUserDataAfterLogin(result.user);
-          return result;
-        } catch (popupError) {
-          // Se o popup falhar (bloqueado por exemplo), tentar com redirecionamento como fallback
-          console.warn("Popup falhou, tentando com redirecionamento:", popupError);
+      // Usar sempre popup para todos os dispositivos
+      console.log("Usando popup para autenticação...");
+      try {
+        const result = await signInWithPopup(auth, provider);
+        console.log("Login com Google realizado com sucesso para:", result.user.email);
+        
+        await updateUserDataAfterLogin(result.user);
+        return result;
+      } catch (popupError) {
+        console.error("Erro ao tentar login com popup:", popupError);
+        
+        // Se o popup falhar, tentar uma vez com redirecionamento
+        if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+          console.warn("Popup bloqueado ou fechado, tentando com redirecionamento");
           setRedirectInProgress(true);
           localStorage.setItem('authRedirectInProgress', 'true');
           await signInWithRedirect(auth, provider);
           return null;
+        } else {
+          throw popupError;
         }
-      } else {
-        console.log("Dispositivo móvel detectado, usando redirecionamento...");
-        setRedirectInProgress(true);
-        localStorage.setItem('authRedirectInProgress', 'true');
-        await signInWithRedirect(auth, provider);
-        return null;
       }
     } catch (authError) {
       console.error("Erro durante autenticação com Google:", authError);
