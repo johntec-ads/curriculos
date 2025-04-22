@@ -147,9 +147,29 @@ function Preview() {
       if (printRef.current) {
         printRef.current.style.visibility = 'visible';
         printRef.current.style.display = 'block';
-        printRef.current.style.position = 'relative';
-        printRef.current.style.left = 'auto';
-        printRef.current.style.top = 'auto';
+        printRef.current.style.position = 'fixed';
+        printRef.current.style.left = '0';
+        printRef.current.style.top = '0';
+        printRef.current.style.transform = 'none';
+        printRef.current.style.transformOrigin = 'top left';
+        
+        // Para dispositivos móveis, aplicamos uma configuração mais específica
+        if (isMobile) {
+          printRef.current.style.width = '210mm';
+          printRef.current.style.height = '297mm';
+          printRef.current.style.maxWidth = '210mm';
+          printRef.current.style.maxHeight = '297mm';
+          printRef.current.style.overflow = 'hidden';
+          
+          // Garantimos que todos os filhos diretos também não sejam transformados
+          const directChildren = printRef.current.children;
+          for (let i = 0; i < directChildren.length; i++) {
+            directChildren[i].style.transform = 'none';
+            directChildren[i].style.position = 'relative';
+            directChildren[i].style.width = '100%';
+            directChildren[i].style.height = '100%';
+          }
+        }
       }
     },
     onAfterPrint: () => {
@@ -396,10 +416,12 @@ function Preview() {
             position: 'absolute',
             left: '-9999px',
             top: 0,
-            width: `${a4WidthInPixels}px`,
-            height: `${a4HeightInPixels}px`,
+            width: '210mm',
+            height: '297mm',
             overflow: 'hidden',
             display: 'block',
+            transform: 'none',
+            transformOrigin: 'top left'
           }}
           className="print-only"
         >

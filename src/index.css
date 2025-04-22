@@ -74,4 +74,21 @@ code {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  
+  /* Ajustes importantes para posicionamento no dispositivo móvel */
+  #print-content {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    transform: none !important;
+    transform-origin: top left !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  #print-content > * {
+    transform: none !important;
+  }
 }
