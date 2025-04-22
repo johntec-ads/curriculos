@@ -11,3 +11,55 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Estilos específicos para impressão */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  .printing-pdf, 
+  .printing-pdf * {
+    visibility: visible;
+  }
+  
+  .no-print, 
+  .no-print * {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden !important;
+  }
+  
+  .temp-hidden, 
+  .temp-hidden * {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden !important;
+  }
+  
+  /* Garante que diálogos, tooltips e snackbars não apareçam no PDF */
+  .MuiDialog-root, 
+  .MuiTooltip-popper,
+  .MuiSnackbar-root,
+  .MuiBottomNavigation-root,
+  .MuiDrawer-root,
+  [role="tooltip"],
+  [role="dialog"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Tamanho A4 forçado */
+  @page {
+    size: 210mm 297mm;
+    margin: 0;
+  }
+  
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+}

@@ -129,17 +129,36 @@ function Preview() {
         el.setAttribute('data-original-display', el.style.display);
         el.style.display = 'none';
       });
+      
+      // Oculta elementos específicos de UI móvel que podem não estar com a classe no-print
+      const mobileUIElements = document.querySelectorAll('.MuiBottomNavigation-root, .MuiDialog-root, [role="dialog"], .MuiTooltip-popper, .MuiSnackbar-root');
+      mobileUIElements.forEach(el => {
+        if (!el.classList.contains('no-print')) {
+          el.setAttribute('data-original-display', el.style.display);
+          el.style.display = 'none';
+          el.classList.add('temp-hidden');
+        }
+      });
+      
+      // Força a aplicação de estilos corretos para impressão
+      document.body.classList.add('printing-pdf');
     },
     onAfterPrint: () => {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
       
       // Restaura a visibilidade dos elementos após a impressão
-      const elementsToRestore = document.querySelectorAll('.no-print');
+      const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
       elementsToRestore.forEach(el => {
         const originalDisplay = el.getAttribute('data-original-display');
         el.style.display = originalDisplay || '';
+        if (el.classList.contains('temp-hidden')) {
+          el.classList.remove('temp-hidden');
+        }
       });
+      
+      // Remove a classe de impressão
+      document.body.classList.remove('printing-pdf');
       
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
@@ -154,11 +173,17 @@ function Preview() {
       setSnackbarOpen(true);
       
       // Restaura a visibilidade dos elementos em caso de erro
-      const elementsToRestore = document.querySelectorAll('.no-print');
+      const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
       elementsToRestore.forEach(el => {
         const originalDisplay = el.getAttribute('data-original-display');
         el.style.display = originalDisplay || '';
+        if (el.classList.contains('temp-hidden')) {
+          el.classList.remove('temp-hidden');
+        }
       });
+      
+      // Remove a classe de impressão
+      document.body.classList.remove('printing-pdf');
     },
     removeAfterPrint: true,
     pageStyle: `
