@@ -122,10 +122,25 @@ function Preview() {
     onBeforePrint: () => {
       console.log("Preparando para impressão...");
       setIsGeneratingPdf(true);
+      
+      // Oculta elementos de UI que não devem aparecer no PDF
+      const elementsToHide = document.querySelectorAll('.no-print');
+      elementsToHide.forEach(el => {
+        el.setAttribute('data-original-display', el.style.display);
+        el.style.display = 'none';
+      });
     },
     onAfterPrint: () => {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
+      
+      // Restaura a visibilidade dos elementos após a impressão
+      const elementsToRestore = document.querySelectorAll('.no-print');
+      elementsToRestore.forEach(el => {
+        const originalDisplay = el.getAttribute('data-original-display');
+        el.style.display = originalDisplay || '';
+      });
+      
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -137,6 +152,13 @@ function Preview() {
       setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+      
+      // Restaura a visibilidade dos elementos em caso de erro
+      const elementsToRestore = document.querySelectorAll('.no-print');
+      elementsToRestore.forEach(el => {
+        const originalDisplay = el.getAttribute('data-original-display');
+        el.style.display = originalDisplay || '';
+      });
     },
     removeAfterPrint: true,
     pageStyle: `
@@ -155,6 +177,9 @@ function Preview() {
           margin: 0 !important;
           padding: 0 !important;
           overflow: hidden;
+        }
+        .no-print {
+          display: none !important;
         }
       }
     `
@@ -201,15 +226,6 @@ function Preview() {
 
   return (
     <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-      <div style={{ display: 'none' }}>
-        <div ref={printRef} style={{ position: 'relative' }}>
-          <TemplateComponent 
-            data={curriculumData}
-            isGenerating={true}
-          />
-        </div>
-      </div>
-
       <Box sx={{ 
         display: 'flex', 
         alignItems: 'center', 
@@ -221,7 +237,7 @@ function Preview() {
         borderRadius: 1,
         py: 1,
         px: 2
-      }}>
+      }} className="no-print">
         <InfoOutlinedIcon color="primary" fontSize="small" />
         <Typography variant="body2" color="text.secondary">
           Esta é uma visualização exata do formato A4 do seu currículo. Use os controles de zoom para melhor visualização.
@@ -234,6 +250,7 @@ function Preview() {
         alignItems="center" 
         spacing={1}
         sx={{ mb: 2 }}
+        className="no-print"
       >
         <Tooltip title="Diminuir zoom">
           <IconButton onClick={handleZoomOut} color="primary" size="small">
@@ -296,6 +313,7 @@ function Preview() {
               overflow: 'hidden'
             }}
           >
+            {/* Conteúdo para visualização na tela */}
             <Box sx={{ 
               width: a4WidthInPixels,
               height: a4HeightInPixels,
@@ -312,6 +330,25 @@ function Preview() {
             </Box>
           </Paper>
         </Box>
+
+        {/* Elemento oculto apenas para impressão - este é o que será usado para gerar o PDF */}
+        <Box 
+          ref={printRef}
+          sx={{ 
+            position: 'absolute',
+            left: '-9999px',
+            top: 0,
+            width: `${a4WidthInPixels}px`,
+            height: `${a4HeightInPixels}px`,
+            overflow: 'hidden',
+            display: 'block',
+          }}
+        >
+          <TemplateComponent 
+            data={curriculumData}
+            isGenerating={isGeneratingPdf}
+          />
+        </Box>
       </Box>
 
       <Box sx={{ 
@@ -323,7 +360,7 @@ function Preview() {
         gap: 2, 
         justifyContent: 'center',
         px: { xs: 2, sm: 0 }
-      }}>
+      }} className="no-print">
         <Button 
           onClick={handleBack}
           variant="outlined" 
@@ -382,6 +419,7 @@ function Preview() {
         onClose={() => setIsTemplateDialogOpen(false)}
         maxWidth="md"
         fullWidth
+        className="no-print"
         sx={{
           '& .MuiDialog-paper': {
             width: '100%',
@@ -501,6 +539,7 @@ function Preview() {
           vertical: 'bottom', 
           horizontal: isMobile ? 'center' : 'right' 
         }}
+        className="no-print"
       >
         <Alert 
           onClose={handleCloseSnackbar} 
