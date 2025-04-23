@@ -42,17 +42,25 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           ref={ref}
           sx={{ 
             width: '210mm', 
-            height: '297mm',
+            minHeight: '297mm',
+            height: 'auto',
             margin: isGenerating ? 0 : '0 auto', 
             p: 0,
             backgroundColor: '#fff', 
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
+            overflow: 'visible',
             fontFamily: '"Segoe UI", "Roboto", "Helvetica", sans-serif',
             display: 'flex',
             flexDirection: 'column',
-            pageBreakAfter: 'always',
+            '@media print': {
+              height: 'auto !important',
+              overflow: 'visible !important',
+              pageBreakInside: 'avoid',
+              breakInside: 'avoid',
+              marginTop: 0,
+              paddingTop: 0
+            }
           }}
         >
           {/* Marca d'água */}
@@ -154,16 +162,31 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             display: 'flex',
             flex: 1,
             position: 'relative',
-            overflow: 'hidden',
+            overflow: 'visible',
+            '@media print': {
+              pageBreakInside: 'auto', /* Permitir quebra de página entre as seções */
+              breakInside: 'auto'
+            }
           }}>
             {/* Coluna da esquerda - maior */}
             <Box sx={{ 
               width: '65%', 
               p: 4,
-              overflow: 'auto',
-            }}>
+              overflow: 'visible',
+              '@media print': {
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  display: 'block',
+                  height: '15mm',
+                  '@media print and (min-height: 298mm)': { /* Segunda página ou posterior */
+                    marginTop: '15mm'
+                  }
+                }
+              }
+            }} className="left-column multi-page-content">
               {/* Experiência Profissional */}
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 4 }} className="section-experience">
                 <Typography 
                   variant="h5" 
                   sx={{ 
@@ -172,6 +195,10 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                     color: '#1976d2',
                     position: 'relative',
                     paddingBottom: '8px',
+                    '@media print': {
+                      pageBreakAfter: 'avoid',
+                      breakAfter: 'avoid'
+                    },
                     '&:after': {
                       content: '""',
                       position: 'absolute',
@@ -182,6 +209,7 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                       backgroundColor: '#1976d2',
                     }
                   }}
+                  className="section-title"
                 >
                   Experiência Profissional
                 </Typography>

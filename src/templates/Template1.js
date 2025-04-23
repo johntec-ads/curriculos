@@ -41,14 +41,20 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           ref={ref}
           sx={{ 
             width: '210mm', 
-            minHeight: '297mm', 
+            minHeight: '297mm',
+            height: 'auto', // Ajuste para altura automática
             margin: isGenerating ? 0 : '0 auto', 
             p: 4, 
             backgroundColor: '#fff', 
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
-            fontFamily: 'Arial, sans-serif' 
+            overflow: 'visible', // Mudado de 'hidden' para 'visible'
+            fontFamily: 'Arial, sans-serif',
+            '@media print': {
+              height: 'auto !important',
+              overflow: 'visible !important', 
+              breakInside: 'avoid'
+            }
           }}
         >
           {/* Marca d'água */}
@@ -93,11 +99,11 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           )}
 
           {/* Experiência */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }} className="section-title section-experience">
             Experiência Profissional
           </Typography>
           {sortByDate(data?.experience || []).map((exp, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
+            <Box key={index} sx={{ mb: 2 }} className="experience-item multi-page-section">
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                 {exp.company} - {exp.position}
               </Typography>
@@ -109,7 +115,7 @@ const Template1 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           ))}
 
           {/* Educação */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }} className="section-title section-education">
             Educação
           </Typography>
           {(data?.education || []).map((edu, index) => (

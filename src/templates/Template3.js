@@ -41,14 +41,20 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           ref={ref}
           sx={{ 
             width: '210mm', 
-            minHeight: '297mm', 
+            minHeight: '297mm',
+            height: 'auto',
             margin: isGenerating ? 0 : '0 auto', 
             p: 4, 
             backgroundColor: '#fff', 
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
-            fontFamily: 'Arial, sans-serif' 
+            overflow: 'visible', // Mudado de 'hidden' para 'visible'
+            fontFamily: 'Arial, sans-serif',
+            '@media print': {
+              height: 'auto !important',
+              overflow: 'visible !important',
+              pageBreakInside: 'avoid'
+            }
           }}
         >
           {/* Cabeçalho */}

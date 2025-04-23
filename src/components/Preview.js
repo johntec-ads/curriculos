@@ -122,6 +122,69 @@ function Preview() {
     onBeforePrint: () => {
       console.log("Preparando para impressão...");
       setIsGeneratingPdf(true);
+      
+      // Oculta elementos de UI que não devem aparecer no PDF
+      const elementsToHide = document.querySelectorAll('.no-print');
+      elementsToHide.forEach(el => {
+        el.setAttribute('data-original-display', el.style.display);
+        el.style.display = 'none';
+      });
+      
+      // Oculta elementos específicos de UI móvel que podem não estar com a classe no-print
+      const mobileUIElements = document.querySelectorAll('.MuiBottomNavigation-root, .MuiDialog-root, [role="dialog"], .MuiTooltip-popper, .MuiSnackbar-root');
+      mobileUIElements.forEach(el => {
+        if (!el.classList.contains('no-print')) {
+          el.setAttribute('data-original-display', el.style.display);
+          el.style.display = 'none';
+          el.classList.add('temp-hidden');
+        }
+      });
+      
+      // Força a aplicação de estilos corretos para impressão
+      document.body.classList.add('printing-pdf');
+      
+      // Ativa suporte a cores de fundo para impressão e adiciona suporte a múltiplas páginas
+      const styleElement = document.createElement('style');
+      styleElement.id = 'pdf-print-styles';
+      styleElement.innerHTML = `
+        @media print {
+          html, body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
+          @page {
+            size: A4;
+            margin: 15mm 0; /* Adiciona margens superiores e inferiores em todas as páginas */
+          }
+          
+          /* Estilização para múltiplas páginas */
+          .MuiPaper-root::after {
+            content: "";
+            display: block;
+            height: 15mm;
+            margin-top: 15mm;
+          }
+          
+          /* Evitar quebras de página dentro de elementos importantes */
+          h1, h2, h3, h4, h5, h6, .MuiTypography-h6 {
+            page-break-after: avoid;
+            break-after: avoid;
+          }
+          
+          /* Melhor controle sobre quebras de página */
+          .MuiBox-root, .MuiPaper-root {
+            overflow: visible !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleElement);
+      
+      // Força que o elemento de impressão seja visível e com estilos adequados
+      if (printRef.current) {
+        // ... resto do código existente ...
+      }
     },
     onAfterPrint: () => {
       console.log("Impressão concluída!");
@@ -129,6 +192,26 @@ function Preview() {
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
+
+      // Restaura elementos ocultos
+      const elementsToRestore = document.querySelectorAll('[data-original-display]');
+      elementsToRestore.forEach(el => {
+        el.style.display = el.getAttribute('data-original-display');
+        el.removeAttribute('data-original-display');
+      });
+
+      const tempHiddenElements = document.querySelectorAll('.temp-hidden');
+      tempHiddenElements.forEach(el => {
+        el.style.display = '';
+        el.classList.remove('temp-hidden');
+      });
+
+      // Remove estilos de impressão
+      document.body.classList.remove('printing-pdf');
+      const styleElement = document.getElementById('pdf-print-styles');
+      if (styleElement) {
+        styleElement.remove();
+      }
     },
     onPrintError: (error) => {
       console.error("Erro de impressão:", error);
@@ -202,7 +285,7 @@ function Preview() {
   return (
     <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
       <div style={{ display: 'none' }}>
-        <div ref={printRef} style={{ position: 'relative' }}>
+        <div ref={printRef} style={{ position: 'relative', marginTop: 0, paddingTop: 0 }}>
           <TemplateComponent 
             data={curriculumData}
             isGenerating={true}

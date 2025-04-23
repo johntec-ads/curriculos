@@ -104,7 +104,13 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
               <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.phone}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.address}</Typography>
               {data?.personalInfo?.linkedin && (
-                <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                <Typography variant="body2" sx={{ 
+                  fontSize: '0.8rem',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-all',
+                  whiteSpace: 'normal',
+                  maxWidth: '100%'
+                }}>
                   LinkedIn: {data.personalInfo.linkedin}
                 </Typography>
               )}
