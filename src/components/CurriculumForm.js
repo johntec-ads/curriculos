@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, TextField, Button, Box, Typography, IconButton, Alert, Snackbar } from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -16,6 +17,8 @@ import TutorialGuide from './TutorialGuide'; // Importando o componente de tutor
 function CurriculumForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const queryParams = new URLSearchParams(location.search);
   const selectedTemplate = queryParams.get('template');
 
@@ -651,6 +654,7 @@ function CurriculumForm() {
             variant="outlined" 
             color="primary" 
             size="large"
+            fullWidth={isMobile}
           >
             Cancelar
           </Button>
@@ -660,6 +664,7 @@ function CurriculumForm() {
             variant="outlined" 
             color="error" 
             size="large"
+            fullWidth={isMobile}
           >
             Limpar Formulário
           </Button>
@@ -668,7 +673,7 @@ function CurriculumForm() {
             variant="contained" 
             color="primary" 
             size="large"
-            fullWidth
+            fullWidth={true}
           >
             Visualizar Currículo
           </Button>
