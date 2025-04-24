@@ -49,7 +49,12 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
             overflow: 'hidden', 
-            fontFamily: 'Arial, sans-serif' 
+            fontFamily: 'Arial, sans-serif',
+            '@media print': {
+              width: '210mm !important',
+              minHeight: '297mm !important',
+              padding: '32px !important',
+            }
           }}
           className={isGenerating ? "print-only" : ""}
         >
@@ -94,10 +99,22 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           <Box sx={{ 
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: 4
+            gap: 4,
+            '@media print': {
+              display: 'grid !important',
+              gridTemplateColumns: '1fr 1fr !important',
+              gap: '32px !important', 
+              width: '100% !important'
+            }
           }}>
             {/* Coluna Esquerda */}
-            <Box>
+            <Box sx={{
+              '@media print': {
+                display: 'block !important',
+                width: '100% !important',
+                pageBreakInside: 'avoid'
+              }
+            }}>
               {/* Experiência */}
               <Typography 
                 variant="h6" 
@@ -128,7 +145,13 @@ const Template3 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             </Box>
 
             {/* Coluna Direita */}
-            <Box>
+            <Box sx={{
+              '@media print': {
+                display: 'block !important',
+                width: '100% !important',
+                pageBreakInside: 'avoid'
+              }
+            }}>
               {/* Educação */}
               <Typography 
                 variant="h6" 

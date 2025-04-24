@@ -58,6 +58,12 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             display: 'flex',
             flexDirection: 'row',
             pageBreakAfter: 'always',
+            '@media print': {
+              display: 'flex !important',
+              flexDirection: 'row !important',
+              width: '210mm !important',
+              height: '297mm !important',
+            }
           }}
           className={isGenerating ? "print-only" : ""}
         >
@@ -72,6 +78,15 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             height: '100%',
             overflow: 'hidden',
             position: 'relative',
+            '@media print': {
+              width: '240px !important',
+              display: 'flex !important',
+              flexDirection: 'column !important',
+              backgroundColor: '#1976d2 !important',
+              color: 'white !important',
+              height: '100% !important',
+              padding: '24px !important',
+            }
           }}>
             {/* Foto do usuário - com tamanho adaptativo */}
             <Box 
@@ -206,7 +221,18 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           </Box>
 
           {/* Conteúdo Principal */}
-          <Box sx={{ flex: 1, p: 4, overflow: 'auto' }}>
+          <Box sx={{ 
+            flex: 1, 
+            p: 4, 
+            overflow: 'auto',
+            '@media print': {
+              flex: '1 !important',
+              display: 'block !important',
+              visibility: 'visible !important',
+              padding: '32px !important',
+              width: 'calc(100% - 240px) !important',
+            }
+          }}>
             <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>
               {data.personalInfo.name}
             </Typography>

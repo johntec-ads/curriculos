@@ -53,6 +53,12 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             display: 'flex',
             flexDirection: 'column',
             pageBreakAfter: 'always',
+            '@media print': {
+              width: '210mm !important',
+              height: '297mm !important',
+              display: 'flex !important',
+              flexDirection: 'column !important'
+            }
           }}
         >
           {/* Marca d'água */}
@@ -84,6 +90,17 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             display: 'flex',
             gap: 4,
             position: 'relative',
+            '@media print': {
+              background: 'linear-gradient(90deg, #1976d2 0%, #5e9ce9 100%) !important',
+              color: '#fff !important',
+              display: 'flex !important',
+              gap: '32px !important',
+              padding: '32px !important',
+              paddingTop: '40px !important',
+              paddingBottom: '32px !important',
+              pageBreakAfter: 'avoid',
+              pageBreakInside: 'avoid'
+            }
           }}>
             <Avatar
               src={data.personalInfo.photoUrl || ''}
@@ -93,12 +110,22 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 height: 130, 
                 border: '4px solid #fff', 
                 boxShadow: 2,
+                '@media print': {
+                  width: '130px !important',
+                  height: '130px !important',
+                  border: '4px solid #fff !important'
+                }
               }}
             >
               {(!data.personalInfo.photoUrl && data.personalInfo.name) ? data.personalInfo.name[0] : ''}
             </Avatar>
             
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ 
+              flex: 1,
+              '@media print': {
+                flex: '1 !important'
+              }
+            }}>
               <Typography variant="h4" sx={{ 
                 mb: 1, 
                 fontWeight: 700,
@@ -114,33 +141,117 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 </Typography>
               )}
 
-              {/* Informações de contato em linha */}
+              {/* Informações de contato em linha - corrigir problema da linha extra */}
               <Box sx={{ 
                 display: 'flex', 
                 flexWrap: 'wrap', 
                 gap: 2, 
                 alignItems: 'center',
                 mt: 'auto',
+                '@media print': {
+                  display: 'flex !important',
+                  flexWrap: 'wrap !important',
+                  gap: '16px !important',
+                  marginTop: 'auto !important'
+                }
               }}>
-                <Typography variant="body2" sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  fontSize: '0.85rem',
-                }}>
+                <Typography 
+                  variant="body2" 
+                  component="span"
+                  sx={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center',
+                    fontSize: '0.85rem',
+                    whiteSpace: 'nowrap',
+                    '@media print': {
+                      display: 'inline-flex !important',
+                      lineHeight: '1 !important'
+                    }
+                  }}
+                >
                   {data.personalInfo.email}
                 </Typography>
-                <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.5)', height: 15 }} />
-                <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                <Divider 
+                  orientation="vertical" 
+                  flexItem 
+                  sx={{ 
+                    bgcolor: 'rgba(255,255,255,0.5)', 
+                    height: 15,
+                    '@media print': {
+                      backgroundColor: 'rgba(255,255,255,0.5) !important',
+                      height: '15px !important',
+                      display: 'inline-block !important'
+                    }
+                  }} 
+                />
+                <Typography 
+                  variant="body2" 
+                  component="span"
+                  sx={{ 
+                    fontSize: '0.85rem',
+                    whiteSpace: 'nowrap',
+                    '@media print': {
+                      display: 'inline-flex !important',
+                      lineHeight: '1 !important'
+                    }
+                  }}
+                >
                   {data.personalInfo.phone}
                 </Typography>
-                <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.5)', height: 15 }} />
-                <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                <Divider 
+                  orientation="vertical" 
+                  flexItem 
+                  sx={{ 
+                    bgcolor: 'rgba(255,255,255,0.5)', 
+                    height: 15,
+                    '@media print': {
+                      backgroundColor: 'rgba(255,255,255,0.5) !important',
+                      height: '15px !important',
+                      display: 'inline-block !important'
+                    }
+                  }} 
+                />
+                <Typography 
+                  variant="body2" 
+                  component="span"
+                  sx={{ 
+                    fontSize: '0.85rem',
+                    whiteSpace: 'nowrap',
+                    '@media print': {
+                      display: 'inline-flex !important',
+                      lineHeight: '1 !important'
+                    }
+                  }}
+                >
                   {data.personalInfo.address}
                 </Typography>
                 {data.personalInfo.linkedin && (
                   <>
-                    <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.5)', height: 15 }} />
-                    <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                    <Divider 
+                      orientation="vertical" 
+                      flexItem 
+                      sx={{ 
+                        bgcolor: 'rgba(255,255,255,0.5)', 
+                        height: 15,
+                        '@media print': {
+                          backgroundColor: 'rgba(255,255,255,0.5) !important',
+                          height: '15px !important',
+                          display: 'inline-block !important'
+                        }
+                      }} 
+                    />
+                    <Typography 
+                      variant="body2" 
+                      component="span"
+                      sx={{ 
+                        fontSize: '0.85rem',
+                        whiteSpace: 'nowrap',
+                        '@media print': {
+                          display: 'inline-flex !important',
+                          lineHeight: '1 !important'
+                        }
+                      }}
+                    >
                       LinkedIn: {data.personalInfo.linkedin}
                     </Typography>
                   </>
@@ -155,15 +266,31 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             flex: 1,
             position: 'relative',
             overflow: 'hidden',
+            '@media print': {
+              display: 'flex !important',
+              flex: '1 !important',
+              height: 'calc(100% - 175px) !important',
+              overflow: 'visible !important'
+            }
           }}>
             {/* Coluna da esquerda - maior */}
             <Box sx={{ 
               width: '65%', 
               p: 4,
               overflow: 'auto',
+              '@media print': {
+                width: '65% !important',
+                padding: '24px !important',
+                overflow: 'visible !important'
+              }
             }}>
               {/* Experiência Profissional */}
-              <Box sx={{ mb: 4 }}>
+              <Box sx={{ 
+                mb: 4,
+                '@media print': {
+                  marginBottom: '24px !important'
+                }
+              }}>
                 <Typography 
                   variant="h5" 
                   sx={{ 
@@ -180,6 +307,14 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                       width: '50px',
                       height: '3px',
                       backgroundColor: '#1976d2',
+                    },
+                    '@media print': {
+                      color: '#1976d2 !important',
+                      paddingBottom: '8px !important',
+                      marginBottom: '16px !important',
+                      '&:after': {
+                        backgroundColor: '#1976d2 !important'
+                      }
                     }
                   }}
                 >
@@ -187,7 +322,13 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 </Typography>
                 
                 {sortByDate(data?.experience || []).map((exp, idx) => (
-                  <Box key={idx} sx={{ mb: 3 }}>
+                  <Box key={idx} sx={{ 
+                    mb: 3,
+                    '@media print': {
+                      marginBottom: '24px !important',
+                      pageBreakInside: 'avoid'
+                    }
+                  }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                       <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                         {exp.position}
@@ -204,8 +345,12 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 ))}
               </Box>
               
-              {/* Educação */}
-              <Box>
+              {/* Educação - reduzir tamanho para caber na página */}
+              <Box sx={{ 
+                '@media print': {
+                  pageBreakInside: 'avoid'
+                }
+              }}>
                 <Typography 
                   variant="h5" 
                   sx={{ 
@@ -222,6 +367,14 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                       width: '50px',
                       height: '3px',
                       backgroundColor: '#1976d2',
+                    },
+                    '@media print': {
+                      color: '#1976d2 !important',
+                      paddingBottom: '8px !important',
+                      marginBottom: '16px !important',
+                      '&:after': {
+                        backgroundColor: '#1976d2 !important'
+                      }
                     }
                   }}
                 >
@@ -229,7 +382,13 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 </Typography>
                 
                 {data?.education.map((edu, idx) => (
-                  <Box key={idx} sx={{ mb: 3 }}>
+                  <Box key={idx} sx={{ 
+                    mb: 3,
+                    '@media print': {
+                      marginBottom: '16px !important',
+                      pageBreakInside: 'avoid'
+                    }
+                  }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                       <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                         {edu.course}
@@ -256,6 +415,15 @@ const Template6 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
               display: 'flex',
               flexDirection: 'column',
               overflow: 'auto',
+              '@media print': {
+                width: '35% !important',
+                backgroundColor: '#f5f9ff !important',
+                padding: '18px !important',
+                borderLeft: '1px solid #e0e0e0 !important',
+                display: 'flex !important',
+                flexDirection: 'column !important',
+                overflow: 'visible !important'
+              }
             }}>
               {/* Habilidades */}
               <Box sx={{ mb: 4 }}>

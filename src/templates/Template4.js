@@ -41,7 +41,15 @@ const Template4 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
             overflow: 'hidden', 
-            fontFamily: 'Arial, sans-serif' 
+            fontFamily: 'Arial, sans-serif',
+            display: 'flex',
+            flexDirection: 'column',
+            '@media print': {
+              width: '210mm !important',
+              minHeight: '297mm !important',
+              padding: '20px !important',
+              overflow: 'visible !important'
+            }
           }}
         >
           {/* Marca d'água */}
@@ -61,70 +69,137 @@ const Template4 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             JOHNTEC.ADS
           </Typography>
           
-          <Typography variant="h4" sx={{ color: '#1976d2', mb: 2 }}>{data.personalInfo.name}</Typography>
-          
-          <Box sx={{ mb: 3 }}>
-            <Typography><strong>Email:</strong> {data.personalInfo.email}</Typography>
-            <Typography><strong>Telefone:</strong> {data.personalInfo.phone}</Typography>
-            <Typography><strong>Endereço:</strong> {data.personalInfo.address}</Typography>
-            {data.personalInfo.linkedin && (
-              <Typography><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</Typography>
-            )}
-          </Box>
-          
-          <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Objetivo</Typography>
-          <Typography paragraph>{data.personalInfo.objective}</Typography>
-          
-          <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Educação</Typography>
-          {data.education.map((edu, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" fontWeight="bold">{edu.course}</Typography>
-              <Typography variant="subtitle2">{edu.institution}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
-              </Typography>
-              <Typography paragraph>{edu.description}</Typography>
+          {/* Conteúdo principal com scroll interno */}
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            height: '100%',
+            '@media print': {
+              display: 'block !important',
+              height: 'auto !important',
+              pageBreakInside: 'avoid'
+            }
+          }}>
+            <Typography variant="h4" sx={{ color: '#1976d2', mb: 2 }}>{data.personalInfo.name}</Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography><strong>Email:</strong> {data.personalInfo.email}</Typography>
+              <Typography><strong>Telefone:</strong> {data.personalInfo.phone}</Typography>
+              <Typography><strong>Endereço:</strong> {data.personalInfo.address}</Typography>
+              {data.personalInfo.linkedin && (
+                <Typography><strong>LinkedIn:</strong> {data.personalInfo.linkedin}</Typography>
+              )}
             </Box>
-          ))}
-          
-          <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Experiência</Typography>
-          {data.experience.map((exp, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" fontWeight="bold">{exp.position}</Typography>
-              <Typography variant="subtitle2">{exp.company}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
-              </Typography>
-              <Typography paragraph>{exp.description}</Typography>
+            
+            <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Objetivo</Typography>
+            <Typography paragraph>{data.personalInfo.objective}</Typography>
+            
+            <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Educação</Typography>
+            {data.education.map((edu, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold">{edu.course}</Typography>
+                <Typography variant="subtitle2">{edu.institution}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                </Typography>
+                <Typography paragraph>{edu.description}</Typography>
+              </Box>
+            ))}
+            
+            <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Experiência</Typography>
+            {data.experience.map((exp, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold">{exp.position}</Typography>
+                <Typography variant="subtitle2">{exp.company}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                </Typography>
+                <Typography paragraph>{exp.description}</Typography>
+              </Box>
+            ))}
+            
+            {/* Habilidades e Idiomas lado a lado para economizar espaço */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: {xs: 'column', sm: 'row'}, 
+              gap: 3,
+              mt: 2,
+              '@media print': {
+                display: 'flex !important',
+                flexDirection: 'row !important',
+                gap: '24px !important'
+              }
+            }}>
+              {/* Habilidades */}
+              <Box sx={{ 
+                flex: 1,
+                '@media print': {
+                  flex: '1 !important'
+                }
+              }}>
+                <Typography variant="h5" sx={{ mb: 1 }}>Habilidades</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: 1,
+                  '@media print': {
+                    display: 'flex !important',
+                    flexWrap: 'wrap !important'
+                  }
+                }}>
+                  {data.skills.map((skill, index) => (
+                    <Typography key={index} component="span" sx={{
+                      bgcolor: '#e3f2fd',
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: '0.8rem',
+                      '@media print': {
+                        backgroundColor: '#e3f2fd !important',
+                        marginBottom: '4px !important'
+                      }
+                    }}>
+                      {skill}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+              
+              {/* Idiomas */}
+              <Box sx={{ 
+                flex: 1,
+                '@media print': {
+                  flex: '1 !important'
+                }
+              }}>
+                <Typography variant="h5" sx={{ mb: 1 }}>Idiomas</Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: 1,
+                  '@media print': {
+                    display: 'flex !important',
+                    flexWrap: 'wrap !important'
+                  }
+                }}>
+                  {data.languages.map((language, index) => (
+                    <Typography key={index} component="span" sx={{
+                      bgcolor: '#e3f2fd',
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: '0.8rem',
+                      '@media print': {
+                        backgroundColor: '#e3f2fd !important',
+                        marginBottom: '4px !important'
+                      }
+                    }}>
+                      {language}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
             </Box>
-          ))}
-          
-          <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Habilidades</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {data.skills.map((skill, index) => (
-              <Typography key={index} component="span" sx={{
-                bgcolor: '#e3f2fd',
-                px: 2,
-                py: 0.5,
-                borderRadius: 1
-              }}>
-                {skill}
-              </Typography>
-            ))}
-          </Box>
-          
-          <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Idiomas</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {data.languages.map((language, index) => (
-              <Typography key={index} component="span" sx={{
-                bgcolor: '#e3f2fd',
-                px: 2,
-                py: 0.5,
-                borderRadius: 1
-              }}>
-                {language}
-              </Typography>
-            ))}
           </Box>
         </Paper>
       </Box>

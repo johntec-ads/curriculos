@@ -47,6 +47,7 @@ function Preview() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
+  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
   
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -116,12 +117,76 @@ function Preview() {
     }
   }, []);
 
+  // Detecta quando o diálogo de impressão é fechado sem concluir a impressão
+  useEffect(() => {
+    if (!isGeneratingPdf || !isPrintDialogOpen) return;
+
+    const checkPrintDialogClosed = () => {
+      // Verifica se o diálogo de impressão foi fechado (cancelado)
+      if (isPrintDialogOpen) {
+        setTimeout(() => {
+          // Se ainda estamos no estado de geração após um tempo, provavelmente foi cancelado
+          if (isGeneratingPdf) {
+            console.log("Detectado cancelamento da impressão");
+            cleanupAfterPrint();
+            setIsPrintDialogOpen(false);
+            setIsGeneratingPdf(false);
+          }
+        }, 500);
+      }
+    };
+
+    // Adiciona listener para detectar quando o foco volta para a página
+    window.addEventListener('focus', checkPrintDialogClosed);
+    
+    return () => {
+      window.removeEventListener('focus', checkPrintDialogClosed);
+    };
+  }, [isGeneratingPdf, isPrintDialogOpen]);
+
+  // Função para limpar estilos após impressão ou cancelamento
+  const cleanupAfterPrint = () => {
+    console.log("Limpando estilos após impressão/cancelamento");
+    
+    // Restaura a visibilidade dos elementos
+    const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
+    elementsToRestore.forEach(el => {
+      const originalDisplay = el.getAttribute('data-original-display');
+      el.style.display = originalDisplay || '';
+      if (el.classList.contains('temp-hidden')) {
+        el.classList.remove('temp-hidden');
+      }
+    });
+    
+    // Remove classe de impressão
+    document.body.classList.remove('printing-pdf');
+    
+    // Restaura o elemento de impressão para seu estado original
+    if (printRef.current) {
+      printRef.current.style.position = 'absolute';
+      printRef.current.style.left = '-9999px';
+      printRef.current.style.top = '0';
+      printRef.current.style.transform = 'none';
+      printRef.current.style.visibility = 'hidden';
+    }
+    
+    // Forçar uma atualização do layout
+    if (printRef.current && printRef.current.parentElement) {
+      const parent = printRef.current.parentElement;
+      const placeholder = document.createElement('div');
+      parent.insertBefore(placeholder, printRef.current);
+      parent.removeChild(printRef.current);
+      parent.replaceChild(printRef.current, placeholder);
+    }
+  };
+
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     documentTitle: `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}`,
     onBeforePrint: () => {
       console.log("Preparando para impressão...");
       setIsGeneratingPdf(true);
+      setIsPrintDialogOpen(true);
       
       // Oculta elementos de UI que não devem aparecer no PDF
       const elementsToHide = document.querySelectorAll('.no-print');
@@ -175,19 +240,10 @@ function Preview() {
     onAfterPrint: () => {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
+      setIsPrintDialogOpen(false);
       
-      // Restaura a visibilidade dos elementos após a impressão
-      const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
-      elementsToRestore.forEach(el => {
-        const originalDisplay = el.getAttribute('data-original-display');
-        el.style.display = originalDisplay || '';
-        if (el.classList.contains('temp-hidden')) {
-          el.classList.remove('temp-hidden');
-        }
-      });
-      
-      // Remove a classe de impressão
-      document.body.classList.remove('printing-pdf');
+      // Usa a função centralizada para limpar
+      cleanupAfterPrint();
       
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
@@ -197,22 +253,14 @@ function Preview() {
       console.error("Erro de impressão:", error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
       setIsGeneratingPdf(false);
+      setIsPrintDialogOpen(false);
+      
+      // Usa a função centralizada para limpar
+      cleanupAfterPrint();
+      
       setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
-      
-      // Restaura a visibilidade dos elementos em caso de erro
-      const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
-      elementsToRestore.forEach(el => {
-        const originalDisplay = el.getAttribute('data-original-display');
-        el.style.display = originalDisplay || '';
-        if (el.classList.contains('temp-hidden')) {
-          el.classList.remove('temp-hidden');
-        }
-      });
-      
-      // Remove a classe de impressão
-      document.body.classList.remove('printing-pdf');
     },
     removeAfterPrint: true,
     pageStyle: `
