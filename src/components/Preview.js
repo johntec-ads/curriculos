@@ -353,6 +353,7 @@ function Preview() {
     <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
       <Box sx={{ 
         display: 'flex', 
+        flexWrap: 'wrap',           // permite quebrar multiline no mobile
         alignItems: 'center', 
         justifyContent: 'center', 
         gap: 1, 
@@ -361,7 +362,11 @@ function Preview() {
         backgroundColor: 'rgba(25, 118, 210, 0.08)',
         borderRadius: 1,
         py: 1,
-        px: 2
+        px: 2,
+        '@media (max-width:600px)': {  // mobile
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+        }
       }} className="no-print">
         <InfoOutlinedIcon color="primary" fontSize="small" />
         <Typography variant="body2" color="text.secondary">
