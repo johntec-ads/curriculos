@@ -662,7 +662,7 @@ function Preview() {
 
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={6000}
+        autoHideDuration={2000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ 
           vertical: 'bottom', 
@@ -674,7 +674,11 @@ function Preview() {
           onClose={handleCloseSnackbar} 
           severity={snackbarSeverity}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{
+            width: '100%',
+            backgroundColor: snackbarSeverity === 'success' ? theme.palette.primary.main : undefined,
+            color: snackbarSeverity === 'success' ? theme.palette.primary.contrastText : undefined
+          }}
         >
           {snackbarMessage}
         </Alert>

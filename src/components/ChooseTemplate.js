@@ -278,7 +278,7 @@ function ChooseTemplate() {
       {/* Snackbar para feedback */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={4000}
+        autoHideDuration={2000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ 
           vertical: 'bottom', 
@@ -289,7 +289,11 @@ function ChooseTemplate() {
           onClose={handleCloseSnackbar} 
           severity={snackbarSeverity}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{
+            width: '100%',
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText
+          }}
         >
           {snackbarMessage}
         </Alert>

@@ -94,6 +94,12 @@ const BuyMeACoffee = () => {
             '&:hover': {
               bgcolor: '#f5f5f5',
             },
+            '@keyframes pulse': {
+              '0%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.1)' },
+              '100%': { transform: 'scale(1)' },
+            },
+            animation: 'pulse 2s infinite',
             zIndex: 1000
           }}
         >

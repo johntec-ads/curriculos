@@ -257,7 +257,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     {exp.position}
                   </Typography>
-                  <Typography variant="subtitle2" color="primary">
+                  <Typography variant="subtitle2" sx={{ color: '#1976d2' }}>
                     {exp.company}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -278,7 +278,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     {edu.course}
                   </Typography>
-                  <Typography variant="subtitle2" color="primary">
+                  <Typography variant="subtitle2" sx={{ color: '#1976d2' }}>
                     {edu.institution}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">

@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#FF5722',
     },
     secondary: {
       main: '#e3f2fd',
@@ -25,6 +25,18 @@ const theme = createTheme({
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          transition: 'transform 0.2s ease-in-out',
+        },
+        containedPrimary: {
+          '&:hover': {
+            transform: 'scale(1.05)',
+          }
+        }
+      }
+    }
   },
 });
 
