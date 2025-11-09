@@ -69,38 +69,47 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
         >
           {/* Barra lateral limitada à altura exata do PDF A4 */}
           <Box sx={{ 
-            width: '240px', 
-            bgcolor: '#1976d2', 
+            width: '200px', 
+            minWidth: '200px',
+            bgcolor: '#1565c0', 
             color: 'white', 
-            p: 3, 
+            p: 2.5, 
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
             overflow: 'hidden',
             position: 'relative',
             '@media print': {
-              width: '240px !important',
+              width: '200px !important',
               display: 'flex !important',
               flexDirection: 'column !important',
-              backgroundColor: '#1976d2 !important',
+              backgroundColor: '#1565c0 !important',
               color: 'white !important',
               height: '100% !important',
-              padding: '24px !important',
+              padding: '20px !important',
+              overflow: 'visible !important',
+              visibility: 'visible !important',
             }
           }}>
             {/* Foto do usuário - com tamanho adaptativo */}
             <Box 
               sx={{
-                width: hasLargePhoto ? 120 : 100,
-                height: hasLargePhoto ? 120 : 100,
+                width: hasLargePhoto ? 110 : 90,
+                height: hasLargePhoto ? 110 : 90,
                 borderRadius: '50%',
                 backgroundColor: '#fff',
-                margin: '10px auto',
+                margin: '8px auto',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'hidden',
                 flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                '@media print': {
+                  display: 'flex !important',
+                  visibility: 'visible !important',
+                  backgroundColor: '#fff !important',
+                }
               }}
             >
               {data?.personalInfo?.photoUrl ? (
@@ -115,13 +124,61 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             </Box>
             
             {/* Informações de Contato */}
-            <Typography variant="h6" sx={{ mt: 1, mb: 1, fontSize: '1rem', fontWeight: 'bold' }}>Contato</Typography>
-            <Box sx={{ mb: 2, width: '100%' }}>
-              <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.email}</Typography>
-              <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.phone}</Typography>
-              <Typography variant="body2" sx={{ fontSize: '0.8rem', mb: 0.5 }}>{data?.personalInfo?.address}</Typography>
+            <Typography variant="h6" sx={{ 
+              mt: 1, 
+              mb: 1, 
+              fontSize: '1rem', 
+              fontWeight: '700',
+              '@media print': {
+                color: 'white !important',
+                visibility: 'visible !important',
+                display: 'block !important',
+              }
+            }}>Contato</Typography>
+            <Box sx={{ 
+              mb: 2, 
+              width: '100%',
+              '@media print': {
+                display: 'block !important',
+                visibility: 'visible !important',
+              }
+            }}>
+              <Typography variant="body2" sx={{ 
+                fontSize: '0.8rem', 
+                mb: 0.5,
+                '@media print': {
+                  color: 'white !important',
+                  visibility: 'visible !important',
+                  display: 'block !important',
+                }
+              }}>{data?.personalInfo?.email}</Typography>
+              <Typography variant="body2" sx={{ 
+                fontSize: '0.8rem', 
+                mb: 0.5,
+                '@media print': {
+                  color: 'white !important',
+                  visibility: 'visible !important',
+                  display: 'block !important',
+                }
+              }}>{data?.personalInfo?.phone}</Typography>
+              <Typography variant="body2" sx={{ 
+                fontSize: '0.8rem', 
+                mb: 0.5,
+                '@media print': {
+                  color: 'white !important',
+                  visibility: 'visible !important',
+                  display: 'block !important',
+                }
+              }}>{data?.personalInfo?.address}</Typography>
               {data?.personalInfo?.linkedin && (
-                <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                <Typography variant="body2" sx={{ 
+                  fontSize: '0.8rem',
+                  '@media print': {
+                    color: 'white !important',
+                    visibility: 'visible !important',
+                    display: 'block !important',
+                  }
+                }}>
                   LinkedIn: {data.personalInfo.linkedin}
                 </Typography>
               )}
@@ -131,17 +188,48 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             {hasManyLanguages ? (
               <Box sx={{ display: 'flex', width: '100%', flex: 1, overflow: 'hidden' }}>
                 {/* Habilidades */}
-                <Box sx={{ width: '50%', pr: 1 }}>
-                  <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Habilidades</Typography>
+                <Box sx={{ 
+                  width: '50%', 
+                  pr: 1,
+                  '@media print': {
+                    display: 'block !important',
+                    visibility: 'visible !important',
+                  }
+                }}>
+                  <Typography variant="h6" sx={{ 
+                    fontSize: '1rem', 
+                    fontWeight: 'bold', 
+                    mb: 1,
+                    '@media print': {
+                      color: 'white !important',
+                      visibility: 'visible !important',
+                      display: 'block !important',
+                    }
+                  }}>Habilidades</Typography>
                   <Box sx={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
                     gap: 0.5,
                     overflow: 'auto',
                     maxHeight: 'calc(100% - 30px)',
+                    '@media print': {
+                      display: 'flex !important',
+                      flexDirection: 'column !important',
+                      visibility: 'visible !important',
+                      overflow: 'visible !important',
+                      maxHeight: 'none !important',
+                    }
                   }}>
                     {data.skills.map((skill, index) => (
-                      <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                      <Typography key={index} variant="body2" sx={{ 
+                        fontSize: '0.8rem', 
+                        lineHeight: 1.2,
+                        '@media print': {
+                          color: 'white !important',
+                          visibility: 'visible !important',
+                          display: 'block !important',
+                        }
+                      }}>
                         • {skill}
                       </Typography>
                     ))}
@@ -149,17 +237,48 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 </Box>
 
                 {/* Idiomas */}
-                <Box sx={{ width: '50%', pl: 1 }}>
-                  <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+                <Box sx={{ 
+                  width: '50%', 
+                  pl: 1,
+                  '@media print': {
+                    display: 'block !important',
+                    visibility: 'visible !important',
+                  }
+                }}>
+                  <Typography variant="h6" sx={{ 
+                    fontSize: '1rem', 
+                    fontWeight: 'bold', 
+                    mb: 1,
+                    '@media print': {
+                      color: 'white !important',
+                      visibility: 'visible !important',
+                      display: 'block !important',
+                    }
+                  }}>Idiomas</Typography>
                   <Box sx={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
                     gap: 0.5,
                     overflow: 'auto',
                     maxHeight: 'calc(100% - 30px)',
+                    '@media print': {
+                      display: 'flex !important',
+                      flexDirection: 'column !important',
+                      visibility: 'visible !important',
+                      overflow: 'visible !important',
+                      maxHeight: 'none !important',
+                    }
                   }}>
                     {data.languages.map((language, index) => (
-                      <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                      <Typography key={index} variant="body2" sx={{ 
+                        fontSize: '0.8rem', 
+                        lineHeight: 1.2,
+                        '@media print': {
+                          color: 'white !important',
+                          visibility: 'visible !important',
+                          display: 'block !important',
+                        }
+                      }}>
                         • {language}
                       </Typography>
                     ))}
@@ -169,7 +288,17 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
             ) : (
               <>
                 {/* Layout tradicional - um abaixo do outro */}
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1, mt: 1 }}>Habilidades</Typography>
+                <Typography variant="h6" sx={{ 
+                  fontSize: '1rem', 
+                  fontWeight: 'bold', 
+                  mb: 1, 
+                  mt: 1,
+                  '@media print': {
+                    color: 'white !important',
+                    visibility: 'visible !important',
+                    display: 'block !important',
+                  }
+                }}>Habilidades</Typography>
                 <Box sx={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
@@ -177,24 +306,63 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                   mb: 2,
                   maxHeight: hasManySkills ? '120px' : '150px',
                   overflow: 'auto',
+                  '@media print': {
+                    display: 'flex !important',
+                    flexDirection: 'column !important',
+                    visibility: 'visible !important',
+                    overflow: 'visible !important',
+                    maxHeight: 'none !important',
+                  }
                 }}>
                   {data.skills.map((skill, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    <Typography key={index} variant="body2" sx={{ 
+                      fontSize: '0.8rem', 
+                      lineHeight: 1.2,
+                      '@media print': {
+                        color: 'white !important',
+                        visibility: 'visible !important',
+                        display: 'block !important',
+                      }
+                    }}>
                       • {skill}
                     </Typography>
                   ))}
                 </Box>
                 
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', mb: 1 }}>Idiomas</Typography>
+                <Typography variant="h6" sx={{ 
+                  fontSize: '1rem', 
+                  fontWeight: 'bold', 
+                  mb: 1,
+                  '@media print': {
+                    color: 'white !important',
+                    visibility: 'visible !important',
+                    display: 'block !important',
+                  }
+                }}>Idiomas</Typography>
                 <Box sx={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
                   gap: 0.5,
                   maxHeight: '80px',
                   overflow: 'auto',
+                  '@media print': {
+                    display: 'flex !important',
+                    flexDirection: 'column !important',
+                    visibility: 'visible !important',
+                    overflow: 'visible !important',
+                    maxHeight: 'none !important',
+                  }
                 }}>
                   {data.languages.map((language, index) => (
-                    <Typography key={index} variant="body2" sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}>
+                    <Typography key={index} variant="body2" sx={{ 
+                      fontSize: '0.8rem', 
+                      lineHeight: 1.2,
+                      '@media print': {
+                        color: 'white !important',
+                        visibility: 'visible !important',
+                        display: 'block !important',
+                      }
+                    }}>
                       • {language}
                     </Typography>
                   ))}
@@ -214,6 +382,12 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 opacity: 0.5,
                 pointerEvents: 'none',
                 userSelect: 'none',
+                '@media print': {
+                  color: 'white !important',
+                  visibility: 'visible !important',
+                  display: 'block !important',
+                  opacity: '0.5 !important',
+                }
               }}
             >
               JOHNTEC.ADS
@@ -223,14 +397,16 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
           {/* Conteúdo Principal */}
           <Box sx={{ 
             flex: 1, 
-            p: 4, 
+            p: { xs: 3, md: 4 }, 
             overflow: 'auto',
+            borderLeft: '1px solid rgba(0,0,0,0.04)',
+            backgroundColor: 'transparent',
             '@media print': {
               flex: '1 !important',
               display: 'block !important',
               visibility: 'visible !important',
-              padding: '32px !important',
-              width: 'calc(100% - 240px) !important',
+              padding: '28px !important',
+              width: 'calc(100% - 200px) !important',
             }
           }}>
             <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>
@@ -253,7 +429,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 Experiência Profissional
               </Typography>
               {sortByDate(data.experience).map((exp, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
+                <Box key={index} sx={{ mb: 2, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     {exp.position}
                   </Typography>
@@ -274,7 +450,7 @@ const Template2 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
                 Educação
               </Typography>
               {data.education.map((edu, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
+                <Box key={index} sx={{ mb: 2, breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     {edu.course}
                   </Typography>

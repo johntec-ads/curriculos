@@ -1,38 +1,39 @@
-import { 
-  Container, 
-  Box, 
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActionArea,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Button,
-  IconButton,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  useMediaQuery,
-  useTheme,
-  Paper,
-  Tooltip,
-  Stack
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useReactToPrint } from 'react-to-print';
-import { getTemplateById, templates } from '../templates';
-import { useState, useRef, useEffect } from 'react';
-import CloseIcon from '@mui/icons-material/Close';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+    import React, { useState, useRef, useEffect } from 'react';
+    import {
+      Container,
+      Box,
+      Typography,
+      Card,
+      CardContent,
+      CardMedia,
+      CardActionArea,
+      Dialog,
+      DialogTitle,
+      DialogContent,
+      DialogActions,
+      Grid,
+      Button,
+      IconButton,
+      CircularProgress,
+      Snackbar,
+      Alert,
+      useMediaQuery,
+      useTheme,
+      Paper,
+      Tooltip,
+      Stack
+    } from '@mui/material';
+    import { useNavigate } from 'react-router-dom';
+    import { useReactToPrint } from 'react-to-print';
+    import { getTemplateById, templates } from '../templates';
+    import { sampleCurriculumData } from '../data/sampleData';
+    import CloseIcon from '@mui/icons-material/Close';
+    import ZoomInIcon from '@mui/icons-material/ZoomIn';
+    import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+    import FullscreenIcon from '@mui/icons-material/Fullscreen';
+    import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-function Preview() {
+const Preview = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -48,7 +49,7 @@ function Preview() {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
-  
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
@@ -83,7 +84,7 @@ function Preview() {
     const data = localStorage.getItem('curriculumData');
     const queryParams = new URLSearchParams(window.location.search);
     const sharedData = queryParams.get('shared');
-    
+
     if (sharedData) {
       try {
         const decodedData = JSON.parse(decodeURIComponent(atob(sharedData)));
@@ -138,7 +139,7 @@ function Preview() {
 
     // Adiciona listener para detectar quando o foco volta para a página
     window.addEventListener('focus', checkPrintDialogClosed);
-    
+
     return () => {
       window.removeEventListener('focus', checkPrintDialogClosed);
     };
@@ -147,7 +148,7 @@ function Preview() {
   // Função para limpar estilos após impressão ou cancelamento
   const cleanupAfterPrint = () => {
     console.log("Limpando estilos após impressão/cancelamento");
-    
+
     // Restaura a visibilidade dos elementos
     const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
     elementsToRestore.forEach(el => {
@@ -157,10 +158,10 @@ function Preview() {
         el.classList.remove('temp-hidden');
       }
     });
-    
+
     // Remove classe de impressão
     document.body.classList.remove('printing-pdf');
-    
+
     // Restaura o elemento de impressão para seu estado original
     if (printRef.current) {
       printRef.current.style.position = 'absolute';
@@ -169,7 +170,7 @@ function Preview() {
       printRef.current.style.transform = 'none';
       printRef.current.style.visibility = 'hidden';
     }
-    
+
     // Forçar uma atualização do layout
     if (printRef.current && printRef.current.parentElement) {
       const parent = printRef.current.parentElement;
@@ -187,14 +188,14 @@ function Preview() {
       console.log("Preparando para impressão...");
       setIsGeneratingPdf(true);
       setIsPrintDialogOpen(true);
-      
+
       // Oculta elementos de UI que não devem aparecer no PDF
       const elementsToHide = document.querySelectorAll('.no-print');
       elementsToHide.forEach(el => {
         el.setAttribute('data-original-display', el.style.display);
         el.style.display = 'none';
       });
-      
+
       // Oculta elementos específicos de UI móvel que podem não estar com a classe no-print
       const mobileUIElements = document.querySelectorAll('.MuiBottomNavigation-root, .MuiDialog-root, [role="dialog"], .MuiTooltip-popper, .MuiSnackbar-root');
       mobileUIElements.forEach(el => {
@@ -204,10 +205,10 @@ function Preview() {
           el.classList.add('temp-hidden');
         }
       });
-      
+
       // Força a aplicação de estilos corretos para impressão
       document.body.classList.add('printing-pdf');
-      
+
       // Força que o elemento de impressão seja visível e com estilos adequados
       if (printRef.current) {
         printRef.current.style.visibility = 'visible';
@@ -217,7 +218,7 @@ function Preview() {
         printRef.current.style.top = '0';
         printRef.current.style.transform = 'none';
         printRef.current.style.transformOrigin = 'top left';
-        
+
         // Para dispositivos móveis, aplicamos uma configuração mais específica
         if (isMobile) {
           printRef.current.style.width = '210mm';
@@ -225,7 +226,7 @@ function Preview() {
           printRef.current.style.maxWidth = '210mm';
           printRef.current.style.maxHeight = '297mm';
           printRef.current.style.overflow = 'hidden';
-          
+
           // Garantimos que todos os filhos diretos também não sejam transformados
           const directChildren = printRef.current.children;
           for (let i = 0; i < directChildren.length; i++) {
@@ -241,10 +242,10 @@ function Preview() {
       console.log("Impressão concluída!");
       setIsGeneratingPdf(false);
       setIsPrintDialogOpen(false);
-      
+
       // Usa a função centralizada para limpar
       cleanupAfterPrint();
-      
+
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -254,60 +255,16 @@ function Preview() {
       setPrintError(error.message || 'Erro ao gerar o PDF');
       setIsGeneratingPdf(false);
       setIsPrintDialogOpen(false);
-      
+
       // Usa a função centralizada para limpar
       cleanupAfterPrint();
-      
+
       setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     },
     removeAfterPrint: true,
-    pageStyle: `
-      @page {
-        size: A4;
-        margin: 0;
-      }
-      @media print {
-        body {
-          -webkit-print-color-adjust: exact;
-          color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        html, body {
-          height: 100%;
-          margin: 0 !important;
-          padding: 0 !important;
-          overflow: hidden;
-        }
-        
-        body * {
-          visibility: hidden;
-        }
-        
-        #print-content,
-        #print-content * {
-          visibility: visible !important;
-          display: block;
-        }
-        
-        #print-content {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 210mm;
-          height: 297mm;
-        }
-        
-        .no-print, .no-print * {
-          display: none !important;
-        }
-        
-        .print-only, .print-only * {
-          visibility: visible !important;
-        }
-      }
-    `
+    pageStyle: `@page { size: A4; margin: 10mm; } @media print { html, body { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } #print-content { display: block !important; position: static !important; width: 190mm !important; height: 277mm !important; margin: 0 auto !important; box-shadow: none !important; background: white !important; } .no-print, .no-print * { display: none !important; } .print-only, .print-only * { display: block !important; } }`
   });
 
   const handleBack = () => {
@@ -326,6 +283,15 @@ function Preview() {
     }));
     setIsTemplateDialogOpen(false);
     setSnackbarMessage("Modelo alterado com sucesso!");
+    setSnackbarSeverity("success");
+    setSnackbarOpen(true);
+  };
+
+  const handleLoadSampleData = () => {
+    setCurriculumData(sampleCurriculumData);
+    setSelectedTemplate(sampleCurriculumData.template);
+    localStorage.setItem('curriculumData', JSON.stringify(sampleCurriculumData));
+    setSnackbarMessage("Dados de exemplo carregados com sucesso!");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
   };
@@ -435,8 +401,8 @@ function Preview() {
             elevation={3} 
             sx={{
               margin: '0 auto',
-              width: `${a4WidthInPixels * zoomLevel}px`,
-              height: `${a4HeightInPixels * zoomLevel}px`,
+              width: (a4WidthInPixels * zoomLevel) + 'px',
+              height: (a4HeightInPixels * zoomLevel) + 'px',
               position: 'relative',
               border: '1px solid #ddd',
               boxShadow: '0 0 10px rgba(0,0,0,0.1)',
@@ -450,7 +416,7 @@ function Preview() {
               position: 'absolute',
               top: 0,
               left: 0,
-              transform: `scale(${zoomLevel})`,
+              transform: 'scale(' + zoomLevel + ')',
               transformOrigin: 'top left',
             }}>
               <TemplateComponent 
@@ -495,6 +461,20 @@ function Preview() {
         justifyContent: 'center',
         px: { xs: 2, sm: 0 }
       }} className="no-print">
+        <Button 
+          onClick={handleLoadSampleData}
+          variant="outlined" 
+          color="secondary"
+          size="large"
+          disabled={isGeneratingPdf}
+          fullWidth={isMobile}
+          sx={{ 
+            borderStyle: 'dashed',
+            fontWeight: 'medium'
+          }}
+        >
+          Carregar Dados de Exemplo
+        </Button>
         <Button 
           onClick={handleBack}
           variant="outlined" 
@@ -690,6 +670,6 @@ function Preview() {
       </Snackbar>
     </Container>
   );
-}
+};
 
 export default Preview;

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import CurriculumForm from './components/CurriculumForm';
 import Preview from './components/Preview';
 import Home from './components/Home';
@@ -12,23 +12,30 @@ import BuyMeACoffee from './components/BuyMeACoffee';
 import VersionInfo from './components/VersionInfo';
 
 function App() {
+  const router = createBrowserRouter(
+    [
+      { path: '/', element: <Home /> },
+      { path: '/create', element: <CurriculumForm /> },
+      { path: '/preview', element: <Preview /> },
+      { path: '/choose-template', element: <ChooseTemplate /> },
+      { path: '/template1', element: <Template1Wrapper /> },
+      { path: '/template2', element: <Template2Wrapper /> },
+      { path: '/template3', element: <Template3Wrapper /> },
+      { path: '/template4', element: <Template4Wrapper /> },
+      { path: '/template5', element: <Template5Wrapper /> },
+    ],
+    {
+      // Opt-in antecipado para o comportamento de resolução relativa de splat routes da v7
+      future: { v7_relativeSplatPath: true },
+    }
+  );
+
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<CurriculumForm />} />
-          <Route path="/preview" element={<Preview />} />
-          <Route path="/choose-template" element={<ChooseTemplate />} />
-          <Route path="/template1" element={<Template1Wrapper />} />
-          <Route path="/template2" element={<Template2Wrapper />} />
-          <Route path="/template3" element={<Template3Wrapper />} />
-          <Route path="/template4" element={<Template4Wrapper />} />
-          <Route path="/template5" element={<Template5Wrapper />} />
-        </Routes>
-        <BuyMeACoffee />
-        <VersionInfo position="bottomRight" />
-      </BrowserRouter>
+      {/* RouterProvider fornece o contexto de rotas (substitui BrowserRouter) */}
+      <RouterProvider router={router} />
+      <BuyMeACoffee />
+      <VersionInfo position="bottomRight" />
     </AuthProvider>
   );
 }
