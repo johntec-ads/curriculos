@@ -25,8 +25,11 @@ function App() {
       { path: '/template5', element: <Template5Wrapper /> },
     ],
     {
-      // Opt-in antecipado para o comportamento de resolução relativa de splat routes da v7
-      future: { v7_relativeSplatPath: true },
+      // Opt-in antecipado para o comportamento da v7
+      future: { 
+        v7_relativeSplatPath: true,
+        v7_startTransition: true 
+      },
     }
   );
 

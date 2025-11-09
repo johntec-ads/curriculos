@@ -288,8 +288,11 @@ const Preview = () => {
   };
 
   const handleLoadSampleData = () => {
+    // Limpar dados existentes primeiro
+    localStorage.removeItem('curriculumData');
+    // Definir novos dados
     setCurriculumData(sampleCurriculumData);
-    setSelectedTemplate(sampleCurriculumData.template);
+    setSelectedTemplate(sampleCurriculumData.template || 'template1');
     localStorage.setItem('curriculumData', JSON.stringify(sampleCurriculumData));
     setSnackbarMessage("Dados de exemplo carregados com sucesso!");
     setSnackbarSeverity("success");
@@ -299,14 +302,38 @@ const Preview = () => {
   const templateData = getTemplateById(selectedTemplate);
   const TemplateComponent = templateData?.component;
 
-  if (!curriculumData || !TemplateComponent) {
+  if (!TemplateComponent) {
     return (
       <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
         <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6, md: 8 } }}>
           <CircularProgress />
           <Typography variant="h6" sx={{ mt: 2 }}>
-            Carregando currículo...
+            Carregando template...
           </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (!curriculumData) {
+    return (
+      <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+        <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6, md: 8 } }}>
+          <Typography variant="h6" sx={{ mb: 4 }}>
+            Nenhum currículo carregado
+          </Typography>
+          <Button
+            onClick={handleLoadSampleData}
+            variant="outlined"
+            color="secondary"
+            size="large"
+            sx={{
+              borderStyle: 'dashed',
+              fontWeight: 'medium'
+            }}
+          >
+            Carregar Dados de Exemplo
+          </Button>
         </Box>
       </Container>
     );
