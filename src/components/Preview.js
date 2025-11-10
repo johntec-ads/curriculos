@@ -38,7 +38,9 @@ import ShareIcon from '@mui/icons-material/Share';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { generateHighQualityPDF } from '../utils/pdfGenerator';const Preview = () => {
+import { generateHighQualityPDF } from '../utils/pdfGenerator';
+
+const Preview = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
