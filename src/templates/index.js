@@ -1,6 +1,6 @@
 // Depois importamos os componentes
 import Template1 from './Template1';
-import Template2 from './Template2';
+// import Template2 from './Template2';
 import Template3 from './Template3';
 import Template4 from './Template4';
 import Template5 from './Template5';
@@ -8,7 +8,7 @@ import Template6 from './Template6';
 import Template7 from './Template7';
 
 export { default as Template1Wrapper } from './Template1';
-export { default as Template2Wrapper } from './Template2';
+// export { default as Template2Wrapper } from './Template2';
 export { default as Template3Wrapper } from './Template3';
 export { default as Template4Wrapper } from './Template4';
 export { default as Template5Wrapper } from './Template5';
@@ -25,12 +25,7 @@ const templateDefinitions = {
     thumbnail: `${templateImagePath}template1.jpg`,
     description: 'Layout tradicional com ênfase em clareza e profissionalismo'
   },
-  template2: {
-    id: 'template2',
-    name: 'Moderno',
-    thumbnail: `${templateImagePath}template2.jpg`,
-    description: 'Design contemporâneo com barra lateral colorida e foto'
-  },
+
   template3: {
     id: 'template3',
     name: 'Minimalista',
@@ -70,10 +65,7 @@ export const templates = [
     ...templateDefinitions.template1,
     component: Template1
   },
-  {
-    ...templateDefinitions.template2,
-    component: Template2
-  },
+
   {
     ...templateDefinitions.template3,
     component: Template3
