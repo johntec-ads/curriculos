@@ -12,39 +12,23 @@ import {
   Box,
   Dialog,
   DialogContent,
-  DialogActions,
   IconButton,
-  Snackbar,
-  Alert,
   useMediaQuery,
   useTheme
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { templates } from '../templates';
-import { useAuth } from '../context/AuthContext';
-import Authentication from './Authentication';
 
 function ChooseTemplate() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
   const handleSelectTemplate = (templateId) => {
-    if (currentUser) {
-      navigate(`/create?template=${templateId}`);
-    } else {
-      // Se usuário não estiver logado, salvar o template selecionado e mostrar diálogo de login
-      setSelectedTemplateId(templateId);
-      setIsAuthDialogOpen(true);
-    }
+    // Navegar diretamente para o formulário, sem necessidade de login
+    navigate(`/create?template=${templateId}`);
   };
 
   const handleOpenImage = (imageUrl) => {
@@ -53,27 +37,6 @@ function ChooseTemplate() {
 
   const handleCloseImage = () => {
     setSelectedImage(null);
-  };
-
-  const handleCloseAuthDialog = () => {
-    setIsAuthDialogOpen(false);
-  };
-
-  const handleAfterLogin = () => {
-    setSnackbarMessage("Login realizado com sucesso!");
-    setSnackbarSeverity("success");
-    setSnackbarOpen(true);
-    
-    // Após login bem-sucedido, navegar para a página de criação com o template selecionado
-    if (selectedTemplateId) {
-      setTimeout(() => {
-        navigate(`/create?template=${selectedTemplateId}`);
-      }, 1000);
-    }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
   };
 
   return (
@@ -248,56 +211,7 @@ function ChooseTemplate() {
             }}
           />
         </DialogContent>
-        <DialogActions sx={{ 
-          justifyContent: 'center', 
-          py: { xs: 1.5, sm: 2 }, 
-          bgcolor: 'rgba(0,0,0,0.03)',
-          px: { xs: 1, sm: 2 }
-        }}>
-          <Button 
-            variant="contained" 
-            onClick={handleCloseImage} 
-            color="primary"
-            sx={{ 
-              minWidth: { xs: 100, sm: 120 },
-              width: isMobile ? "100%" : "auto"
-            }}
-          >
-            Fechar
-          </Button>
-        </DialogActions>
       </Dialog>
-
-      {/* Componente de autenticação */}
-      <Authentication
-        open={isAuthDialogOpen}
-        onClose={handleCloseAuthDialog}
-        afterLogin={handleAfterLogin}
-      />
-
-      {/* Snackbar para feedback */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={2000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ 
-          vertical: 'bottom', 
-          horizontal: isMobile ? 'center' : 'right' 
-        }}
-      >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{
-            width: '100%',
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText
-          }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }

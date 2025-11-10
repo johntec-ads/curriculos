@@ -1,11 +1,9 @@
 import { forwardRef } from 'react';
-import { Paper, Typography, Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import { Paper, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const Template4 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, ref) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+const Template4 = forwardRef(({ data, isGenerating = false }, ref) => {
   
   const formatDate = (date) => {
     if (!date) return 'Presente';
@@ -204,45 +202,13 @@ const Template4 = forwardRef(({ data, onPrint, onBack, isGenerating = false }, r
         </Paper>
       </Box>
 
-      {/* Só renderiza os botões se NÃO estiver na página de preview */}
-      {!isGenerating && onPrint && onBack && (
-        <Box sx={{ 
-          textAlign: 'center', 
-          mb: 4, 
-          display: 'flex', 
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2, 
-          justifyContent: 'center',
-          px: 2
-        }}>
-          <Button 
-            onClick={onBack} 
-            variant="outlined" 
-            color="primary" 
-            size="large"
-            fullWidth={isMobile}
-          >
-            Voltar e Editar
-          </Button>
-          <Button
-            onClick={onPrint}
-            variant="contained" 
-            color="primary"
-            size="large"
-            fullWidth={isMobile}
-          >
-            Gerar PDF
-          </Button>
-        </Box>
-      )}
+      {/* Botões removidos - agora são gerenciados pela página Preview */}
     </>
   );
 });
 
 Template4.propTypes = {
   data: PropTypes.object.isRequired,
-  onBack: PropTypes.func,
-  onPrint: PropTypes.func,
   isGenerating: PropTypes.bool
 };
 

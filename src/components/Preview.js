@@ -1,39 +1,44 @@
-    import React, { useState, useRef, useEffect } from 'react';
-    import {
-      Container,
-      Box,
-      Typography,
-      Card,
-      CardContent,
-      CardMedia,
-      CardActionArea,
-      Dialog,
-      DialogTitle,
-      DialogContent,
-      DialogActions,
-      Grid,
-      Button,
-      IconButton,
-      CircularProgress,
-      Snackbar,
-      Alert,
-      useMediaQuery,
-      useTheme,
-      Paper,
-      Tooltip,
-      Stack
-    } from '@mui/material';
-    import { useNavigate } from 'react-router-dom';
-    import { useReactToPrint } from 'react-to-print';
-    import { getTemplateById, templates } from '../templates';
-    import { sampleCurriculumData } from '../data/sampleData';
-    import CloseIcon from '@mui/icons-material/Close';
-    import ZoomInIcon from '@mui/icons-material/ZoomIn';
-    import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-    import FullscreenIcon from '@mui/icons-material/Fullscreen';
-    import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-
-const Preview = () => {
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Container,
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActionArea,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Button,
+  IconButton,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  useMediaQuery,
+  useTheme,
+  Paper,
+  Tooltip,
+  Stack,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { getTemplateById, templates } from '../templates';
+import CloseIcon from '@mui/icons-material/Close';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ShareIcon from '@mui/icons-material/Share';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import EmailIcon from '@mui/icons-material/Email';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { generateHighQualityPDF } from '../utils/pdfGenerator';const Preview = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -48,7 +53,7 @@ const Preview = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
-  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -118,154 +123,115 @@ const Preview = () => {
     }
   }, []);
 
-  // Detecta quando o diálogo de impressão é fechado sem concluir a impressão
-  useEffect(() => {
-    if (!isGeneratingPdf || !isPrintDialogOpen) return;
+  // Função para gerar PDF
+  const handleGeneratePDF = async () => {
+    if (!printRef.current) return;
+    
+    setIsGeneratingPdf(true);
+    setPrintError(null);
 
-    const checkPrintDialogClosed = () => {
-      // Verifica se o diálogo de impressão foi fechado (cancelado)
-      if (isPrintDialogOpen) {
-        setTimeout(() => {
-          // Se ainda estamos no estado de geração após um tempo, provavelmente foi cancelado
-          if (isGeneratingPdf) {
-            console.log("Detectado cancelamento da impressão");
-            cleanupAfterPrint();
-            setIsPrintDialogOpen(false);
-            setIsGeneratingPdf(false);
-          }
-        }, 500);
-      }
-    };
+    // Tornar o elemento temporariamente visível para captura
+    const element = printRef.current;
+    element.style.visibility = 'visible';
+    element.style.position = 'fixed';
+    element.style.left = '0';
+    element.style.top = '0';
+    element.style.zIndex = '9999';
 
-    // Adiciona listener para detectar quando o foco volta para a página
-    window.addEventListener('focus', checkPrintDialogClosed);
-
-    return () => {
-      window.removeEventListener('focus', checkPrintDialogClosed);
-    };
-  }, [isGeneratingPdf, isPrintDialogOpen]);
-
-  // Função para limpar estilos após impressão ou cancelamento
-  const cleanupAfterPrint = () => {
-    console.log("Limpando estilos após impressão/cancelamento");
-
-    // Restaura a visibilidade dos elementos
-    const elementsToRestore = document.querySelectorAll('.no-print, .temp-hidden');
-    elementsToRestore.forEach(el => {
-      const originalDisplay = el.getAttribute('data-original-display');
-      el.style.display = originalDisplay || '';
-      if (el.classList.contains('temp-hidden')) {
-        el.classList.remove('temp-hidden');
-      }
-    });
-
-    // Remove classe de impressão
-    document.body.classList.remove('printing-pdf');
-
-    // Restaura o elemento de impressão para seu estado original
-    if (printRef.current) {
-      printRef.current.style.position = 'absolute';
-      printRef.current.style.left = '-9999px';
-      printRef.current.style.top = '0';
-      printRef.current.style.transform = 'none';
-      printRef.current.style.visibility = 'hidden';
-    }
-
-    // Forçar uma atualização do layout
-    if (printRef.current && printRef.current.parentElement) {
-      const parent = printRef.current.parentElement;
-      const placeholder = document.createElement('div');
-      parent.insertBefore(placeholder, printRef.current);
-      parent.removeChild(printRef.current);
-      parent.replaceChild(printRef.current, placeholder);
-    }
-  };
-
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}`,
-    onBeforePrint: () => {
-      console.log("Preparando para impressão...");
-      setIsGeneratingPdf(true);
-      setIsPrintDialogOpen(true);
-
-      // Oculta elementos de UI que não devem aparecer no PDF
-      const elementsToHide = document.querySelectorAll('.no-print');
-      elementsToHide.forEach(el => {
-        el.setAttribute('data-original-display', el.style.display);
-        el.style.display = 'none';
-      });
-
-      // Oculta elementos específicos de UI móvel que podem não estar com a classe no-print
-      const mobileUIElements = document.querySelectorAll('.MuiBottomNavigation-root, .MuiDialog-root, [role="dialog"], .MuiTooltip-popper, .MuiSnackbar-root');
-      mobileUIElements.forEach(el => {
-        if (!el.classList.contains('no-print')) {
-          el.setAttribute('data-original-display', el.style.display);
-          el.style.display = 'none';
-          el.classList.add('temp-hidden');
+    try {
+      const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
+      
+      // Aguardar um momento para o elemento renderizar
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      await generateHighQualityPDF(element, filename, {
+        scale: 2,
+        quality: 0.95,
+        onProgress: (percent, message) => {
+          console.log(`${percent}% - ${message}`);
         }
       });
-
-      // Força a aplicação de estilos corretos para impressão
-      document.body.classList.add('printing-pdf');
-
-      // Força que o elemento de impressão seja visível e com estilos adequados
-      if (printRef.current) {
-        printRef.current.style.visibility = 'visible';
-        printRef.current.style.display = 'block';
-        printRef.current.style.position = 'fixed';
-        printRef.current.style.left = '0';
-        printRef.current.style.top = '0';
-        printRef.current.style.transform = 'none';
-        printRef.current.style.transformOrigin = 'top left';
-
-        // Para dispositivos móveis, aplicamos uma configuração mais específica
-        if (isMobile) {
-          printRef.current.style.width = '210mm';
-          printRef.current.style.height = '297mm';
-          printRef.current.style.maxWidth = '210mm';
-          printRef.current.style.maxHeight = '297mm';
-          printRef.current.style.overflow = 'hidden';
-
-          // Garantimos que todos os filhos diretos também não sejam transformados
-          const directChildren = printRef.current.children;
-          for (let i = 0; i < directChildren.length; i++) {
-            directChildren[i].style.transform = 'none';
-            directChildren[i].style.position = 'relative';
-            directChildren[i].style.width = '100%';
-            directChildren[i].style.height = '100%';
-          }
-        }
-      }
-    },
-    onAfterPrint: () => {
-      console.log("Impressão concluída!");
-      setIsGeneratingPdf(false);
-      setIsPrintDialogOpen(false);
-
-      // Usa a função centralizada para limpar
-      cleanupAfterPrint();
 
       setSnackbarMessage("PDF gerado com sucesso!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-    },
-    onPrintError: (error) => {
-      console.error("Erro de impressão:", error);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
-      setIsGeneratingPdf(false);
-      setIsPrintDialogOpen(false);
-
-      // Usa a função centralizada para limpar
-      cleanupAfterPrint();
-
       setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
-    },
-    removeAfterPrint: true,
-    pageStyle: `@page { size: A4; margin: 10mm; } @media print { html, body { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } #print-content { display: block !important; position: static !important; width: 190mm !important; height: 277mm !important; margin: 0 auto !important; box-shadow: none !important; background: white !important; } .no-print, .no-print * { display: none !important; } .print-only, .print-only * { display: block !important; } }`
-  });
+    } finally {
+      // Restaurar elemento para estado oculto
+      element.style.visibility = 'hidden';
+      element.style.position = 'fixed';
+      element.style.zIndex = '-1';
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  // Função para compartilhar
+  const handleShare = (event) => {
+    setShareMenuAnchor(event.currentTarget);
+  };
+
+  const handleCloseShareMenu = () => {
+    setShareMenuAnchor(null);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
+      const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
+      
+      await navigator.clipboard.writeText(shareUrl);
+      
+      setSnackbarMessage("Link copiado para a área de transferência!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      handleCloseShareMenu();
+    } catch (error) {
+      console.error("Erro ao copiar link:", error);
+      setSnackbarMessage("Erro ao copiar link.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleShareWhatsApp = () => {
+    try {
+      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
+      const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
+      const message = `Confira meu currículo: ${shareUrl}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      
+      window.open(whatsappUrl, '_blank');
+      handleCloseShareMenu();
+    } catch (error) {
+      console.error("Erro ao compartilhar no WhatsApp:", error);
+      setSnackbarMessage("Erro ao compartilhar no WhatsApp.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleShareEmail = () => {
+    try {
+      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
+      const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
+      const subject = `Currículo - ${curriculumData?.personalInfo?.name || 'Profissional'}`;
+      const body = `Olá,\n\nConfira meu currículo através do link: ${shareUrl}\n\nAtenciosamente,\n${curriculumData?.personalInfo?.name || ''}`;
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      window.location.href = mailtoUrl;
+      handleCloseShareMenu();
+    } catch (error) {
+      console.error("Erro ao compartilhar por email:", error);
+      setSnackbarMessage("Erro ao compartilhar por email.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
 
   const handleBack = () => {
     navigate('/create');
@@ -283,18 +249,6 @@ const Preview = () => {
     }));
     setIsTemplateDialogOpen(false);
     setSnackbarMessage("Modelo alterado com sucesso!");
-    setSnackbarSeverity("success");
-    setSnackbarOpen(true);
-  };
-
-  const handleLoadSampleData = () => {
-    // Limpar dados existentes primeiro
-    localStorage.removeItem('curriculumData');
-    // Definir novos dados
-    setCurriculumData(sampleCurriculumData);
-    setSelectedTemplate(sampleCurriculumData.template || 'template1');
-    localStorage.setItem('curriculumData', JSON.stringify(sampleCurriculumData));
-    setSnackbarMessage("Dados de exemplo carregados com sucesso!");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
   };
@@ -323,16 +277,12 @@ const Preview = () => {
             Nenhum currículo carregado
           </Typography>
           <Button
-            onClick={handleLoadSampleData}
-            variant="outlined"
-            color="secondary"
+            onClick={handleBack}
+            variant="contained"
+            color="primary"
             size="large"
-            sx={{
-              borderStyle: 'dashed',
-              fontWeight: 'medium'
-            }}
           >
-            Carregar Dados de Exemplo
+            Criar Novo Currículo
           </Button>
         </Box>
       </Container>
@@ -361,9 +311,8 @@ const Preview = () => {
           justifyContent: 'flex-start',
         }
       }} className="no-print">
-        <InfoOutlinedIcon color="primary" fontSize="small" />
-        <Typography variant="body2" color="text.secondary">
-          Esta é uma visualização exata do formato A4 do seu currículo. Use os controles de zoom para melhor visualização.
+        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          ℹ️ Esta é uma visualização exata do formato A4 do seu currículo. Use os controles de zoom para melhor visualização.
         </Typography>
       </Box>
 
@@ -454,20 +403,25 @@ const Preview = () => {
           </Paper>
         </Box>
 
-        {/* Elemento oculto apenas para impressão - este é o que será usado para gerar o PDF */}
+        {/* Elemento oculto apenas para impressão - posicionado de forma visível mas fora da viewport */}
         <Box 
           ref={printRef}
           id="print-content"
           sx={{ 
-            position: 'absolute',
-            left: '-9999px',
+            position: 'fixed',
+            left: 0,
             top: 0,
             width: '210mm',
-            height: '297mm',
-            overflow: 'hidden',
-            display: 'block',
-            transform: 'none',
-            transformOrigin: 'top left'
+            minHeight: '297mm',
+            backgroundColor: '#ffffff',
+            visibility: 'hidden',
+            pointerEvents: 'none',
+            zIndex: -1,
+            '&.printing': {
+              visibility: 'visible',
+              position: 'static',
+              zIndex: 9999
+            }
           }}
           className="print-only"
         >
@@ -488,20 +442,6 @@ const Preview = () => {
         justifyContent: 'center',
         px: { xs: 2, sm: 0 }
       }} className="no-print">
-        <Button 
-          onClick={handleLoadSampleData}
-          variant="outlined" 
-          color="secondary"
-          size="large"
-          disabled={isGeneratingPdf}
-          fullWidth={isMobile}
-          sx={{ 
-            borderStyle: 'dashed',
-            fontWeight: 'medium'
-          }}
-        >
-          Carregar Dados de Exemplo
-        </Button>
         <Button 
           onClick={handleBack}
           variant="outlined" 
@@ -531,12 +471,27 @@ const Preview = () => {
           Escolher Outro Modelo
         </Button>
         <Button
-          onClick={handlePrint}
+          onClick={handleShare}
+          variant="outlined" 
+          color="success"
+          size="large"
+          disabled={isGeneratingPdf}
+          fullWidth={isMobile}
+          startIcon={<ShareIcon />}
+          sx={{ 
+            fontWeight: 'medium'
+          }}
+        >
+          Compartilhar
+        </Button>
+        <Button
+          onClick={handleGeneratePDF}
           variant="contained" 
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
           fullWidth={isMobile}
+          startIcon={<PictureAsPdfIcon />}
           sx={{ 
             fontWeight: 'bold',
             boxShadow: '0 4px 6px rgba(25, 118, 210, 0.25)',
@@ -548,6 +503,35 @@ const Preview = () => {
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
       </Box>
+
+      {/* Menu de compartilhamento */}
+      <Menu
+        anchorEl={shareMenuAnchor}
+        open={Boolean(shareMenuAnchor)}
+        onClose={handleCloseShareMenu}
+        transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+        className="no-print"
+      >
+        <MenuItem onClick={handleCopyLink}>
+          <ListItemIcon>
+            <ContentCopyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Copiar Link</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleShareWhatsApp}>
+          <ListItemIcon>
+            <WhatsAppIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>WhatsApp</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleShareEmail}>
+          <ListItemIcon>
+            <EmailIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Email</ListItemText>
+        </MenuItem>
+      </Menu>
 
       {printError && (
         <Typography color="error" align="center" sx={{ mb: 2 }}>

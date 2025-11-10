@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import CurriculumForm from './components/CurriculumForm';
+import CurriculumFormV2 from './components/CurriculumFormV2';
 import Preview from './components/Preview';
 import Home from './components/Home';
+import HomeV2 from './components/HomeV2';
 import ChooseTemplate from './components/ChooseTemplate';
 import Template1Wrapper from './templates/Template1';
 import Template2Wrapper from './templates/Template2';
@@ -14,8 +16,10 @@ import VersionInfo from './components/VersionInfo';
 function App() {
   const router = createBrowserRouter(
     [
-      { path: '/', element: <Home /> },
-      { path: '/create', element: <CurriculumForm /> },
+      { path: '/', element: <HomeV2 /> },
+      { path: '/home-classic', element: <Home /> },
+      { path: '/create', element: <CurriculumFormV2 /> },
+      { path: '/create-classic', element: <CurriculumForm /> },
       { path: '/preview', element: <Preview /> },
       { path: '/choose-template', element: <ChooseTemplate /> },
       { path: '/template1', element: <Template1Wrapper /> },
