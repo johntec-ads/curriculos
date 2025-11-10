@@ -5,12 +5,14 @@ import Template3 from './Template3';
 import Template4 from './Template4';
 import Template5 from './Template5';
 import Template6 from './Template6';
+import Template7 from './Template7';
 
 export { default as Template1Wrapper } from './Template1';
 export { default as Template2Wrapper } from './Template2';
 export { default as Template3Wrapper } from './Template3';
 export { default as Template4Wrapper } from './Template4';
 export { default as Template5Wrapper } from './Template5';
+export { default as Template7Wrapper } from './Template7';
 
 // Caminho para as imagens dos templates
 const templateImagePath = "/images/";
@@ -53,6 +55,13 @@ const templateDefinitions = {
     thumbnail: `${templateImagePath}template6.jpg`,
     description: 'Barra lateral colorida, foto e layout profissional'
   }
+  ,
+  template7: {
+    id: 'template7',
+    name: 'Clean Modern',
+    thumbnail: `${templateImagePath}template7.jpg`,
+    description: 'Cabeçalho colorido, layout duas colunas e foco em impressão'
+  }
 };
 
 // Finalmente, criamos o array de templates com os componentes
@@ -80,6 +89,11 @@ export const templates = [
   {
     ...templateDefinitions.template6,
     component: Template6
+  }
+  ,
+  {
+    ...templateDefinitions.template7,
+    component: Template7
   }
 ];
 
