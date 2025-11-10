@@ -53,7 +53,7 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             borderRadius: isGenerating ? 0 : undefined,
             boxShadow: isGenerating ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
+            overflow: 'visible', // Mudar para visible para não cortar a sidebar
             fontFamily: 'Arial, sans-serif',
             display: 'flex',
             flexDirection: 'row',
@@ -65,11 +65,12 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
               height: '297mm !important',
               borderRadius: '0 !important',
               boxShadow: 'none !important',
+              overflow: 'visible !important',
             }
           }}
           className={isGenerating ? "print-only" : ""}
         >
-          {/* Barra lateral fixa - usa layout flex normal */}
+          {/* Barra lateral fixa - ocupa toda a altura do A4 */}
           <Box sx={{ 
             width: '200px', 
             minWidth: '200px',
@@ -78,18 +79,20 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             p: 2.5, 
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
+            alignSelf: 'stretch', // Esticar para ocupar toda a altura do pai
+            minHeight: '297mm', // Garantir altura mínima igual ao A4
             overflow: 'hidden',
             // Garantir que não haja cantos arredondados ou sombras na tarja ao imprimir
             borderRadius: 0,
             boxShadow: 'none',
             '@media print': {
               width: '200px !important',
+              minWidth: '200px !important',
               display: 'flex !important',
               flexDirection: 'column !important',
               backgroundColor: '#1565c0 !important',
               color: 'white !important',
-              height: '100% !important',
+              minHeight: '297mm !important',
               padding: '20px !important',
               overflow: 'visible !important',
               visibility: 'visible !important',
