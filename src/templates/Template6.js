@@ -44,7 +44,9 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
             margin: isGenerating ? 0 : '0 auto', 
             p: 0,
             backgroundColor: '#fff', 
-            boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+            // Durante a geração/print removemos sombras e bordas para evitar artefatos
+            borderRadius: isGenerating ? 0 : undefined,
+            boxShadow: isGenerating ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
             overflow: 'hidden', 
             fontFamily: '"Segoe UI", "Roboto", "Helvetica", sans-serif',
@@ -55,7 +57,9 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               width: '210mm !important',
               height: '297mm !important',
               display: 'flex !important',
-              flexDirection: 'column !important'
+              flexDirection: 'column !important',
+              borderRadius: '0 !important',
+              boxShadow: 'none !important'
             }
           }}
         >
@@ -88,6 +92,8 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
             display: 'flex',
             gap: 4,
             position: 'relative',
+            // Garantir que o cabeçalho não quebre entre páginas
+            pageBreakInside: 'avoid',
             '@media print': {
               background: 'linear-gradient(90deg, #1976d2 0%, #5e9ce9 100%) !important',
               color: '#fff !important',
@@ -276,6 +282,10 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               width: '65%', 
               p: 4,
               overflow: 'auto',
+              // Evitar quebra de páginas dentro de blocos de experiência/educação
+              '& > *': {
+                pageBreakInside: 'avoid'
+              },
               '@media print': {
                 width: '65% !important',
                 padding: '24px !important',
@@ -413,6 +423,9 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               display: 'flex',
               flexDirection: 'column',
               overflow: 'auto',
+              // Garantir que a coluna direita não exiba sombras nem arredondamentos na impressão
+              borderRadius: 0,
+              boxShadow: 'none',
               '@media print': {
                 width: '35% !important',
                 backgroundColor: '#f5f9ff !important',
@@ -420,7 +433,9 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
                 borderLeft: '1px solid #e0e0e0 !important',
                 display: 'flex !important',
                 flexDirection: 'column !important',
-                overflow: 'visible !important'
+                overflow: 'visible !important',
+                borderRadius: '0 !important',
+                boxShadow: 'none !important'
               }
             }}>
               {/* Habilidades */}

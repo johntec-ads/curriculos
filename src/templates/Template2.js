@@ -49,7 +49,9 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             margin: isGenerating ? 0 : '0 auto', 
             p: 0,
             backgroundColor: '#fff', 
-            boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
+            // Remover bordas e sombras durante geração/print para evitar cortes visíveis
+            borderRadius: isGenerating ? 0 : undefined,
+            boxShadow: isGenerating ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
             overflow: 'hidden', 
             fontFamily: 'Arial, sans-serif',
@@ -61,6 +63,8 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
               flexDirection: 'row !important',
               width: '210mm !important',
               height: '297mm !important',
+              borderRadius: '0 !important',
+              boxShadow: 'none !important',
             }
           }}
           className={isGenerating ? "print-only" : ""}
@@ -77,6 +81,9 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             height: '100%',
             overflow: 'hidden',
             position: 'relative',
+            // Garantir que não haja cantos arredondados ou sombras na tarja ao imprimir
+            borderRadius: 0,
+            boxShadow: 'none',
             '@media print': {
               width: '200px !important',
               display: 'flex !important',
@@ -87,6 +94,8 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
               padding: '20px !important',
               overflow: 'visible !important',
               visibility: 'visible !important',
+              borderRadius: '0 !important',
+              boxShadow: 'none !important'
             }
           }}>
             {/* Foto do usuário - com tamanho adaptativo */}
@@ -186,18 +195,20 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             {hasManyLanguages ? (
               <Box sx={{ display: 'flex', width: '100%', flex: 1, overflow: 'hidden' }}>
                 {/* Habilidades */}
-                <Box sx={{ 
-                  width: '50%', 
-                  pr: 1,
-                  '@media print': {
+                  <Box sx={{ 
+                    width: '50%', 
+                    pr: 1,
+                    '@media print': {
                     display: 'block !important',
                     visibility: 'visible !important',
-                  }
-                }}>
+                    }
+                 }}>
                   <Typography variant="h6" sx={{ 
                     fontSize: '1rem', 
                     fontWeight: 'bold', 
                     mb: 1,
+                    // Evitar quebra interna de página nessa seção
+                    pageBreakInside: 'avoid',
                     '@media print': {
                       color: 'white !important',
                       visibility: 'visible !important',
