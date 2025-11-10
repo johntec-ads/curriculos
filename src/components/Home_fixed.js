@@ -19,16 +19,13 @@ import {
   Grid,
   Card,
   CardContent,
-  Chip,
   Stack
 } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import FacebookIcon from '@mui/icons-material/Facebook';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import EmailIcon from '@mui/icons-material/Email';
-import TwitterIcon from '@mui/icons-material/Twitter';
+// removed unused icons: LinkedInIcon, EmailIcon, TwitterIcon
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import DescriptionIcon from '@mui/icons-material/Description';
