@@ -201,20 +201,67 @@ const Preview = () => {
   };
 
   const handleShareWhatsApp = () => {
-    try {
-      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
-      const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
-      const message = `Confira meu currículo: ${shareUrl}`;
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-      
-      window.open(whatsappUrl, '_blank');
+    (async () => {
       handleCloseShareMenu();
-    } catch (error) {
-      console.error("Erro ao compartilhar no WhatsApp:", error);
-      setSnackbarMessage("Erro ao compartilhar no WhatsApp.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
+      if (!printRef.current) {
+        setSnackbarMessage('Conteúdo do currículo não disponível para compartilhamento.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        return;
+      }
+
+      setIsGeneratingPdf(true);
+      try {
+        const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
+
+        // Gerar PDF como Blob em memória
+        const pdfBlob = await generateHighQualityPDF(printRef.current, filename, {
+          scale: 2,
+          quality: 0.9,
+          margin: 10,
+          returnBlob: true,
+          onProgress: (p, msg) => console.log(p, msg)
+        });
+
+        const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+        // Tenta usar Web Share API com arquivos (apenas em ambientes suportados, normalmente mobile)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: `Currículo - ${curriculumData?.personalInfo?.name || ''}`, text: 'Segue meu currículo em anexo.' });
+            setSnackbarMessage('Compartilhamento concluído!');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+            return;
+          } catch (err) {
+            console.warn('Falha ao usar navigator.share com arquivos:', err);
+            // cair para fallback
+          }
+        }
+
+        // Se Web Share com arquivos não estiver disponível, tentar abrir o WhatsApp Web com link
+        // Primeiro oferecemos o download do PDF para o usuário enviar manualmente
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        setSnackbarMessage('PDF gerado e baixado. Envie o arquivo manualmente pelo WhatsApp.');
+        setSnackbarSeverity('info');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error('Erro ao compartilhar no WhatsApp:', error);
+        setSnackbarMessage('Erro ao gerar/compartilhar o PDF.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      } finally {
+        setIsGeneratingPdf(false);
+      }
+    })();
   };
 
   const handleShareEmail = () => {

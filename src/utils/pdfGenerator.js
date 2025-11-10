@@ -15,7 +15,9 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       quality = 1.0,
       format = 'a4',
       orientation = 'portrait',
-      onProgress = null
+      onProgress = null,
+      margin = 10, // margem em mm
+      returnBlob = false // se true, retorna um Blob ao invés de salvar diretamente
     } = options;
 
     if (onProgress) onProgress(10, 'Preparando documento...');
@@ -40,9 +42,11 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
 
     if (onProgress) onProgress(50, 'Gerando PDF...');
 
-    // Dimensões A4 em mm
+    // Dimensões A4 em mm e configuração de margem
     const a4Width = 210;
     const a4Height = 297;
+    const usableWidth = a4Width - margin * 2;
+    const usableHeight = a4Height - margin * 2;
 
     // Criar PDF com orientação especificada
     const pdf = new jsPDF({
@@ -52,33 +56,53 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       compress: true
     });
 
-    // Calcular dimensões para manter proporção
-    const imgWidth = a4Width;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    // Calcular conversão px <-> mm
+    const pxPerMm = canvas.width / a4Width; // pixels por mm baseado na largura A4
+    const pageHeightPx = Math.floor(usableHeight * pxPerMm);
 
-    // Converter canvas para imagem
-    const imgData = canvas.toDataURL('image/jpeg', quality);
+    // Número de páginas necessárias
+    const totalPages = Math.ceil(canvas.height / pageHeightPx);
 
-    // Se a imagem for maior que uma página A4, dividir em múltiplas páginas
-    let heightLeft = imgHeight;
-    let position = 0;
-    let page = 1;
+    if (onProgress) onProgress(60, `Gerando ${totalPages} página(s)...`);
 
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-    heightLeft -= a4Height;
+    // Para cada página, recortar o segmento correspondente e adicionar ao PDF
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    const tempCtx = tempCanvas.getContext('2d');
 
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= a4Height;
-      page++;
-      if (onProgress) onProgress(50 + (page * 10), `Processando página ${page}...`);
+    for (let page = 0; page < totalPages; page++) {
+      const y = page * pageHeightPx;
+      const thisPageHeightPx = Math.min(pageHeightPx, canvas.height - y);
+      tempCanvas.height = thisPageHeightPx;
+
+      // Limpar e desenhar o recorte
+      tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, y, canvas.width, thisPageHeightPx, 0, 0, canvas.width, thisPageHeightPx);
+
+      // Converter slice para imagem
+      const imgData = tempCanvas.toDataURL('image/jpeg', quality);
+
+  // Dimensões em mm para essa fatia
+  const imgWidth = usableWidth;
+
+      const xPos = margin;
+      const yPos = margin;
+
+      if (page > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidth, (thisPageHeightPx / pxPerMm), undefined, 'FAST');
+
+      if (onProgress) onProgress(60 + Math.round(((page + 1) / totalPages) * 30), `Processando página ${page + 1}/${totalPages}...`);
     }
 
     if (onProgress) onProgress(90, 'Finalizando...');
 
-    // Salvar o PDF
+    // Finalizar: salvar ou retornar Blob
+    if (returnBlob) {
+      const pdfBlob = pdf.output('blob');
+      if (onProgress) onProgress(100, 'Concluído (blob retornado)!');
+      return pdfBlob;
+    }
+
     pdf.save(filename);
 
     if (onProgress) onProgress(100, 'Concluído!');
