@@ -69,7 +69,7 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
           }}
           className={isGenerating ? "print-only" : ""}
         >
-          {/* Barra lateral limitada à altura exata do PDF A4 */}
+          {/* Barra lateral com altura absoluta para cobrir todo o A4 */}
           <Box sx={{ 
             width: '200px', 
             minWidth: '200px',
@@ -78,18 +78,26 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             p: 2.5, 
             display: 'flex',
             flexDirection: 'column',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
             height: '100%',
             overflow: 'hidden',
-            position: 'relative',
             // Garantir que não haja cantos arredondados ou sombras na tarja ao imprimir
             borderRadius: 0,
             boxShadow: 'none',
+            zIndex: 1,
             '@media print': {
               width: '200px !important',
               display: 'flex !important',
               flexDirection: 'column !important',
               backgroundColor: '#1565c0 !important',
               color: 'white !important',
+              position: 'absolute !important',
+              left: '0 !important',
+              top: '0 !important',
+              bottom: '0 !important',
               height: '100% !important',
               padding: '20px !important',
               overflow: 'visible !important',
@@ -403,19 +411,45 @@ const Template2 = forwardRef(({ data, isGenerating = false }, ref) => {
             </Typography>
           </Box>
 
-          {/* Conteúdo Principal */}
+          {/* Numeração de página no rodapé */}
+          <Box sx={{
+            position: 'absolute',
+            bottom: '10mm',
+            right: '10mm',
+            zIndex: 999,
+            fontSize: '0.75rem',
+            color: '#666',
+            '@media print': {
+              display: 'block !important',
+              visibility: 'visible !important',
+              position: 'absolute !important',
+              bottom: '10mm !important',
+              right: '10mm !important',
+              fontSize: '0.75rem !important',
+              color: '#666 !important'
+            }
+          }}>
+            Página 1
+          </Box>
+
+          {/* Conteúdo Principal - ajustado para não sobrepor a sidebar */}
           <Box sx={{ 
             flex: 1, 
             p: { xs: 3, md: 4 }, 
             overflow: 'auto',
             borderLeft: '1px solid rgba(0,0,0,0.04)',
             backgroundColor: 'transparent',
+            marginLeft: '200px',
+            position: 'relative',
+            zIndex: 2,
+            paddingBottom: '40px', // Espaço para numeração de página
             '@media print': {
               flex: '1 !important',
               display: 'block !important',
               visibility: 'visible !important',
-              padding: '28px !important',
+              padding: '28px 28px 40px 28px !important',
               width: 'calc(100% - 200px) !important',
+              marginLeft: '0 !important',
             }
           }}>
             <Typography variant="h4" gutterBottom sx={{ color: '#1976d2' }}>

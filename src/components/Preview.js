@@ -211,11 +211,32 @@ const Preview = () => {
       }
 
       setIsGeneratingPdf(true);
+      const element = printRef.current;
+      // Tornar o elemento visível para captura (mesma técnica usada em handleGeneratePDF)
+      const previousStyles = {
+        visibility: element.style.visibility,
+        position: element.style.position,
+        left: element.style.left,
+        top: element.style.top,
+        zIndex: element.style.zIndex,
+        pointerEvents: element.style.pointerEvents
+      };
+
       try {
         const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
 
+        element.style.visibility = 'visible';
+        element.style.position = 'fixed';
+        element.style.left = '0';
+        element.style.top = '0';
+        element.style.zIndex = '9999';
+        element.style.pointerEvents = 'auto';
+
+        // Aguardar breve momento para reflow/render
+        await new Promise(resolve => setTimeout(resolve, 150));
+
         // Gerar PDF como Blob em memória
-        const pdfBlob = await generateHighQualityPDF(printRef.current, filename, {
+        const pdfBlob = await generateHighQualityPDF(element, filename, {
           scale: 2,
           quality: 0.9,
           margin: 10,
@@ -259,6 +280,17 @@ const Preview = () => {
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
       } finally {
+        // Restaurar estilos do elemento de impressão
+        try {
+          element.style.visibility = previousStyles.visibility || 'hidden';
+          element.style.position = previousStyles.position || 'fixed';
+          element.style.left = previousStyles.left || '0';
+          element.style.top = previousStyles.top || '0';
+          element.style.zIndex = previousStyles.zIndex || '-1';
+          element.style.pointerEvents = previousStyles.pointerEvents || 'none';
+        } catch (e) {
+          // ignore
+        }
         setIsGeneratingPdf(false);
       }
     })();

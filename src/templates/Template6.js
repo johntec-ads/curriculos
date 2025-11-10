@@ -277,11 +277,14 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               overflow: 'visible !important'
             }
           }}>
-            {/* Coluna da esquerda - maior */}
+            {/* Coluna da esquerda - maior, ajustada para não sobrepor sidebar */}
             <Box sx={{ 
               width: '65%', 
               p: 4,
               overflow: 'auto',
+              paddingBottom: '40px', // Espaço para numeração de página
+              position: 'relative',
+              zIndex: 2,
               // Evitar quebra de páginas dentro de blocos de experiência/educação
               '& > *': {
                 pageBreakInside: 'avoid'
@@ -541,6 +544,30 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               )}
             </Box>
           </Box>
+
+          {/* Numeração de página no rodapé */}
+          <Box sx={{
+            position: 'absolute',
+            bottom: '10mm',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 999,
+            fontSize: '0.75rem',
+            color: '#666',
+            '@media print': {
+              display: 'block !important',
+              visibility: 'visible !important',
+              position: 'absolute !important',
+              bottom: '10mm !important',
+              left: '50% !important',
+              transform: 'translateX(-50%) !important',
+              fontSize: '0.75rem !important',
+              color: '#666 !important'
+            }
+          }}>
+            Página 1
+          </Box>
+
         </Paper>
       </Box>
 
