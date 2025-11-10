@@ -277,14 +277,12 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
               overflow: 'visible !important'
             }
           }}>
-            {/* Coluna da esquerda - maior, ajustada para não sobrepor sidebar */}
+            {/* Coluna da esquerda - maior */}
             <Box sx={{ 
               width: '65%', 
               p: 4,
               overflow: 'auto',
               paddingBottom: '40px', // Espaço para numeração de página
-              position: 'relative',
-              zIndex: 2,
               // Evitar quebra de páginas dentro de blocos de experiência/educação
               '& > *': {
                 pageBreakInside: 'avoid'
