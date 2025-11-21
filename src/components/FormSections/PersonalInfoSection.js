@@ -25,6 +25,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import WorkIcon from '@mui/icons-material/Work';
 import Cropper from 'react-easy-crop';
+import lookupCep from '../../utils/cepService';
 
 function PersonalInfoSection({ formik }) {
   const [photo, setPhoto] = useState(formik.values.personalInfo.photoUrl || null);
@@ -107,6 +108,34 @@ function PersonalInfoSection({ formik }) {
   const getFieldHelperText = (fieldName) => {
     const error = getFieldError(fieldName);
     return error || '';
+  };
+
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState('');
+
+  const handleFetchCep = async () => {
+    setCepError('');
+    const cepValue = formik.values.personalInfo?.cep || '';
+    const sanitized = cepValue.toString().replace(/\D/g, '');
+    if (sanitized.length !== 8) {
+      setCepError('CEP deve ter 8 dígitos');
+      return;
+    }
+
+    setCepLoading(true);
+    try {
+      const data = await lookupCep(sanitized);
+      const addressParts = [];
+      if (data.logradouro) addressParts.push(data.logradouro);
+      if (data.bairro) addressParts.push(data.bairro);
+      const addressStr = `${addressParts.join(', ')} - ${data.localidade}, ${data.uf}`.replace(/^\s*-\s*/, '');
+      formik.setFieldValue('personalInfo.address', addressStr);
+      formik.setFieldValue('personalInfo.cep', sanitized);
+    } catch (err) {
+      setCepError(err.message || 'Erro ao buscar CEP');
+    } finally {
+      setCepLoading(false);
+    }
   };
 
   return (
@@ -271,7 +300,39 @@ function PersonalInfoSection({ formik }) {
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
+          <TextField
+            fullWidth
+            label="CEP"
+            name="personalInfo.cep"
+            value={formik.values.personalInfo.cep || ''}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={!!cepError}
+            helperText={cepError || 'Apenas números (ex: 01001000)'}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LocationOnIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={handleFetchCep}
+                    disabled={cepLoading}
+                  >
+                    {cepLoading ? 'Buscando...' : 'Buscar'}
+                  </Button>
+                </InputAdornment>
+              )
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={8}>
           <TextField
             fullWidth
             label="Endereço"
@@ -280,7 +341,7 @@ function PersonalInfoSection({ formik }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={!!getFieldError('address')}
-            helperText={getFieldHelperText('address') || 'Cidade, Estado (ex: São Paulo, SP)'}
+            helperText={getFieldHelperText('address') || 'Rua, Bairro - Cidade, UF'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
