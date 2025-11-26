@@ -38,7 +38,8 @@ import ShareIcon from '@mui/icons-material/Share';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { generateHighQualityPDF } from '../utils/pdfGenerator';
+import PrintIcon from '@mui/icons-material/Print';
+import { generateHighQualityPDF } from '../utils/pdfGeneratorV3';
 
 const Preview = () => {
   const navigate = useNavigate();
@@ -179,6 +180,10 @@ const Preview = () => {
 
   const handleCloseShareMenu = () => {
     setShareMenuAnchor(null);
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   const handleCopyLink = async () => {
@@ -550,6 +555,20 @@ const Preview = () => {
           }}
         >
           Escolher Outro Modelo
+        </Button>
+        <Button
+          onClick={handlePrint}
+          variant="outlined" 
+          color="secondary"
+          size="large"
+          disabled={isGeneratingPdf}
+          fullWidth={isMobile}
+          startIcon={<PrintIcon />}
+          sx={{ 
+            fontWeight: 'medium'
+          }}
+        >
+          Imprimir
         </Button>
         <Button
           onClick={handleShare}

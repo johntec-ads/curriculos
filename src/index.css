@@ -189,7 +189,7 @@ code {
   /* Mostra apenas o conteúdo de impressão e seus filhos */
   #print-content,
   #print-content * {
-    visibility: visible !important;
+    visibility: visible;
   }
 
   /* Garante que elementos no-print permanecem escondidos */

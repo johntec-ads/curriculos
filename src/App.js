@@ -12,12 +12,14 @@ import { Template4Wrapper, Template5Wrapper } from './templates';
 import { AuthProvider } from './context/AuthContext';
 import BuyMeACoffee from './components/BuyMeACoffee';
 import VersionInfo from './components/VersionInfo';
+import TestGenerator from './components/TestGenerator';
 
 function App() {
   const router = createBrowserRouter(
     [
       { path: '/', element: <HomeV2 /> },
-  { path: '/home-classic', element: <HomeFixed /> },
+      { path: '/test-generator', element: <TestGenerator /> },
+      { path: '/home-classic', element: <HomeFixed /> },
       { path: '/create', element: <CurriculumFormV2 /> },
       { path: '/create-classic', element: <CurriculumForm /> },
       { path: '/preview', element: <Preview /> },
