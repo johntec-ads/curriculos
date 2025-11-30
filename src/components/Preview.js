@@ -39,7 +39,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PrintIcon from '@mui/icons-material/Print';
-import { generateHighQualityPDF } from '../utils/pdfGeneratorV3';
+import { generateHighQualityPDF } from '../utils/pdfGeneratorFinal';
 
 const Preview = () => {
   const navigate = useNavigate();
@@ -133,23 +133,17 @@ const Preview = () => {
     setIsGeneratingPdf(true);
     setPrintError(null);
 
-    // Tornar o elemento temporariamente visível para captura
-    const element = printRef.current;
-    element.style.visibility = 'visible';
-    element.style.position = 'fixed';
-    element.style.left = '0';
-    element.style.top = '0';
-    element.style.zIndex = '9999';
-
     try {
-      const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
+      const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
       
-      // Aguardar um momento para o elemento renderizar
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Usar diretamente o elemento visível na tela (não o oculto)
+      // Vamos pegar o conteúdo renderizado dentro do Paper de visualização
+      const visibleContent = document.querySelector('.curriculum-preview-content');
+      const elementToCapture = visibleContent || printRef.current;
       
-      await generateHighQualityPDF(element, filename, {
+      await generateHighQualityPDF(elementToCapture, filename, {
         scale: 2,
-        quality: 0.95,
+        quality: 0.92,
         onProgress: (percent, message) => {
           console.log(`${percent}% - ${message}`);
         }
@@ -165,10 +159,6 @@ const Preview = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     } finally {
-      // Restaurar elemento para estado oculto
-      element.style.visibility = 'hidden';
-      element.style.position = 'fixed';
-      element.style.zIndex = '-1';
       setIsGeneratingPdf(false);
     }
   };
@@ -472,15 +462,17 @@ const Preview = () => {
             }}
           >
             {/* Conteúdo para visualização na tela */}
-            <Box sx={{ 
-              width: a4WidthInPixels,
-              height: a4HeightInPixels,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              transform: 'scale(' + zoomLevel + ')',
-              transformOrigin: 'top left',
-            }}>
+            <Box 
+              className="curriculum-preview-content"
+              sx={{ 
+                width: a4WidthInPixels,
+                height: a4HeightInPixels,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                transform: 'scale(' + zoomLevel + ')',
+                transformOrigin: 'top left',
+              }}>
               <TemplateComponent 
                 data={curriculumData}
                 isGenerating={false}
