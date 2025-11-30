@@ -59,8 +59,12 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     // Precisamos encontrar o container de conteúdo real dentro do clone
     let contentContainer = clonedElement;
     
-    // Se o elemento raiz for apenas um wrapper, tentar achar o container interno
-    // No Template1, é um Paper.
+    // Descer na hierarquia para encontrar o container real de conteúdo
+    // Muitas vezes temos wrappers: #print-content > Box > Paper > Conteúdo
+    // Evitamos descer se for uma imagem ou se tivermos múltiplos filhos significativos
+    while (contentContainer.children.length === 1 && contentContainer.firstElementChild.tagName !== 'IMG') {
+      contentContainer = contentContainer.firstElementChild;
+    }
     
     // Coletar todos os "blocos" de conteúdo
     // Vamos tentar ser genéricos: pegar todos os filhos diretos do container principal
@@ -145,7 +149,14 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       });
 
       const imgData = canvas.toDataURL('image/jpeg', quality);
-      pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthMm, a4HeightMm);
+      
+      // Calcular dimensões proporcionais para evitar achatamento/estiramento
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = a4WidthMm;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      // Usar altura proporcional em vez de forçar a4HeightMm
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
       document.body.removeChild(pageContainer);
       
