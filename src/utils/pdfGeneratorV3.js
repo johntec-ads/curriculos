@@ -13,7 +13,8 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     const {
       onProgress = null,
       scale = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 1.5 : 2,
-      quality = 0.95
+      quality = 0.95,
+      returnBlob = false
     } = options;
 
     if (onProgress) onProgress(10, 'Analisando conteúdo...');
@@ -149,8 +150,13 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       if (onProgress) onProgress(50 + Math.floor(((i + 1) / pages.length) * 40), `Processando página ${i + 1}...`);
     }
 
-    pdf.save(filename);
     if (onProgress) onProgress(100, 'Concluído!');
+
+    if (returnBlob) {
+      return pdf.output('blob');
+    }
+
+    pdf.save(filename);
     return true;
 
   } catch (error) {

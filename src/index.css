@@ -233,16 +233,14 @@ code {
 
   /* Tamanho A4 forçado */
   @page {
-    size: 210mm 297mm;
+    size: A4;
     margin: 0;
   }
 
   html, body {
-    width: 210mm;
-    height: 297mm;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    background: white !important;
   }
 
   /* Garantindo que todos os elementos dentro da área de impressão sejam visíveis */
@@ -255,15 +253,18 @@ code {
 
   /* Ajustes importantes para posicionamento no dispositivo móvel */
   #print-content {
-    position: fixed !important;
+    position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 210mm !important;
-    height: 297mm !important;
+    /* Permitir altura automática para múltiplas páginas */
+    min-height: 297mm !important;
+    height: auto !important;
     transform: none !important;
     transform-origin: top left !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
   }
 
   #print-content > * {
