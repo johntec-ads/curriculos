@@ -144,20 +144,31 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       const imgData = canvas.toDataURL('image/jpeg', quality);
       pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
     } else {
-      // Dividir em múltiplas páginas
-      const pageHeightPx = (pageHeight * canvas.width) / imgWidth;
+      // Dividir em múltiplas páginas com pequena sobreposição para evitar corte de texto
+      const overlapMm = 5; // 5mm de sobreposição entre páginas
+      const effectivePageHeight = pageHeight - overlapMm;
+      const pageHeightPx = (effectivePageHeight * canvas.width) / imgWidth;
+      const overlapPx = (overlapMm * canvas.width) / imgWidth;
       
-      for (let page = 0; page < totalPages; page++) {
+      // Recalcular total de páginas com a sobreposição
+      const adjustedTotalPages = Math.ceil((canvas.height - overlapPx) / pageHeightPx);
+      
+      for (let page = 0; page < adjustedTotalPages; page++) {
         if (page > 0) pdf.addPage();
         
         // Criar canvas temporário para esta página
         const pageCanvas = document.createElement('canvas');
         pageCanvas.width = canvas.width;
         
-        // Calcular altura desta página (última página pode ser menor)
-        const startY = page * pageHeightPx;
+        // Calcular posição inicial (com sobreposição a partir da segunda página)
+        const startY = page === 0 ? 0 : (page * pageHeightPx) - (overlapPx * 0.5);
         const remainingHeight = canvas.height - startY;
-        const thisPageHeight = Math.min(pageHeightPx, remainingHeight);
+        
+        // Altura desta página (última página pode ser menor)
+        const thisPageHeight = Math.min(pageHeightPx + overlapPx, remainingHeight);
+        
+        // Garantir altura mínima
+        if (thisPageHeight <= 0) break;
         
         pageCanvas.height = thisPageHeight;
         
@@ -176,11 +187,13 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
         const pageImgData = pageCanvas.toDataURL('image/jpeg', quality);
         const thisPageHeightMm = (thisPageHeight * imgWidth) / canvas.width;
         
-        pdf.addImage(pageImgData, 'JPEG', margin, margin, imgWidth, thisPageHeightMm);
+        // Centralizar verticalmente se a página não estiver cheia
+        const yOffset = margin;
+        pdf.addImage(pageImgData, 'JPEG', margin, yOffset, imgWidth, thisPageHeightMm);
         
         if (onProgress) {
-          const progress = 60 + Math.floor(((page + 1) / totalPages) * 35);
-          onProgress(progress, `Página ${page + 1}/${totalPages}...`);
+          const progress = 60 + Math.floor(((page + 1) / adjustedTotalPages) * 35);
+          onProgress(progress, `Página ${page + 1}/${adjustedTotalPages}...`);
         }
       }
     }
