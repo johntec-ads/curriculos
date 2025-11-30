@@ -35,12 +35,12 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
           py: { xs: 1, sm: 2 }
         }}
       >
-        {/* Template do currículo com dimensões fixas A4 para garantir consistência no PDF */}
+        {/* Template do currículo com dimensões A4 - minHeight para permitir expansão */}
         <Paper 
           ref={ref}
           sx={{ 
             width: '210mm', 
-            height: '297mm',
+            minHeight: '297mm',
             margin: isGenerating ? 0 : '0 auto', 
             p: 0,
             backgroundColor: '#fff', 
@@ -48,18 +48,18 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
             borderRadius: isGenerating ? 0 : undefined,
             boxShadow: isGenerating ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
+            overflow: 'visible', 
             fontFamily: '"Segoe UI", "Roboto", "Helvetica", sans-serif',
             display: 'flex',
             flexDirection: 'column',
-            pageBreakAfter: 'always',
             '@media print': {
               width: '210mm !important',
-              height: '297mm !important',
+              minHeight: '297mm !important',
               display: 'flex !important',
               flexDirection: 'column !important',
               borderRadius: '0 !important',
-              boxShadow: 'none !important'
+              boxShadow: 'none !important',
+              overflow: 'visible !important'
             }
           }}
         >

@@ -24,11 +24,12 @@ const Template7 = forwardRef(({ data, isGenerating = false }, ref) => {
             p: 0,
             backgroundColor: '#fff',
             position: 'relative',
-            overflow: 'hidden',
+            overflow: 'visible',
             fontFamily: 'Arial, sans-serif',
             '@media print': {
               width: '210mm !important',
-              minHeight: '297mm !important'
+              minHeight: '297mm !important',
+              overflow: 'visible !important'
             }
           }}
           className={isGenerating ? 'print-only' : ''}

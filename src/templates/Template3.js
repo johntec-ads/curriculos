@@ -46,7 +46,7 @@ const Template3 = forwardRef(({ data, isGenerating = false }, ref) => {
             backgroundColor: '#fff', 
             boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
             position: 'relative', 
-            overflow: 'hidden', 
+            overflow: 'visible', 
             fontFamily: 'Arial, sans-serif',
             '@media print': {
               width: '210mm !important',
