@@ -78,7 +78,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     returnBlob = false,
     scale = 2, // Escala para qualidade (2 = boa qualidade, 3 = alta qualidade)
     quality = 0.92, // Qualidade JPEG (0.92 é um bom equilíbrio)
-    margin = 0 // Margem em mm (0 = sem margem adicional, o template já tem suas margens)
+    margin = 10 // Margem em mm (10mm = margem padrão para impressão)
   } = options;
 
   try {
