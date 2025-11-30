@@ -24,8 +24,9 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     const a4HeightMm = 297;
     const mmToPx = 3.7795275591; // 1mm = 3.78px
     const a4HeightPx = Math.floor(a4HeightMm * mmToPx);
-    const pageMarginPx = 40; // Margem de segurança interna
-    const contentHeightPx = a4HeightPx - (pageMarginPx * 2);
+    // Aumentar margem de segurança para evitar cortes no rodapé
+    const pageMarginPx = 60; 
+    const contentHeightPx = a4HeightPx - pageMarginPx;
 
     // Clonar o elemento para manipulação
     const clonedElement = element.cloneNode(true);
@@ -77,6 +78,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       
       // Se o item sozinho é maior que uma página, ele vai quebrar de qualquer jeito
       // Mas se ele cabe na página atual, adicionamos. Se não, nova página.
+      // Adicionar margem de segurança extra (20px) na verificação
       if (currentHeight + height > contentHeightPx && currentPage.length > 0) {
         pages.push(currentPage);
         currentPage = [];
