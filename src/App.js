@@ -13,12 +13,14 @@ import { AuthProvider } from './context/AuthContext';
 import BuyMeACoffee from './components/BuyMeACoffee';
 import VersionInfo from './components/VersionInfo';
 import TestGenerator from './components/TestGenerator';
+import TestPDFComparison from './components/TestPDFComparison';
 
 function App() {
   const router = createBrowserRouter(
     [
       { path: '/', element: <HomeV2 /> },
       { path: '/test-generator', element: <TestGenerator /> },
+      { path: '/test-pdf', element: <TestPDFComparison /> },
       { path: '/home-classic', element: <HomeFixed /> },
       { path: '/create', element: <CurriculumFormV2 /> },
       { path: '/create-classic', element: <CurriculumForm /> },

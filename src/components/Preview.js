@@ -38,7 +38,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import PrintIcon from '@mui/icons-material/Print';
+import { generatePDFWithReactPDF, hasPDFTemplate } from '../utils/pdfGeneratorReactPDF';
 import { generateHighQualityPDF } from '../utils/pdfGeneratorFinal';
 
 const Preview = () => {
@@ -128,8 +128,8 @@ const Preview = () => {
 
   // Função para gerar PDF
   const handleGeneratePDF = async () => {
-    if (!printRef.current) {
-      setSnackbarMessage('Conteúdo do currículo não disponível.');
+    if (!curriculumData) {
+      setSnackbarMessage('Dados do currículo não disponíveis.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
@@ -138,42 +138,61 @@ const Preview = () => {
     setIsGeneratingPdf(true);
     setPrintError(null);
 
-    const element = printRef.current;
-    // Salvar estilos originais
-    const previousStyles = {
-      visibility: element.style.visibility,
-      position: element.style.position,
-      left: element.style.left,
-      top: element.style.top,
-      zIndex: element.style.zIndex,
-      pointerEvents: element.style.pointerEvents
-    };
-
     try {
       const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
       
-      // Tornar o elemento visível para captura
-      element.style.visibility = 'visible';
-      element.style.position = 'fixed';
-      element.style.left = '0';
-      element.style.top = '0';
-      element.style.zIndex = '9999';
-      element.style.pointerEvents = 'auto';
-
-      // Aguardar renderização
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Extrair número do template (template1 -> 1, template3 -> 3, etc.)
+      const templateNum = parseInt(selectedTemplate.replace('template', ''), 10) || 1;
       
-      await generateHighQualityPDF(element, filename, {
-        scale: 2,
-        quality: 0.92,
-        onProgress: (percent, message) => {
-          console.log(`${percent}% - ${message}`);
+      // Usar novo gerador react-pdf se o template tiver versão PDF
+      if (hasPDFTemplate(templateNum)) {
+        await generatePDFWithReactPDF(curriculumData, templateNum, filename, {
+          onProgress: (percent, message) => {
+            console.log(`${percent}% - ${message}`);
+          }
+        });
+        
+        setSnackbarMessage("PDF gerado com sucesso!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } else {
+        // Fallback para método antigo (não deveria acontecer, todos os templates têm versão PDF)
+        if (!printRef.current) {
+          throw new Error('Conteúdo do currículo não disponível.');
         }
-      });
-
-      setSnackbarMessage("PDF gerado com sucesso!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
+        
+        const element = printRef.current;
+        const previousStyles = {
+          visibility: element.style.visibility,
+          position: element.style.position,
+          left: element.style.left,
+          top: element.style.top,
+          zIndex: element.style.zIndex,
+          pointerEvents: element.style.pointerEvents
+        };
+        
+        element.style.visibility = 'visible';
+        element.style.position = 'fixed';
+        element.style.left = '0';
+        element.style.top = '0';
+        element.style.zIndex = '9999';
+        element.style.pointerEvents = 'auto';
+        await new Promise(resolve => setTimeout(resolve, 150));
+        
+        try {
+          await generateHighQualityPDF(element, filename, { scale: 2, quality: 0.92 });
+          setSnackbarMessage("PDF gerado com sucesso!");
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
+        } finally {
+          element.style.visibility = previousStyles.visibility || 'hidden';
+          element.style.position = previousStyles.position || 'fixed';
+          element.style.left = previousStyles.left || '0';
+          element.style.top = previousStyles.top || '0';
+          element.style.zIndex = previousStyles.zIndex || '-1';
+          element.style.pointerEvents = previousStyles.pointerEvents || 'none';
+        }
+      }
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
@@ -181,13 +200,6 @@ const Preview = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     } finally {
-      // Restaurar estilos originais
-      element.style.visibility = previousStyles.visibility || 'hidden';
-      element.style.position = previousStyles.position || 'fixed';
-      element.style.left = previousStyles.left || '0';
-      element.style.top = previousStyles.top || '0';
-      element.style.zIndex = previousStyles.zIndex || '-1';
-      element.style.pointerEvents = previousStyles.pointerEvents || 'none';
       setIsGeneratingPdf(false);
     }
   };
@@ -199,91 +211,6 @@ const Preview = () => {
 
   const handleCloseShareMenu = () => {
     setShareMenuAnchor(null);
-  };
-
-  const handlePrint = async () => {
-    if (!printRef.current) {
-      setSnackbarMessage('Conteúdo do currículo não disponível.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      return;
-    }
-
-    setIsGeneratingPdf(true);
-
-    const element = printRef.current;
-    // Salvar estilos originais
-    const previousStyles = {
-      visibility: element.style.visibility,
-      position: element.style.position,
-      left: element.style.left,
-      top: element.style.top,
-      zIndex: element.style.zIndex,
-      pointerEvents: element.style.pointerEvents
-    };
-
-    try {
-      const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
-      
-      // Tornar o elemento visível para captura
-      element.style.visibility = 'visible';
-      element.style.position = 'fixed';
-      element.style.left = '0';
-      element.style.top = '0';
-      element.style.zIndex = '9999';
-      element.style.pointerEvents = 'auto';
-
-      // Aguardar renderização
-      await new Promise(resolve => setTimeout(resolve, 150));
-      
-      // Gerar PDF como Blob e abrir em nova aba para impressão
-      const pdfBlob = await generateHighQualityPDF(element, filename, {
-        scale: 2,
-        quality: 0.92,
-        returnBlob: true,
-        onProgress: (percent, message) => {
-          console.log(`${percent}% - ${message}`);
-        }
-      });
-
-      // Criar URL do blob e abrir em nova janela para impressão
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const printWindow = window.open(pdfUrl, '_blank');
-      
-      if (printWindow) {
-        printWindow.onload = () => {
-          printWindow.print();
-        };
-        setSnackbarMessage("PDF aberto para impressão!");
-        setSnackbarSeverity("success");
-      } else {
-        // Fallback: baixar o PDF se popup bloqueado
-        const a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setSnackbarMessage("PDF baixado. Abra o arquivo para imprimir.");
-        setSnackbarSeverity("info");
-      }
-      setSnackbarOpen(true);
-
-    } catch (error) {
-      console.error("Erro ao preparar impressão:", error);
-      setSnackbarMessage("Erro ao preparar impressão. Tente novamente.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    } finally {
-      // Restaurar estilos originais
-      element.style.visibility = previousStyles.visibility || 'hidden';
-      element.style.position = previousStyles.position || 'fixed';
-      element.style.left = previousStyles.left || '0';
-      element.style.top = previousStyles.top || '0';
-      element.style.zIndex = previousStyles.zIndex || '-1';
-      element.style.pointerEvents = previousStyles.pointerEvents || 'none';
-      setIsGeneratingPdf(false);
-    }
   };
 
   const handleCopyLink = async () => {
@@ -308,46 +235,67 @@ const Preview = () => {
   const handleShareWhatsApp = () => {
     (async () => {
       handleCloseShareMenu();
-      if (!printRef.current) {
-        setSnackbarMessage('Conteúdo do currículo não disponível para compartilhamento.');
+      if (!curriculumData) {
+        setSnackbarMessage('Dados do currículo não disponíveis para compartilhamento.');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         return;
       }
 
       setIsGeneratingPdf(true);
-      const element = printRef.current;
-      // Tornar o elemento visível para captura (mesma técnica usada em handleGeneratePDF)
-      const previousStyles = {
-        visibility: element.style.visibility,
-        position: element.style.position,
-        left: element.style.left,
-        top: element.style.top,
-        zIndex: element.style.zIndex,
-        pointerEvents: element.style.pointerEvents
-      };
 
       try {
         const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
-
-        element.style.visibility = 'visible';
-        element.style.position = 'fixed';
-        element.style.left = '0';
-        element.style.top = '0';
-        element.style.zIndex = '9999';
-        element.style.pointerEvents = 'auto';
-
-        // Aguardar breve momento para reflow/render
-        await new Promise(resolve => setTimeout(resolve, 150));
-
-        // Gerar PDF como Blob em memória
-        const pdfBlob = await generateHighQualityPDF(element, filename, {
-          scale: 2,
-          quality: 0.9,
-          margin: 10,
-          returnBlob: true,
-          onProgress: (p, msg) => console.log(p, msg)
-        });
+        const templateNum = parseInt(selectedTemplate.replace('template', ''), 10) || 1;
+        
+        let pdfBlob;
+        
+        // Usar novo gerador react-pdf se o template tiver versão PDF
+        if (hasPDFTemplate(templateNum)) {
+          pdfBlob = await generatePDFWithReactPDF(curriculumData, templateNum, filename, {
+            returnBlob: true,
+            onProgress: (p, msg) => console.log(p, msg)
+          });
+        } else {
+          // Fallback para método antigo
+          if (!printRef.current) {
+            throw new Error('Conteúdo do currículo não disponível.');
+          }
+          
+          const element = printRef.current;
+          const previousStyles = {
+            visibility: element.style.visibility,
+            position: element.style.position,
+            left: element.style.left,
+            top: element.style.top,
+            zIndex: element.style.zIndex,
+            pointerEvents: element.style.pointerEvents
+          };
+          
+          element.style.visibility = 'visible';
+          element.style.position = 'fixed';
+          element.style.left = '0';
+          element.style.top = '0';
+          element.style.zIndex = '9999';
+          element.style.pointerEvents = 'auto';
+          await new Promise(resolve => setTimeout(resolve, 150));
+          
+          try {
+            pdfBlob = await generateHighQualityPDF(element, filename, {
+              scale: 2,
+              quality: 0.9,
+              margin: 10,
+              returnBlob: true
+            });
+          } finally {
+            element.style.visibility = previousStyles.visibility || 'hidden';
+            element.style.position = previousStyles.position || 'fixed';
+            element.style.left = previousStyles.left || '0';
+            element.style.top = previousStyles.top || '0';
+            element.style.zIndex = previousStyles.zIndex || '-1';
+            element.style.pointerEvents = previousStyles.pointerEvents || 'none';
+          }
+        }
 
         const file = new File([pdfBlob], filename, { type: 'application/pdf' });
 
@@ -385,17 +333,6 @@ const Preview = () => {
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
       } finally {
-        // Restaurar estilos do elemento de impressão
-        try {
-          element.style.visibility = previousStyles.visibility || 'hidden';
-          element.style.position = previousStyles.position || 'fixed';
-          element.style.left = previousStyles.left || '0';
-          element.style.top = previousStyles.top || '0';
-          element.style.zIndex = previousStyles.zIndex || '-1';
-          element.style.pointerEvents = previousStyles.pointerEvents || 'none';
-        } catch (e) {
-          // ignore
-        }
         setIsGeneratingPdf(false);
       }
     })();
@@ -657,20 +594,6 @@ const Preview = () => {
           }}
         >
           Escolher Outro Modelo
-        </Button>
-        <Button
-          onClick={handlePrint}
-          variant="outlined" 
-          color="secondary"
-          size="large"
-          disabled={isGeneratingPdf}
-          fullWidth={isMobile}
-          startIcon={<PrintIcon />}
-          sx={{ 
-            fontWeight: 'medium'
-          }}
-        >
-          Imprimir
         </Button>
         <Button
           onClick={handleShare}
