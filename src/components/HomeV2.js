@@ -199,13 +199,16 @@ function HomeV2() {
                     py: 2,
                     px: 4,
                     fontSize: '1.2rem',
+                    fontWeight: 700,
                     borderRadius: '50px',
-                    backgroundColor: '#fff',
-                    color: '#764ba2',
+                    backgroundColor: '#FFD700',
+                    color: '#1a1a2e',
+                    border: '3px solid #FFA500',
+                    boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4)',
                     '&:hover': {
-                      backgroundColor: '#f0f0f0',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)'
+                      backgroundColor: '#FFA500',
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 8px 25px rgba(255, 165, 0, 0.5)'
                     },
                     transition: 'all 0.3s ease'
                   }}
