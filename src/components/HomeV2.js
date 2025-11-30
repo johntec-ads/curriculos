@@ -26,6 +26,7 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import BugReportIcon from '@mui/icons-material/BugReport';
 
 function HomeV2() {
   const [isVisible, setIsVisible] = useState(false);
@@ -187,12 +188,7 @@ function HomeV2() {
               </Typography>
 
               {/* CTA Buttons */}
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={2}
-                justifyContent="center"
-                sx={{ mb: 4 }}
-              >
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
                 <Button
                   component={Link}
                   to="/create"
@@ -200,45 +196,44 @@ function HomeV2() {
                   size="large"
                   startIcon={<RocketLaunchIcon />}
                   sx={{
-                    px: 5,
                     py: 2,
+                    px: 4,
                     fontSize: '1.2rem',
-                    fontWeight: 700,
-                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                    color: '#000',
-                    boxShadow: '0 8px 24px rgba(255,215,0,0.4)',
+                    borderRadius: '50px',
+                    backgroundColor: '#fff',
+                    color: '#764ba2',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)',
+                      backgroundColor: '#f0f0f0',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 32px rgba(255,215,0,0.5)'
+                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)'
                     },
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  Criar Meu Currículo Agora
+                  Criar Currículo Agora
                 </Button>
-
                 <Button
                   component={Link}
-                  to="/choose-template"
+                  to="/test-generator"
                   variant="outlined"
                   size="large"
+                  startIcon={<BugReportIcon />}
                   sx={{
-                    px: 4,
                     py: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 600,
-                    color: 'white',
+                    px: 4,
+                    fontSize: '1.2rem',
+                    borderRadius: '50px',
                     borderColor: 'rgba(255,255,255,0.5)',
-                    borderWidth: 2,
+                    color: '#fff',
                     '&:hover': {
-                      borderColor: 'white',
-                      background: 'rgba(255,255,255,0.1)',
-                      borderWidth: 2
-                    }
+                      borderColor: '#fff',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      transform: 'translateY(-2px)'
+                    },
+                    transition: 'all 0.3s ease'
                   }}
                 >
-                  Ver Templates
+                  Teste Rápido (Dados Fictícios)
                 </Button>
               </Stack>
 
