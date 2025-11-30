@@ -128,20 +128,42 @@ const Preview = () => {
 
   // Função para gerar PDF
   const handleGeneratePDF = async () => {
-    if (!printRef.current) return;
+    if (!printRef.current) {
+      setSnackbarMessage('Conteúdo do currículo não disponível.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
     
     setIsGeneratingPdf(true);
     setPrintError(null);
 
+    const element = printRef.current;
+    // Salvar estilos originais
+    const previousStyles = {
+      visibility: element.style.visibility,
+      position: element.style.position,
+      left: element.style.left,
+      top: element.style.top,
+      zIndex: element.style.zIndex,
+      pointerEvents: element.style.pointerEvents
+    };
+
     try {
       const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
       
-      // Usar diretamente o elemento visível na tela (não o oculto)
-      // Vamos pegar o conteúdo renderizado dentro do Paper de visualização
-      const visibleContent = document.querySelector('.curriculum-preview-content');
-      const elementToCapture = visibleContent || printRef.current;
+      // Tornar o elemento visível para captura
+      element.style.visibility = 'visible';
+      element.style.position = 'fixed';
+      element.style.left = '0';
+      element.style.top = '0';
+      element.style.zIndex = '9999';
+      element.style.pointerEvents = 'auto';
+
+      // Aguardar renderização
+      await new Promise(resolve => setTimeout(resolve, 150));
       
-      await generateHighQualityPDF(elementToCapture, filename, {
+      await generateHighQualityPDF(element, filename, {
         scale: 2,
         quality: 0.92,
         onProgress: (percent, message) => {
@@ -159,6 +181,13 @@ const Preview = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     } finally {
+      // Restaurar estilos originais
+      element.style.visibility = previousStyles.visibility || 'hidden';
+      element.style.position = previousStyles.position || 'fixed';
+      element.style.left = previousStyles.left || '0';
+      element.style.top = previousStyles.top || '0';
+      element.style.zIndex = previousStyles.zIndex || '-1';
+      element.style.pointerEvents = previousStyles.pointerEvents || 'none';
       setIsGeneratingPdf(false);
     }
   };
@@ -172,8 +201,89 @@ const Preview = () => {
     setShareMenuAnchor(null);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    if (!printRef.current) {
+      setSnackbarMessage('Conteúdo do currículo não disponível.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    setIsGeneratingPdf(true);
+
+    const element = printRef.current;
+    // Salvar estilos originais
+    const previousStyles = {
+      visibility: element.style.visibility,
+      position: element.style.position,
+      left: element.style.left,
+      top: element.style.top,
+      zIndex: element.style.zIndex,
+      pointerEvents: element.style.pointerEvents
+    };
+
+    try {
+      const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
+      
+      // Tornar o elemento visível para captura
+      element.style.visibility = 'visible';
+      element.style.position = 'fixed';
+      element.style.left = '0';
+      element.style.top = '0';
+      element.style.zIndex = '9999';
+      element.style.pointerEvents = 'auto';
+
+      // Aguardar renderização
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Gerar PDF como Blob e abrir em nova aba para impressão
+      const pdfBlob = await generateHighQualityPDF(element, filename, {
+        scale: 2,
+        quality: 0.92,
+        returnBlob: true,
+        onProgress: (percent, message) => {
+          console.log(`${percent}% - ${message}`);
+        }
+      });
+
+      // Criar URL do blob e abrir em nova janela para impressão
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const printWindow = window.open(pdfUrl, '_blank');
+      
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+        setSnackbarMessage("PDF aberto para impressão!");
+        setSnackbarSeverity("success");
+      } else {
+        // Fallback: baixar o PDF se popup bloqueado
+        const a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setSnackbarMessage("PDF baixado. Abra o arquivo para imprimir.");
+        setSnackbarSeverity("info");
+      }
+      setSnackbarOpen(true);
+
+    } catch (error) {
+      console.error("Erro ao preparar impressão:", error);
+      setSnackbarMessage("Erro ao preparar impressão. Tente novamente.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      // Restaurar estilos originais
+      element.style.visibility = previousStyles.visibility || 'hidden';
+      element.style.position = previousStyles.position || 'fixed';
+      element.style.left = previousStyles.left || '0';
+      element.style.top = previousStyles.top || '0';
+      element.style.zIndex = previousStyles.zIndex || '-1';
+      element.style.pointerEvents = previousStyles.pointerEvents || 'none';
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handleCopyLink = async () => {
