@@ -70,6 +70,9 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     // Vamos tentar ser genéricos: pegar todos os filhos diretos do container principal
     const children = Array.from(contentContainer.children);
     
+    // Capturar estilos do container original para replicar nas páginas (padding, background, etc)
+    const containerStyle = window.getComputedStyle(contentContainer);
+    
     const pages = [];
     let currentPage = [];
     let currentHeight = 0;
@@ -119,12 +122,14 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       pageContainer.style.top = '0';
       pageContainer.style.width = `${a4WidthMm}mm`;
       pageContainer.style.minHeight = `${a4HeightMm}mm`;
-      pageContainer.style.backgroundColor = '#ffffff';
-      pageContainer.style.padding = '20px'; // Padding visual
+      
+      // Replicar estilos do container original (Paper)
+      pageContainer.style.backgroundColor = containerStyle.backgroundColor;
+      pageContainer.style.backgroundImage = containerStyle.backgroundImage;
+      pageContainer.style.padding = containerStyle.padding;
       pageContainer.style.boxSizing = 'border-box';
       
-      // Reconstruir o estilo do pai original para manter fontes/cores
-      // Copiar estilos computados relevantes do elemento original para o pageContainer
+      // Reconstruir o estilo de fonte herdado
       const originalStyle = window.getComputedStyle(element);
       pageContainer.style.fontFamily = originalStyle.fontFamily;
       pageContainer.style.color = originalStyle.color;
