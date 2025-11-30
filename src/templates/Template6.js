@@ -543,29 +543,6 @@ const Template6 = forwardRef(({ data, isGenerating = false }, ref) => {
             </Box>
           </Box>
 
-          {/* Numeração de página no rodapé */}
-          <Box sx={{
-            position: 'absolute',
-            bottom: '10mm',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 999,
-            fontSize: '0.75rem',
-            color: '#666',
-            '@media print': {
-              display: 'block !important',
-              visibility: 'visible !important',
-              position: 'absolute !important',
-              bottom: '10mm !important',
-              left: '50% !important',
-              transform: 'translateX(-50%) !important',
-              fontSize: '0.75rem !important',
-              color: '#666 !important'
-            }
-          }}>
-            Página 1
-          </Box>
-
         </Paper>
       </Box>
 

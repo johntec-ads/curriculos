@@ -144,28 +144,24 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       const imgData = canvas.toDataURL('image/jpeg', quality);
       pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
     } else {
-      // Dividir em múltiplas páginas com pequena sobreposição para evitar corte de texto
-      const overlapMm = 5; // 5mm de sobreposição entre páginas
-      const effectivePageHeight = pageHeight - overlapMm;
-      const pageHeightPx = (effectivePageHeight * canvas.width) / imgWidth;
-      const overlapPx = (overlapMm * canvas.width) / imgWidth;
+      // Para múltiplas páginas, usar altura de página completa sem sobreposição
+      // Isso evita repetição de conteúdo e corte é inevitável com abordagem de imagem
+      const pageHeightPx = (pageHeight * canvas.width) / imgWidth;
+      const actualTotalPages = Math.ceil(canvas.height / pageHeightPx);
       
-      // Recalcular total de páginas com a sobreposição
-      const adjustedTotalPages = Math.ceil((canvas.height - overlapPx) / pageHeightPx);
-      
-      for (let page = 0; page < adjustedTotalPages; page++) {
+      for (let page = 0; page < actualTotalPages; page++) {
         if (page > 0) pdf.addPage();
         
         // Criar canvas temporário para esta página
         const pageCanvas = document.createElement('canvas');
         pageCanvas.width = canvas.width;
         
-        // Calcular posição inicial (com sobreposição a partir da segunda página)
-        const startY = page === 0 ? 0 : (page * pageHeightPx) - (overlapPx * 0.5);
+        // Calcular posição inicial
+        const startY = page * pageHeightPx;
         const remainingHeight = canvas.height - startY;
         
         // Altura desta página (última página pode ser menor)
-        const thisPageHeight = Math.min(pageHeightPx + overlapPx, remainingHeight);
+        const thisPageHeight = Math.min(pageHeightPx, remainingHeight);
         
         // Garantir altura mínima
         if (thisPageHeight <= 0) break;
@@ -187,13 +183,11 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
         const pageImgData = pageCanvas.toDataURL('image/jpeg', quality);
         const thisPageHeightMm = (thisPageHeight * imgWidth) / canvas.width;
         
-        // Centralizar verticalmente se a página não estiver cheia
-        const yOffset = margin;
-        pdf.addImage(pageImgData, 'JPEG', margin, yOffset, imgWidth, thisPageHeightMm);
+        pdf.addImage(pageImgData, 'JPEG', margin, margin, imgWidth, thisPageHeightMm);
         
         if (onProgress) {
-          const progress = 60 + Math.floor(((page + 1) / adjustedTotalPages) * 35);
-          onProgress(progress, `Página ${page + 1}/${adjustedTotalPages}...`);
+          const progress = 60 + Math.floor(((page + 1) / actualTotalPages) * 35);
+          onProgress(progress, `Página ${page + 1}/${actualTotalPages}...`);
         }
       }
     }
