@@ -109,7 +109,7 @@ const Template5 = forwardRef(({ data, isGenerating = false }, ref) => {
                 borderLeft: '3px solid #1976d2 !important'
               }
             }}>
-              {data.education.map((edu, index) => (
+              {(data.education || []).map((edu, index) => (
                 <Box key={index} sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">{edu.course}</Typography>
                   <Typography variant="subtitle2">{edu.institution}</Typography>
@@ -129,7 +129,7 @@ const Template5 = forwardRef(({ data, isGenerating = false }, ref) => {
                 borderLeft: '3px solid #1976d2 !important'
               }
             }}>
-              {data.experience.map((exp, index) => (
+              {(data.experience || []).map((exp, index) => (
                 <Box key={index} sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold">{exp.position}</Typography>
                   <Typography variant="subtitle2">{exp.company}</Typography>
@@ -165,7 +165,7 @@ const Template5 = forwardRef(({ data, isGenerating = false }, ref) => {
                     flexWrap: 'wrap !important'
                   }
                 }}>
-                  {data.skills.map((skill, index) => (
+                  {(data.skills || []).map((skill, index) => (
                     <Typography key={index} component="span" sx={{
                       bgcolor: '#e3f2fd',
                       px: 2,
@@ -196,7 +196,7 @@ const Template5 = forwardRef(({ data, isGenerating = false }, ref) => {
                     flexWrap: 'wrap !important'
                   }
                 }}>
-                  {data.languages.map((language, index) => (
+                  {(data.languages || []).map((language, index) => (
                     <Typography key={index} component="span" sx={{
                       bgcolor: '#e3f2fd',
                       px: 2,

@@ -124,7 +124,7 @@ const Template3 = forwardRef(({ data, isGenerating = false }, ref) => {
               >
                 Experiência Profissional
               </Typography>
-              {sortByDate(data.experience).map((exp, index) => (
+              {sortByDate(data.experience || []).map((exp, index) => (
                 <Box key={index} sx={{ mb: 3 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>
                     {exp.position}
@@ -161,7 +161,7 @@ const Template3 = forwardRef(({ data, isGenerating = false }, ref) => {
               >
                 Educação
               </Typography>
-              {data.education.map((edu, index) => (
+              {(data.education || []).map((edu, index) => (
                 <Box key={index} sx={{ mb: 3 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>
                     {edu.course}
@@ -197,7 +197,7 @@ const Template3 = forwardRef(({ data, isGenerating = false }, ref) => {
                 flexWrap: 'wrap', 
                 gap: 1 
               }}>
-                {data.skills.map((skill, index) => (
+                {(data.skills || []).map((skill, index) => (
                   <Box
                     key={index}
                     sx={{
@@ -230,7 +230,7 @@ const Template3 = forwardRef(({ data, isGenerating = false }, ref) => {
                 flexWrap: 'wrap', 
                 gap: 1 
               }}>
-                {data.languages.map((language, index) => (
+                {(data.languages || []).map((language, index) => (
                   <Box
                     key={index}
                     sx={{
