@@ -113,9 +113,14 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       // Mas se ele cabe na página atual, adicionamos. Se não, nova página.
       // Adicionar margem de segurança extra (20px) na verificação
       if (currentHeight + height > contentHeightPx && currentPage.length > 0) {
-        pages.push(currentPage);
-        currentPage = [];
-        currentHeight = 0;
+        // Se o item for GIGANTE (maior que uma página inteira), não adianta jogar para a próxima
+        // pois ele vai estourar lá também. Nesse caso, começamos ele na página atual mesmo
+        // para aproveitar o espaço, e deixamos o sistema de fatiamento (slicing) resolver.
+        if (height < contentHeightPx) {
+          pages.push(currentPage);
+          currentPage = [];
+          currentHeight = 0;
+        }
       }
 
       currentPage.push(child);

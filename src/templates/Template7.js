@@ -60,10 +60,10 @@ const Template7 = forwardRef(({ data, isGenerating = false }, ref) => {
           {/* Content */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 3, p: 3 }}>
             {/* Left: main */}
-            <Box sx={{ '& > *': { pageBreakInside: 'avoid' } }}>
+            <Box>
               <Typography variant="h6" sx={{ color: '#1565c0', mb: 1 }}>Experiência Profissional</Typography>
               {sortByDate(data.experience).map((exp, idx) => (
-                <Box key={idx} sx={{ mb: 2 }}>
+                <Box key={idx} sx={{ mb: 2, pageBreakInside: 'avoid' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: '700' }}>{exp.position}</Typography>
                   <Typography variant="subtitle2" sx={{ color: '#666' }}>{exp.company} • <span style={{ color: '#1976d2' }}>{formatDate(exp.startDate)} - {formatDate(exp.endDate)}</span></Typography>
                   <Typography variant="body2" sx={{ mt: 1 }}>{exp.description}</Typography>
@@ -72,7 +72,7 @@ const Template7 = forwardRef(({ data, isGenerating = false }, ref) => {
 
               <Typography variant="h6" sx={{ color: '#1565c0', mt: 3, mb: 1 }}>Educação</Typography>
               {(data.education || []).map((edu, idx) => (
-                <Box key={idx} sx={{ mb: 2 }}>
+                <Box key={idx} sx={{ mb: 2, pageBreakInside: 'avoid' }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: '700' }}>{edu.course}</Typography>
                   <Typography variant="subtitle2" sx={{ color: '#666' }}>{edu.institution} • <span style={{ color: '#1976d2' }}>{formatDate(edu.startDate)} - {formatDate(edu.endDate)}</span></Typography>
                   {edu.description && <Typography variant="body2" sx={{ mt: 1 }}>{edu.description}</Typography>}

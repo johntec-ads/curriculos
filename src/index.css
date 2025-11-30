@@ -181,103 +181,38 @@ code {
 
 /* Estilos específicos para impressão */
 @media print {
-  /* Esconde tudo por padrão */
-  body * {
-    visibility: hidden;
-  }
-
-  /* Mostra apenas o conteúdo de impressão e seus filhos */
-  #print-content,
-  #print-content * {
-    visibility: visible;
-  }
-
-  /* Garante que elementos no-print permanecem escondidos */
-  .no-print,
-  .no-print * {
-    display: none !important;
-    height: 0 !important;
-    visibility: hidden !important;
-  }
-
-  .temp-hidden,
-  .temp-hidden * {
-    display: none !important;
-    height: 0 !important;
-    visibility: hidden !important;
-  }
-
-  /* Garante que diálogos, tooltips e snackbars não apareçam no PDF */
-  .MuiDialog-root,
-  .MuiTooltip-popper,
-  .MuiSnackbar-root,
-  .MuiBottomNavigation-root,
-  .MuiDrawer-root,
-  [role="tooltip"],
-  [role="dialog"] {
-    display: none !important;
-    visibility: hidden !important;
-  }
-
-  /* Remove backgrounds e sombras para impressão */
-  * {
-    background: white !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  /* Ajusta cores para impressão */
+  /* Reset total */
   body {
-    background: white !important;
-  }
-
-  /* Tamanho A4 forçado */
-  @page {
-    size: A4;
+    background: white;
     margin: 0;
+    padding: 0;
   }
 
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
+  /* Esconde tudo que não é conteúdo de impressão */
+  body > *:not(#print-content) {
+    display: none !important;
   }
 
-  /* Garantindo que todos os elementos dentro da área de impressão sejam visíveis */
-  .print-only,
-  .print-only * {
-    visibility: visible !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Evita quebra de página dentro de elementos importantes */
-  .MuiCard-root, 
-  .MuiPaper-root,
-  li,
-  p,
-  h1, h2, h3, h4, h5, h6 {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  /* Ajustes importantes para posicionamento no dispositivo móvel */
+  /* Garante que o container de impressão esteja visível e posicionado */
   #print-content {
+    display: block !important;
+    visibility: visible !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    width: 210mm !important;
-    /* Permitir altura automática para múltiplas páginas */
-    min-height: 297mm !important;
-    height: auto !important;
-    transform: none !important;
-    transform-origin: top left !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
   }
 
-  #print-content > * {
-    transform: none !important;
+  #print-content * {
+    visibility: visible !important;
+  }
+
+  /* Remove margens da página do navegador */
+  @page {
+    size: auto;
+    margin: 0mm;
   }
 }
