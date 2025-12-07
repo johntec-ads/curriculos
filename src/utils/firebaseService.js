@@ -1,6 +1,6 @@
 import { auth, db } from '../firebase';
 import { signInAnonymously as fbSignInAnonymously } from 'firebase/auth';
-import { collection, doc, setDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 
 /**
  * Serviço simples para salvar/recuperar currículos no Firestore

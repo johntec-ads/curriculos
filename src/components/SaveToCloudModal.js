@@ -5,7 +5,7 @@ import { signInAnonymously, migrateLocalToCloud } from '../utils/firebaseService
 import { useNavigate } from 'react-router-dom';
 
 function SaveToCloudModal({ open, onClose, localData, onSaved }) {
-  const { currentUser } = useAuth();
+  useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
