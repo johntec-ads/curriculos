@@ -11,7 +11,6 @@ import {
   getRedirectResult
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
-import { migrateLocalToCloud } from '../utils/firebaseService';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 const AuthContext = createContext();
@@ -201,24 +200,6 @@ export function AuthProvider({ children }) {
           console.log("Último login atualizado com sucesso.");
         } catch (error) {
           console.error("Erro ao atualizar último login:", error);
-        }
-
-        // Se houver uma migração pendente marcada pelo cliente, tentamos migrar
-        try {
-          const pending = localStorage.getItem('pendingCloudSave') === 'true';
-          const localRaw = localStorage.getItem('curriculumData');
-          if (pending && localRaw) {
-            try {
-              const data = JSON.parse(localRaw);
-              await migrateLocalToCloud(user.uid, data);
-              localStorage.removeItem('pendingCloudSave');
-              console.log('Dados migrados para a nuvem automaticamente (AuthContext).');
-            } catch (migErr) {
-              console.error('Falha ao migrar dados locais para nuvem (AuthContext):', migErr);
-            }
-          }
-        } catch (e) {
-          console.error('Erro ao checar migração pendente no AuthContext:', e);
         }
       }
     });

@@ -40,9 +40,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { generatePDFWithReactPDF, hasPDFTemplate } from '../utils/pdfGeneratorReactPDF';
 import { generateHighQualityPDF } from '../utils/pdfGeneratorFinal';
-import SaveToCloudModal from './SaveToCloudModal';
-import { useAuth } from '../context/AuthContext';
-import { migrateLocalToCloud } from '../utils/firebaseService';
 
 const Preview = () => {
   const navigate = useNavigate();
@@ -60,32 +57,6 @@ const Preview = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
   const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
-  const [saveModalOpen, setSaveModalOpen] = useState(false);
-  const { currentUser } = useAuth();
-
-  // If user logged in and there is pending local data flagged for migration, migrate it
-  useEffect(() => {
-    (async () => {
-      try {
-        if (!currentUser) return;
-        const pending = localStorage.getItem('pendingCloudSave') === 'true';
-        const localRaw = localStorage.getItem('curriculumData');
-        if (pending && localRaw) {
-          const data = JSON.parse(localRaw);
-          await migrateLocalToCloud(currentUser.uid, data);
-          localStorage.removeItem('pendingCloudSave');
-          setSnackbarMessage('Dados migrados para a nuvem com sucesso.');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        }
-      } catch (e) {
-        console.error('Erro ao migrar dados locais para nuvem:', e);
-        setSnackbarMessage('Falha ao migrar dados para a nuvem.');
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      }
-    })();
-  }, [currentUser]);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -639,17 +610,6 @@ const Preview = () => {
           Compartilhar
         </Button>
         <Button
-          onClick={() => setSaveModalOpen(true)}
-          variant="outlined"
-          color="secondary"
-          size="large"
-          disabled={isGeneratingPdf}
-          fullWidth={isMobile}
-          sx={{ fontWeight: 'medium' }}
-        >
-          Salvar na nuvem
-        </Button>
-        <Button
           onClick={handleGeneratePDF}
           variant="contained" 
           color="primary"
@@ -668,17 +628,6 @@ const Preview = () => {
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
         </Button>
       </Box>
-
-      <SaveToCloudModal
-        open={saveModalOpen}
-        onClose={() => setSaveModalOpen(false)}
-        localData={curriculumData}
-        onSaved={() => {
-          setSnackbarMessage('Currículo salvo na nuvem com sucesso!');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        }}
-      />
 
       {/* Menu de compartilhamento */}
       <Menu
