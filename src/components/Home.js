@@ -54,6 +54,18 @@ function Home() {
     setIsVisible(true);
   }, []);
 
+  // Se o usuário veio do fluxo de "Salvar na nuvem" e marcou pending, abrir o diálogo de autenticação automaticamente
+  useEffect(() => {
+    try {
+      const pending = localStorage.getItem('pendingCloudSave') === 'true';
+      if (pending) {
+        setIsAuthDialogOpen(true);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
   const handleShareDialogOpen = () => setIsShareDialogOpen(true);
   const handleShareDialogClose = () => setIsShareDialogOpen(false);
   const handleOpenAuthDialog = () => setIsAuthDialogOpen(true);

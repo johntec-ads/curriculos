@@ -27,14 +27,25 @@ function SaveToCloudModal({ open, onClose, localData, onSaved }) {
     setLoading(true);
     setError('');
     try {
+      console.log('Iniciando salvamento anônimo...');
       const user = await signInAnonymously();
-      // Firebase auth state will update; now migrate data
-      await migrateLocalToCloud(user.uid, localData);
-      if (onSaved) onSaved();
-      onClose();
+      if (!user || !user.uid) {
+        throw new Error('Resposta inválida ao autenticar anonimamente');
+      }
+      console.log('Usuário anônimo criado:', user.uid);
+      // Tenta migrar os dados locais para a nuvem
+      try {
+        await migrateLocalToCloud(user.uid, localData);
+        console.log('Migração anônima concluída.');
+        if (onSaved) onSaved();
+        onClose();
+      } catch (migErr) {
+        console.error('Erro ao migrar dados após signInAnonymously:', migErr);
+        setError('Não foi possível salvar os dados na nuvem após autenticação.');
+      }
     } catch (e) {
       console.error(e);
-      setError('Não foi possível salvar na nuvem. Tente novamente.');
+      setError(e.message || 'Não foi possível salvar na nuvem. Tente novamente.');
     } finally {
       setLoading(false);
     }
