@@ -5,6 +5,7 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import HomeIcon from '@mui/icons-material/Home';
 import Cropper from 'react-easy-crop';
 import Slider from '@mui/material/Slider';
 import Dialog from '@mui/material/Dialog';
@@ -361,8 +362,13 @@ function CurriculumForm() {
       )}
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom>Informações Pessoais</Typography>
-        
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Typography variant="h4" gutterBottom sx={{ mb: 0 }}>Informações Pessoais</Typography>
+          <IconButton onClick={() => navigate('/')} aria-label="Voltar ao Início">
+            <HomeIcon />
+          </IconButton>
+        </Box>
+
         <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
           {/* Upload de Foto */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

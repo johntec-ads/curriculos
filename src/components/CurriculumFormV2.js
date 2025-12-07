@@ -15,6 +15,7 @@ import {
   Fade,
   Chip,
   Stack,
+  IconButton,
   useMediaQuery,
   useTheme
 } from '@mui/material';
@@ -26,6 +27,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SaveIcon from '@mui/icons-material/Save';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HomeIcon from '@mui/icons-material/Home';
 
 // Importar seções do formulário
 import PersonalInfoSection from './FormSections/PersonalInfoSection';
@@ -59,7 +61,7 @@ const validationSchemas = [
       address: Yup.string()
         .min(5, 'Endereço deve ter pelo menos 5 caracteres'),
       linkedin: Yup.string()
-        .url('URL do LinkedIn inválida'),
+        .max(200, 'LinkedIn inválido'),
       objective: Yup.string()
         .max(500, 'Objetivo deve ter no máximo 500 caracteres')
     })
@@ -313,12 +315,17 @@ function CurriculumFormV2() {
           <Typography variant="h4" component="h1" fontWeight="bold">
             Criar Currículo
           </Typography>
-          <Chip
-            icon={<InfoIcon />}
-            label={`${Math.round(progress)}% completo`}
-            color="secondary"
-            sx={{ fontWeight: 'bold' }}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              icon={<InfoIcon />}
+              label={`${Math.round(progress)}% completo`}
+              color="secondary"
+              sx={{ fontWeight: 'bold' }}
+            />
+            <IconButton color="inherit" onClick={() => navigate('/')} aria-label="Voltar ao Início" sx={{ ml: 1 }}>
+              <HomeIcon />
+            </IconButton>
+          </Box>
         </Box>
         <LinearProgress
           variant="determinate"
