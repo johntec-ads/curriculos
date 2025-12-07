@@ -12,9 +12,15 @@ import {
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 'normal' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 'bold' },
-  ]
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
+      fontWeight: 'normal',
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+      fontWeight: 'bold',
+    },
+  ],
 });
 
 // Estilos do PDF
@@ -141,7 +147,7 @@ const formatDate = (date) => {
   if (!date) return 'Presente';
   return new Date(date).toLocaleDateString('pt-BR', {
     year: 'numeric',
-    month: 'long'
+    month: 'long',
   });
 };
 
@@ -149,7 +155,13 @@ const formatDate = (date) => {
 const PDFTemplate1 = ({ data }) => {
   if (!data) return null;
 
-  const { personalInfo, experience = [], education = [], skills = [], languages = [] } = data;
+  const {
+    personalInfo,
+    experience = [],
+    education = [],
+    skills = [],
+    languages = [],
+  } = data;
 
   return (
     <Document>
@@ -159,12 +171,24 @@ const PDFTemplate1 = ({ data }) => {
 
         {/* Cabeçalho */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personalInfo?.name || 'Nome não informado'}</Text>
+          <Text style={styles.name}>
+            {personalInfo?.name || 'Nome não informado'}
+          </Text>
           <View style={styles.contactInfo}>
-            {personalInfo?.email && <Text style={styles.contactItem}>{personalInfo.email}</Text>}
-            {personalInfo?.phone && <Text style={styles.contactItem}>{personalInfo.phone}</Text>}
-            {personalInfo?.address && <Text style={styles.contactItem}>{personalInfo.address}</Text>}
-            {personalInfo?.linkedin && <Text style={styles.contactItem}>LinkedIn: {personalInfo.linkedin}</Text>}
+            {personalInfo?.email && (
+              <Text style={styles.contactItem}>{personalInfo.email}</Text>
+            )}
+            {personalInfo?.phone && (
+              <Text style={styles.contactItem}>{personalInfo.phone}</Text>
+            )}
+            {personalInfo?.address && (
+              <Text style={styles.contactItem}>{personalInfo.address}</Text>
+            )}
+            {personalInfo?.linkedin && (
+              <Text style={styles.contactItem}>
+                LinkedIn: {personalInfo.linkedin}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -203,7 +227,8 @@ const PDFTemplate1 = ({ data }) => {
               <View key={index} style={styles.educationItem} wrap={false}>
                 <Text style={styles.course}>{edu.course}</Text>
                 <Text style={styles.institution}>
-                  {edu.institution} ({formatDate(edu.startDate)} - {formatDate(edu.endDate)})
+                  {edu.institution} ({formatDate(edu.startDate)} -{' '}
+                  {formatDate(edu.endDate)})
                 </Text>
                 {edu.description && (
                   <Text style={styles.description}>{edu.description}</Text>

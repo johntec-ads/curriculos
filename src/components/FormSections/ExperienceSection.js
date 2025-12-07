@@ -9,7 +9,7 @@ import {
   Chip,
   Alert,
   Tooltip,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,13 +25,18 @@ function ExperienceSection({ formik }) {
       position: '',
       startDate: '',
       endDate: '',
-      description: ''
+      description: '',
     };
-    formik.setFieldValue('experience', [...formik.values.experience, newExperience]);
+    formik.setFieldValue('experience', [
+      ...formik.values.experience,
+      newExperience,
+    ]);
   };
 
   const removeExperience = (index) => {
-    const newExperience = formik.values.experience.filter((_, i) => i !== index);
+    const newExperience = formik.values.experience.filter(
+      (_, i) => i !== index
+    );
     formik.setFieldValue('experience', newExperience);
   };
 
@@ -43,7 +48,13 @@ function ExperienceSection({ formik }) {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 1 }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        color="primary"
+        sx={{ mb: 1 }}
+      >
         Experiência Profissional
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -57,7 +68,9 @@ function ExperienceSection({ formik }) {
         <Typography variant="body2" component="ul" sx={{ mt: 1, mb: 0, pl: 2 }}>
           <li>Comece pela experiência mais recente</li>
           <li>Use verbos de ação: "Desenvolvi", "Gerenciei", "Implementei"</li>
-          <li>Quantifique resultados quando possível: "Aumentei vendas em 30%"</li>
+          <li>
+            Quantifique resultados quando possível: "Aumentei vendas em 30%"
+          </li>
           <li>Foque em conquistas, não apenas em responsabilidades</li>
         </Typography>
       </Alert>
@@ -71,10 +84,17 @@ function ExperienceSection({ formik }) {
             mb: 3,
             borderLeft: '4px solid',
             borderColor: 'primary.main',
-            position: 'relative'
+            position: 'relative',
           }}
         >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <Chip
               label={`Experiência ${index + 1}`}
               color="primary"
@@ -104,14 +124,16 @@ function ExperienceSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'company')}
-                helperText={getFieldError(index, 'company') || 'Nome completo da empresa'}
+                helperText={
+                  getFieldError(index, 'company') || 'Nome completo da empresa'
+                }
                 required
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <BusinessIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -125,14 +147,17 @@ function ExperienceSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'position')}
-                helperText={getFieldError(index, 'position') || 'Ex: Desenvolvedor Full Stack'}
+                helperText={
+                  getFieldError(index, 'position') ||
+                  'Ex: Desenvolvedor Full Stack'
+                }
                 required
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <WorkIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -155,7 +180,7 @@ function ExperienceSection({ formik }) {
                     <InputAdornment position="start">
                       <CalendarTodayIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -170,14 +195,17 @@ function ExperienceSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'endDate')}
-                helperText={getFieldError(index, 'endDate') || 'Deixe em branco se ainda trabalha aqui'}
+                helperText={
+                  getFieldError(index, 'endDate') ||
+                  'Deixe em branco se ainda trabalha aqui'
+                }
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <CalendarTodayIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -201,10 +229,13 @@ function ExperienceSection({ formik }) {
                 placeholder="Ex: Desenvolvi aplicações web usando React e Node.js, resultando em aumento de 30% na produtividade da equipe. Implementei sistema de autenticação e gerenciei banco de dados..."
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 2 }}>
+                    <InputAdornment
+                      position="start"
+                      sx={{ alignSelf: 'flex-start', mt: 2 }}
+                    >
                       <DescriptionIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>

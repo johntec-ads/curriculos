@@ -3,7 +3,7 @@ import { Box, Typography, Tooltip } from '@mui/material';
 
 const VersionInfo = ({ showBuildDate = true, position = 'bottomRight' }) => {
   const [version, setVersion] = useState('0.1.0'); // Versão padrão
-  
+
   useEffect(() => {
     // Tenta obter a versão do package.json via ambiente
     const appVersion = process.env.REACT_APP_VERSION || '0.1.0';
@@ -38,14 +38,16 @@ const VersionInfo = ({ showBuildDate = true, position = 'bottomRight' }) => {
       position: 'fixed',
       left: '8px',
       top: '8px',
-    }
+    },
   };
 
   // Determinar estilo de fundo com base no ambiente
-  const backgroundColor = isDevelopment ? 'rgba(255, 193, 7, 0.15)' : 'rgba(76, 175, 80, 0.15)';
-  
+  const backgroundColor = isDevelopment
+    ? 'rgba(255, 193, 7, 0.15)'
+    : 'rgba(76, 175, 80, 0.15)';
+
   return (
-    <Tooltip 
+    <Tooltip
       title={`Versão: ${versionDisplay}${showBuildDate ? `\nCompilação: ${buildDate}` : ''}`}
       placement="top"
       arrow
@@ -62,11 +64,15 @@ const VersionInfo = ({ showBuildDate = true, position = 'bottomRight' }) => {
           opacity: 0.8,
           '&:hover': {
             opacity: 1,
-            cursor: 'help'
+            cursor: 'help',
           },
         }}
       >
-        <Typography variant="caption" component="div" sx={{ fontWeight: 'medium' }}>
+        <Typography
+          variant="caption"
+          component="div"
+          sx={{ fontWeight: 'medium' }}
+        >
           v{versionDisplay}
         </Typography>
       </Box>

@@ -60,7 +60,6 @@ Uma aplicação web moderna e intuitiva para criação de currículos profission
 - Upload e recorte de foto profissional
 - Preview em tempo real
 - Compartilhamento via QR Code
-- Suporte a múltiplos idiomas
 - Sistema de progresso visual
 - Mensagens motivacionais
 
@@ -76,12 +75,11 @@ Uma aplicação web moderna e intuitiva para criação de currículos profission
 - **Yup 0.32** - Validação de esquemas
 
 ### Geração de PDF
-- **html2canvas 1.4** - Captura de tela de alta qualidade
-- **jsPDF 2.5** - Geração de documentos PDF
-- **react-to-print 2.15** - Impressão otimizada
+- **@react-pdf/renderer** - Geração de PDFs com texto real (melhor fidelidade e acessibilidade)
+  
+   (Nota: o projeto também contém utilitários adicionais que usam `html2canvas`/`jsPDF` como opções de fallback para cenários de exportação baseados em imagem.)
 
 ### Outras Ferramentas
-- **Firebase 9** - Autenticação (opcional)
 - **react-easy-crop 5.4** - Recorte de imagens
 - **qrcode.react 4.2** - Geração de QR Codes
 
@@ -111,12 +109,9 @@ npm install
 yarn install
 ```
 
-3. **Configure o Firebase (Opcional)**
-   
-   Se quiser usar autenticação:
-   - Crie um projeto no [Firebase Console](https://console.firebase.google.com/)
-   - Ative Authentication
-   - Copie as credenciais para `src/firebase.js`
+3. **Configuração de Autenticação (removida)**
+
+   Observação: a integração com Firebase foi removida deste projeto; o fluxo de sincronização em nuvem não está habilitado.
 
 4. **Inicie o servidor de desenvolvimento**
 ```bash
@@ -202,11 +197,11 @@ curriculos/
 | Template | Descrição | Ideal Para |
 |----------|-----------|------------|
 | **Clássico** | Layout tradicional com ênfase em clareza | Profissionais conservadores |
-| **Moderno** | Design contemporâneo com barra lateral | Áreas criativas e tech |
 | **Minimalista** | Layout limpo e elegante | Profissionais experientes |
 | **Simples** | Direto ao ponto | Primeira vaga |
 | **Organizado** | Design limpo e estruturado | Gestores e líderes |
-| **Premium** | Gradiente moderno e profissional | Destaque no mercado |
+| **Moderno com Foto** | Barra lateral colorida, foto e layout profissional | Profissionais que desejam destaque visual |
+| **Clean Modern** | Cabeçalho colorido, layout duas colunas e foco em impressão | Impressão e legibilidade |
 
 ---
 

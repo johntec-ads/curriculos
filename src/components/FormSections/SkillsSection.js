@@ -9,7 +9,7 @@ import {
   Paper,
   Grid,
   Tooltip,
-  Autocomplete
+  Autocomplete,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,16 +18,60 @@ import LanguageIcon from '@mui/icons-material/Language';
 
 // Sugestões comuns de habilidades
 const commonSkills = [
-  'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'PHP', 'Ruby',
-  'React', 'Angular', 'Vue.js', 'Node.js', 'Express', 'Django', 'Flask',
-  'HTML', 'CSS', 'SASS', 'Tailwind CSS', 'Bootstrap', 'Material-UI',
-  'SQL', 'MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Firebase',
-  'Git', 'GitHub', 'GitLab', 'Docker', 'Kubernetes', 'CI/CD',
-  'AWS', 'Azure', 'Google Cloud', 'Heroku', 'Vercel', 'Netlify',
-  'REST API', 'GraphQL', 'Microservices', 'Agile', 'Scrum',
-  'Testes Automatizados', 'Jest', 'Cypress', 'Selenium',
-  'Comunicação', 'Liderança', 'Trabalho em equipe', 'Gestão de projetos',
-  'Resolução de problemas', 'Pensamento crítico', 'Criatividade'
+  'JavaScript',
+  'TypeScript',
+  'Python',
+  'Java',
+  'C#',
+  'PHP',
+  'Ruby',
+  'React',
+  'Angular',
+  'Vue.js',
+  'Node.js',
+  'Express',
+  'Django',
+  'Flask',
+  'HTML',
+  'CSS',
+  'SASS',
+  'Tailwind CSS',
+  'Bootstrap',
+  'Material-UI',
+  'SQL',
+  'MongoDB',
+  'PostgreSQL',
+  'MySQL',
+  'Redis',
+  'Firebase',
+  'Git',
+  'GitHub',
+  'GitLab',
+  'Docker',
+  'Kubernetes',
+  'CI/CD',
+  'AWS',
+  'Azure',
+  'Google Cloud',
+  'Heroku',
+  'Vercel',
+  'Netlify',
+  'REST API',
+  'GraphQL',
+  'Microservices',
+  'Agile',
+  'Scrum',
+  'Testes Automatizados',
+  'Jest',
+  'Cypress',
+  'Selenium',
+  'Comunicação',
+  'Liderança',
+  'Trabalho em equipe',
+  'Gestão de projetos',
+  'Resolução de problemas',
+  'Pensamento crítico',
+  'Criatividade',
 ];
 
 // Sugestões de idiomas com níveis
@@ -52,7 +96,7 @@ const commonLanguages = [
   'Mandarim - Fluente',
   'Mandarim - Avançado',
   'Mandarim - Intermediário',
-  'Mandarim - Básico'
+  'Mandarim - Básico',
 ];
 
 function SkillsSection({ formik }) {
@@ -91,7 +135,13 @@ function SkillsSection({ formik }) {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 1 }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        color="primary"
+        sx={{ mb: 1 }}
+      >
         Habilidades e Competências
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -99,7 +149,15 @@ function SkillsSection({ formik }) {
       </Typography>
 
       {/* Seção de Habilidades */}
-      <Paper elevation={2} sx={{ p: 3, mb: 4, borderLeft: '4px solid', borderColor: 'primary.main' }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: 3,
+          mb: 4,
+          borderLeft: '4px solid',
+          borderColor: 'primary.main',
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <EmojiObjectsIcon color="primary" sx={{ mr: 1 }} />
           <Typography variant="h6" fontWeight="bold">
@@ -109,8 +167,9 @@ function SkillsSection({ formik }) {
 
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Dica:</strong> Inclua habilidades técnicas (ferramentas, linguagens) e comportamentais (comunicação, liderança).
-            Seja específico e honesto sobre seu nível de conhecimento.
+            <strong>💡 Dica:</strong> Inclua habilidades técnicas (ferramentas,
+            linguagens) e comportamentais (comunicação, liderança). Seja
+            específico e honesto sobre seu nível de conhecimento.
           </Typography>
         </Alert>
 
@@ -123,8 +182,12 @@ function SkillsSection({ formik }) {
                   freeSolo
                   options={commonSkills}
                   value={skill}
-                  onChange={(event, newValue) => updateSkill(index, newValue || '')}
-                  onInputChange={(event, newValue) => updateSkill(index, newValue)}
+                  onChange={(event, newValue) =>
+                    updateSkill(index, newValue || '')
+                  }
+                  onInputChange={(event, newValue) =>
+                    updateSkill(index, newValue)
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -168,9 +231,14 @@ function SkillsSection({ formik }) {
         </Button>
 
         {/* Sugestões rápidas */}
-        {formik.values.skills.filter(s => s).length < 5 && (
+        {formik.values.skills.filter((s) => s).length < 5 && (
           <Box sx={{ mt: 2 }}>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mb: 1 }}
+            >
               Sugestões rápidas:
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -181,11 +249,16 @@ function SkillsSection({ formik }) {
                   size="small"
                   onClick={() => {
                     if (!formik.values.skills.includes(suggestion)) {
-                      const emptyIndex = formik.values.skills.findIndex(s => !s);
+                      const emptyIndex = formik.values.skills.findIndex(
+                        (s) => !s
+                      );
                       if (emptyIndex !== -1) {
                         updateSkill(emptyIndex, suggestion);
                       } else {
-                        formik.setFieldValue('skills', [...formik.values.skills, suggestion]);
+                        formik.setFieldValue('skills', [
+                          ...formik.values.skills,
+                          suggestion,
+                        ]);
                       }
                     }
                   }}
@@ -198,7 +271,10 @@ function SkillsSection({ formik }) {
       </Paper>
 
       {/* Seção de Idiomas */}
-      <Paper elevation={2} sx={{ p: 3, borderLeft: '4px solid', borderColor: 'secondary.main' }}>
+      <Paper
+        elevation={2}
+        sx={{ p: 3, borderLeft: '4px solid', borderColor: 'secondary.main' }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <LanguageIcon color="secondary" sx={{ mr: 1 }} />
           <Typography variant="h6" fontWeight="bold">
@@ -208,8 +284,9 @@ function SkillsSection({ formik }) {
 
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
-            <strong>💡 Dica:</strong> Inclua seu nível de proficiência: Nativo, Fluente, Avançado, Intermediário ou Básico.
-            Ex: "Inglês - Avançado" ou "Espanhol - Intermediário"
+            <strong>💡 Dica:</strong> Inclua seu nível de proficiência: Nativo,
+            Fluente, Avançado, Intermediário ou Básico. Ex: "Inglês - Avançado"
+            ou "Espanhol - Intermediário"
           </Typography>
         </Alert>
 
@@ -222,8 +299,12 @@ function SkillsSection({ formik }) {
                   freeSolo
                   options={commonLanguages}
                   value={language}
-                  onChange={(event, newValue) => updateLanguage(index, newValue || '')}
-                  onInputChange={(event, newValue) => updateLanguage(index, newValue)}
+                  onChange={(event, newValue) =>
+                    updateLanguage(index, newValue || '')
+                  }
+                  onInputChange={(event, newValue) =>
+                    updateLanguage(index, newValue)
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}

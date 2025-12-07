@@ -9,7 +9,7 @@ import {
   Chip,
   Alert,
   Tooltip,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -26,9 +26,12 @@ function EducationSection({ formik }) {
       course: '',
       startDate: '',
       endDate: '',
-      description: ''
+      description: '',
     };
-    formik.setFieldValue('education', [...formik.values.education, newEducation]);
+    formik.setFieldValue('education', [
+      ...formik.values.education,
+      newEducation,
+    ]);
   };
 
   const removeEducation = (index) => {
@@ -44,7 +47,13 @@ function EducationSection({ formik }) {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 1 }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        color="primary"
+        sx={{ mb: 1 }}
+      >
         Formação Acadêmica
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -72,10 +81,17 @@ function EducationSection({ formik }) {
             mb: 3,
             borderLeft: '4px solid',
             borderColor: 'secondary.main',
-            position: 'relative'
+            position: 'relative',
           }}
         >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <Chip
               label={`Formação ${index + 1}`}
               color="secondary"
@@ -105,14 +121,17 @@ function EducationSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'institution')}
-                helperText={getFieldError(index, 'institution') || 'Nome da universidade, escola ou instituição'}
+                helperText={
+                  getFieldError(index, 'institution') ||
+                  'Nome da universidade, escola ou instituição'
+                }
                 required
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <BusinessIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -126,14 +145,17 @@ function EducationSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'course')}
-                helperText={getFieldError(index, 'course') || 'Ex: Bacharelado em Ciência da Computação'}
+                helperText={
+                  getFieldError(index, 'course') ||
+                  'Ex: Bacharelado em Ciência da Computação'
+                }
                 required
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <MenuBookIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -155,7 +177,7 @@ function EducationSection({ formik }) {
                     <InputAdornment position="start">
                       <CalendarTodayIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -170,14 +192,17 @@ function EducationSection({ formik }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={!!getFieldError(index, 'endDate')}
-                helperText={getFieldError(index, 'endDate') || 'Deixe em branco se ainda está cursando'}
+                helperText={
+                  getFieldError(index, 'endDate') ||
+                  'Deixe em branco se ainda está cursando'
+                }
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <CalendarTodayIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
@@ -200,10 +225,13 @@ function EducationSection({ formik }) {
                 placeholder="Ex: Projeto de conclusão sobre Inteligência Artificial. Bolsista de iniciação científica. Participei do programa de monitoria..."
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 2 }}>
+                    <InputAdornment
+                      position="start"
+                      sx={{ alignSelf: 'flex-start', mt: 2 }}
+                    >
                       <DescriptionIcon />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>

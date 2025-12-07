@@ -1,7 +1,16 @@
-import { Box, CircularProgress, Typography, LinearProgress } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  LinearProgress,
+} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] }) {
+function LoadingScreen({
+  message = 'Carregando...',
+  progress = null,
+  steps = [],
+}) {
   return (
     <Box
       sx={{
@@ -15,7 +24,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 9999
+        zIndex: 9999,
       }}
     >
       <Box
@@ -26,7 +35,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
           backgroundColor: 'rgba(255,255,255,0.95)',
           borderRadius: 4,
           p: 4,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
         }}
       >
         <CircularProgress
@@ -34,7 +43,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
           thickness={4}
           sx={{
             mb: 3,
-            color: '#667eea'
+            color: '#667eea',
           }}
         />
 
@@ -43,7 +52,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
           sx={{
             fontWeight: 600,
             color: '#2c3e50',
-            mb: 2
+            mb: 2,
           }}
         >
           {message}
@@ -60,11 +69,15 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
                 backgroundColor: '#e0e7ff',
                 '& .MuiLinearProgress-bar': {
                   backgroundColor: '#667eea',
-                  borderRadius: 4
-                }
+                  borderRadius: 4,
+                },
               }}
             />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1, display: 'block' }}
+            >
               {Math.round(progress)}% completo
             </Typography>
           </Box>
@@ -80,7 +93,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
                   alignItems: 'center',
                   gap: 1,
                   mb: 1,
-                  opacity: step.completed ? 1 : 0.5
+                  opacity: step.completed ? 1 : 0.5,
                 }}
               >
                 {step.completed ? (
@@ -88,7 +101,10 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
                 ) : (
                   <CircularProgress size={20} thickness={4} />
                 )}
-                <Typography variant="body2" color={step.completed ? 'success.main' : 'text.secondary'}>
+                <Typography
+                  variant="body2"
+                  color={step.completed ? 'success.main' : 'text.secondary'}
+                >
                   {step.label}
                 </Typography>
               </Box>
@@ -102,7 +118,7 @@ function LoadingScreen({ message = 'Carregando...', progress = null, steps = [] 
             display: 'block',
             mt: 3,
             color: 'text.secondary',
-            fontStyle: 'italic'
+            fontStyle: 'italic',
           }}
         >
           Aguarde enquanto preparamos tudo para você...

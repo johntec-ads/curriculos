@@ -7,7 +7,10 @@ const TestGenerator = () => {
   const navigate = useNavigate();
 
   const handleLoadSample = () => {
-    localStorage.setItem('curriculumData', JSON.stringify(sampleCurriculumData));
+    localStorage.setItem(
+      'curriculumData',
+      JSON.stringify(sampleCurriculumData)
+    );
     navigate('/preview');
   };
 
@@ -17,12 +20,12 @@ const TestGenerator = () => {
       experience: [
         ...sampleCurriculumData.experience,
         ...sampleCurriculumData.experience,
-        ...sampleCurriculumData.experience
+        ...sampleCurriculumData.experience,
       ],
       education: [
         ...sampleCurriculumData.education,
-        ...sampleCurriculumData.education
-      ]
+        ...sampleCurriculumData.education,
+      ],
     };
     localStorage.setItem('curriculumData', JSON.stringify(longData));
     navigate('/preview');
@@ -34,7 +37,7 @@ const TestGenerator = () => {
       education: [sampleCurriculumData.education[0]],
       experience: [sampleCurriculumData.experience[0]],
       skills: sampleCurriculumData.skills.slice(0, 3),
-      languages: []
+      languages: [],
     };
     localStorage.setItem('curriculumData', JSON.stringify(minimalData));
     navigate('/preview');
@@ -47,14 +50,23 @@ const TestGenerator = () => {
           Gerador de Testes de Currículo
         </Typography>
         <Typography variant="body1" paragraph>
-          Use esta ferramenta para gerar currículos com dados fictícios e testar a visualização e geração de PDF.
+          Use esta ferramenta para gerar currículos com dados fictícios e testar
+          a visualização e geração de PDF.
         </Typography>
-        
+
         <Stack spacing={2} direction="column">
-          <Button variant="contained" color="primary" onClick={handleLoadSample}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLoadSample}
+          >
             Carregar Dados Padrão (1-2 páginas)
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleLoadLongSample}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleLoadLongSample}
+          >
             Carregar Dados Longos (3+ páginas)
           </Button>
           <Button variant="outlined" onClick={handleLoadMinimalSample}>

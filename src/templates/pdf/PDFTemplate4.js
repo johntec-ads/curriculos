@@ -3,16 +3,32 @@
  * Usando @react-pdf/renderer para geração de PDF com texto real
  */
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Font,
+} from '@react-pdf/renderer';
 
 // Registrar fonte Roboto
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 'normal' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 'bold' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf', fontStyle: 'italic' },
-  ]
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
+      fontWeight: 'normal',
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+      fontWeight: 'bold',
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf',
+      fontStyle: 'italic',
+    },
+  ],
 });
 
 const styles = StyleSheet.create({
@@ -113,13 +129,13 @@ const formatDate = (date) => {
   if (!date) return 'Presente';
   return new Date(date).toLocaleDateString('pt-BR', {
     year: 'numeric',
-    month: 'long'
+    month: 'long',
   });
 };
 
 const PDFTemplate4 = ({ data }) => {
   if (!data) return null;
-  
+
   const { personalInfo, experience, education, skills, languages } = data;
 
   return (
@@ -127,10 +143,12 @@ const PDFTemplate4 = ({ data }) => {
       <Page size="A4" style={styles.page}>
         {/* Marca d'água */}
         <Text style={styles.watermark}>JOHNTEC.ADS</Text>
-        
+
         {/* Nome */}
-        <Text style={styles.name}>{personalInfo?.name || 'Nome não informado'}</Text>
-        
+        <Text style={styles.name}>
+          {personalInfo?.name || 'Nome não informado'}
+        </Text>
+
         {/* Informações de Contato */}
         <View style={styles.contactSection}>
           {personalInfo?.email && (
@@ -210,7 +228,9 @@ const PDFTemplate4 = ({ data }) => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Habilidades</Text>
             {skills.map((skill, index) => (
-              <Text key={index} style={styles.skillItem}>• {skill}</Text>
+              <Text key={index} style={styles.skillItem}>
+                • {skill}
+              </Text>
             ))}
           </View>
         )}
@@ -220,7 +240,9 @@ const PDFTemplate4 = ({ data }) => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Idiomas</Text>
             {languages.map((lang, index) => (
-              <Text key={index} style={styles.skillItem}>• {lang}</Text>
+              <Text key={index} style={styles.skillItem}>
+                • {lang}
+              </Text>
             ))}
           </View>
         )}

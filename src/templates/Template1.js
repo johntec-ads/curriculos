@@ -3,12 +3,11 @@ import { Paper, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
-  
   const formatDate = (date) => {
     if (!date) return 'Presente';
     return new Date(date).toLocaleDateString('pt-BR', {
       year: 'numeric',
-      month: 'long'
+      month: 'long',
     });
   };
 
@@ -25,31 +24,31 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
   return (
     <>
       {/* Wrapper container responsivo - apenas ajusta a forma como o currículo é visualizado na tela */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           overflowX: 'auto',
           width: '100%',
           display: 'flex',
           justifyContent: 'center',
-          py: { xs: 1, sm: 2 }
+          py: { xs: 1, sm: 2 },
         }}
-        className={isGenerating ? "" : "no-print-container"}
+        className={isGenerating ? '' : 'no-print-container'}
       >
         {/* Template do currículo com dimensões fixas A4 para garantir consistência no PDF */}
         <Paper
           ref={ref}
-          sx={{ 
-            width: '210mm', 
-            minHeight: '297mm', 
-            margin: isGenerating ? 0 : '0 auto', 
-            p: 4, 
-            backgroundColor: '#fff', 
-            boxShadow: '0 0 10px rgba(0,0,0,0.1)', 
-            position: 'relative', 
-            overflow: 'visible', 
-            fontFamily: 'Arial, sans-serif' 
+          sx={{
+            width: '210mm',
+            minHeight: '297mm',
+            margin: isGenerating ? 0 : '0 auto',
+            p: 4,
+            backgroundColor: '#fff',
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            position: 'relative',
+            overflow: 'visible',
+            fontFamily: 'Arial, sans-serif',
           }}
-          className={isGenerating ? "print-only" : ""}
+          className={isGenerating ? 'print-only' : ''}
         >
           {/* Marca d'água */}
           <Typography
@@ -62,14 +61,18 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
               fontSize: '80px',
               pointerEvents: 'none',
               userSelect: 'none',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
             }}
           >
             JOHNTEC.ADS
           </Typography>
 
           {/* Cabeçalho */}
-          <Typography variant="h4" gutterBottom sx={{ borderBottom: '2px solid #1976d2' }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ borderBottom: '2px solid #1976d2' }}
+          >
             {data?.personalInfo?.name || 'Nome não informado'}
           </Typography>
 
@@ -85,7 +88,11 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
           {/* Objetivo */}
           {data?.personalInfo?.objective && (
             <>
-              <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ color: '#1976d2', mt: 3 }}
+              >
                 Objetivo Profissional
               </Typography>
               <Typography paragraph>{data.personalInfo.objective}</Typography>
@@ -93,7 +100,11 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
           )}
 
           {/* Experiência */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ color: '#1976d2', mt: 3 }}
+          >
             Experiência Profissional
           </Typography>
           {sortByDate(data?.experience || []).map((exp, index) => (
@@ -109,7 +120,11 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
           ))}
 
           {/* Educação */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ color: '#1976d2', mt: 3 }}
+          >
             Educação
           </Typography>
           {(data?.education || []).map((edu, index) => (
@@ -118,46 +133,62 @@ const Template1 = forwardRef(({ data, isGenerating = false }, ref) => {
                 {edu.course}
               </Typography>
               <Typography variant="body2">
-                {edu.institution} ({formatDate(edu.startDate)} - {formatDate(edu.endDate)})
+                {edu.institution} ({formatDate(edu.startDate)} -{' '}
+                {formatDate(edu.endDate)})
               </Typography>
               <Typography>{edu.description}</Typography>
             </Box>
           ))}
 
           {/* Habilidades */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ color: '#1976d2', mt: 3 }}
+          >
             Habilidades
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {(data?.skills || []).map((skill, index) => (
-              <Typography key={index} component="span" sx={{
-                bgcolor: '#e3f2fd',
-                px: 2,
-                py: 0.5,
-                borderRadius: 1
-              }}>
+              <Typography
+                key={index}
+                component="span"
+                sx={{
+                  bgcolor: '#e3f2fd',
+                  px: 2,
+                  py: 0.5,
+                  borderRadius: 1,
+                }}
+              >
                 {skill}
               </Typography>
             ))}
           </Box>
 
           {/* Idiomas */}
-          <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mt: 3 }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ color: '#1976d2', mt: 3 }}
+          >
             Idiomas
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {(data?.languages || []).map((language, index) => (
-              <Typography key={index} component="span" sx={{
-                bgcolor: '#e3f2fd',
-                px: 2,
-                py: 0.5,
-                borderRadius: 1
-              }}>
+              <Typography
+                key={index}
+                component="span"
+                sx={{
+                  bgcolor: '#e3f2fd',
+                  px: 2,
+                  py: 0.5,
+                  borderRadius: 1,
+                }}
+              >
                 {language}
               </Typography>
             ))}
           </Box>
-
         </Paper>
       </Box>
 
@@ -171,12 +202,7 @@ const Template1Wrapper = (props) => {
   const handleBack = () => {
     navigate(-1);
   };
-  return (
-    <Template1
-      {...props}
-      onBack={props.onBack || handleBack}
-    />
-  );
+  return <Template1 {...props} onBack={props.onBack || handleBack} />;
 };
 
 export default Template1Wrapper;

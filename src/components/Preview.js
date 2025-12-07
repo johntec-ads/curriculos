@@ -25,7 +25,7 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getTemplateById, templates } from '../templates';
@@ -38,7 +38,10 @@ import ShareIcon from '@mui/icons-material/Share';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { generatePDFWithReactPDF, hasPDFTemplate } from '../utils/pdfGeneratorReactPDF';
+import {
+  generatePDFWithReactPDF,
+  hasPDFTemplate,
+} from '../utils/pdfGeneratorReactPDF';
 import { generateHighQualityPDF } from '../utils/pdfGeneratorFinal';
 
 const Preview = () => {
@@ -55,7 +58,9 @@ const Preview = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-  const [zoomLevel, setZoomLevel] = useState(isMobile ? 0.6 : isTablet ? 0.8 : 1);
+  const [zoomLevel, setZoomLevel] = useState(
+    isMobile ? 0.6 : isTablet ? 0.8 : 1
+  );
   const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
 
   const handleCloseSnackbar = () => {
@@ -63,8 +68,16 @@ const Preview = () => {
   };
 
   useEffect(() => {
-    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 32;
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) * 0.7;
+    const viewportWidth =
+      Math.max(
+        document.documentElement.clientWidth || 0,
+        window.innerWidth || 0
+      ) - 32;
+    const viewportHeight =
+      Math.max(
+        document.documentElement.clientHeight || 0,
+        window.innerHeight || 0
+      ) * 0.7;
     const widthRatio = viewportWidth / 794;
     const heightRatio = viewportHeight / 1123;
     const idealZoom = Math.min(widthRatio, heightRatio, 1);
@@ -72,16 +85,24 @@ const Preview = () => {
   }, [isMobile, isTablet]);
 
   const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+    setZoomLevel((prev) => Math.min(prev + 0.1, 1.5));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.1, 0.3));
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.3));
   };
 
   const handleResetZoom = () => {
-    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 32;
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) * 0.7;
+    const viewportWidth =
+      Math.max(
+        document.documentElement.clientWidth || 0,
+        window.innerWidth || 0
+      ) - 32;
+    const viewportHeight =
+      Math.max(
+        document.documentElement.clientHeight || 0,
+        window.innerHeight || 0
+      ) * 0.7;
     const widthRatio = viewportWidth / 794;
     const heightRatio = viewportHeight / 1123;
     const idealZoom = Math.min(widthRatio, heightRatio, 1);
@@ -108,7 +129,9 @@ const Preview = () => {
             setSelectedTemplate(parsedData.template || 'template1');
           } catch (error) {
             console.error('Erro ao analisar os dados do localStorage:', error);
-            alert('Os dados armazenados estão corrompidos. Por favor, reinicie o processo.');
+            alert(
+              'Os dados armazenados estão corrompidos. Por favor, reinicie o processo.'
+            );
             localStorage.removeItem('curriculumData');
           }
         }
@@ -120,7 +143,9 @@ const Preview = () => {
         setSelectedTemplate(parsedData.template || 'template1');
       } catch (error) {
         console.error('Erro ao analisar os dados do localStorage:', error);
-        alert('Os dados armazenados estão corrompidos. Por favor, reinicie o processo.');
+        alert(
+          'Os dados armazenados estão corrompidos. Por favor, reinicie o processo.'
+        );
         localStorage.removeItem('curriculumData');
       }
     }
@@ -134,33 +159,34 @@ const Preview = () => {
       setSnackbarOpen(true);
       return;
     }
-    
+
     setIsGeneratingPdf(true);
     setPrintError(null);
 
     try {
       const filename = `Curriculo_${curriculumData?.personalInfo?.name?.replace(/\s+/g, '_') || 'Novo'}.pdf`;
-      
+
       // Extrair número do template (template1 -> 1, template3 -> 3, etc.)
-      const templateNum = parseInt(selectedTemplate.replace('template', ''), 10) || 1;
-      
+      const templateNum =
+        parseInt(selectedTemplate.replace('template', ''), 10) || 1;
+
       // Usar novo gerador react-pdf se o template tiver versão PDF
       if (hasPDFTemplate(templateNum)) {
         await generatePDFWithReactPDF(curriculumData, templateNum, filename, {
           onProgress: (percent, message) => {
             console.log(`${percent}% - ${message}`);
-          }
+          },
         });
-        
-        setSnackbarMessage("PDF gerado com sucesso!");
-        setSnackbarSeverity("success");
+
+        setSnackbarMessage('PDF gerado com sucesso!');
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
       } else {
         // Fallback para método antigo (não deveria acontecer, todos os templates têm versão PDF)
         if (!printRef.current) {
           throw new Error('Conteúdo do currículo não disponível.');
         }
-        
+
         const element = printRef.current;
         const previousStyles = {
           visibility: element.style.visibility,
@@ -168,21 +194,24 @@ const Preview = () => {
           left: element.style.left,
           top: element.style.top,
           zIndex: element.style.zIndex,
-          pointerEvents: element.style.pointerEvents
+          pointerEvents: element.style.pointerEvents,
         };
-        
+
         element.style.visibility = 'visible';
         element.style.position = 'fixed';
         element.style.left = '0';
         element.style.top = '0';
         element.style.zIndex = '9999';
         element.style.pointerEvents = 'auto';
-        await new Promise(resolve => setTimeout(resolve, 150));
-        
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
         try {
-          await generateHighQualityPDF(element, filename, { scale: 2, quality: 0.92 });
-          setSnackbarMessage("PDF gerado com sucesso!");
-          setSnackbarSeverity("success");
+          await generateHighQualityPDF(element, filename, {
+            scale: 2,
+            quality: 0.92,
+          });
+          setSnackbarMessage('PDF gerado com sucesso!');
+          setSnackbarSeverity('success');
           setSnackbarOpen(true);
         } finally {
           element.style.visibility = previousStyles.visibility || 'hidden';
@@ -194,10 +223,10 @@ const Preview = () => {
         }
       }
     } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
+      console.error('Erro ao gerar PDF:', error);
       setPrintError(error.message || 'Erro ao gerar o PDF');
-      setSnackbarMessage("Erro ao gerar o PDF. Tente novamente.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Erro ao gerar o PDF. Tente novamente.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {
       setIsGeneratingPdf(false);
@@ -215,19 +244,21 @@ const Preview = () => {
 
   const handleCopyLink = async () => {
     try {
-      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
+      const encodedData = btoa(
+        encodeURIComponent(JSON.stringify(curriculumData))
+      );
       const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
-      
+
       await navigator.clipboard.writeText(shareUrl);
-      
-      setSnackbarMessage("Link copiado para a área de transferência!");
-      setSnackbarSeverity("success");
+
+      setSnackbarMessage('Link copiado para a área de transferência!');
+      setSnackbarSeverity('success');
       setSnackbarOpen(true);
       handleCloseShareMenu();
     } catch (error) {
-      console.error("Erro ao copiar link:", error);
-      setSnackbarMessage("Erro ao copiar link.");
-      setSnackbarSeverity("error");
+      console.error('Erro ao copiar link:', error);
+      setSnackbarMessage('Erro ao copiar link.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
@@ -236,7 +267,9 @@ const Preview = () => {
     (async () => {
       handleCloseShareMenu();
       if (!curriculumData) {
-        setSnackbarMessage('Dados do currículo não disponíveis para compartilhamento.');
+        setSnackbarMessage(
+          'Dados do currículo não disponíveis para compartilhamento.'
+        );
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         return;
@@ -246,22 +279,28 @@ const Preview = () => {
 
       try {
         const filename = `Curriculo_${curriculumData?.personalInfo?.name || 'Novo'}.pdf`;
-        const templateNum = parseInt(selectedTemplate.replace('template', ''), 10) || 1;
-        
+        const templateNum =
+          parseInt(selectedTemplate.replace('template', ''), 10) || 1;
+
         let pdfBlob;
-        
+
         // Usar novo gerador react-pdf se o template tiver versão PDF
         if (hasPDFTemplate(templateNum)) {
-          pdfBlob = await generatePDFWithReactPDF(curriculumData, templateNum, filename, {
-            returnBlob: true,
-            onProgress: (p, msg) => console.log(p, msg)
-          });
+          pdfBlob = await generatePDFWithReactPDF(
+            curriculumData,
+            templateNum,
+            filename,
+            {
+              returnBlob: true,
+              onProgress: (p, msg) => console.log(p, msg),
+            }
+          );
         } else {
           // Fallback para método antigo
           if (!printRef.current) {
             throw new Error('Conteúdo do currículo não disponível.');
           }
-          
+
           const element = printRef.current;
           const previousStyles = {
             visibility: element.style.visibility,
@@ -269,23 +308,23 @@ const Preview = () => {
             left: element.style.left,
             top: element.style.top,
             zIndex: element.style.zIndex,
-            pointerEvents: element.style.pointerEvents
+            pointerEvents: element.style.pointerEvents,
           };
-          
+
           element.style.visibility = 'visible';
           element.style.position = 'fixed';
           element.style.left = '0';
           element.style.top = '0';
           element.style.zIndex = '9999';
           element.style.pointerEvents = 'auto';
-          await new Promise(resolve => setTimeout(resolve, 150));
-          
+          await new Promise((resolve) => setTimeout(resolve, 150));
+
           try {
             pdfBlob = await generateHighQualityPDF(element, filename, {
               scale: 2,
               quality: 0.9,
               margin: 10,
-              returnBlob: true
+              returnBlob: true,
             });
           } finally {
             element.style.visibility = previousStyles.visibility || 'hidden';
@@ -293,7 +332,8 @@ const Preview = () => {
             element.style.left = previousStyles.left || '0';
             element.style.top = previousStyles.top || '0';
             element.style.zIndex = previousStyles.zIndex || '-1';
-            element.style.pointerEvents = previousStyles.pointerEvents || 'none';
+            element.style.pointerEvents =
+              previousStyles.pointerEvents || 'none';
           }
         }
 
@@ -302,7 +342,11 @@ const Preview = () => {
         // Tenta usar Web Share API com arquivos (apenas em ambientes suportados, normalmente mobile)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            await navigator.share({ files: [file], title: `Currículo - ${curriculumData?.personalInfo?.name || ''}`, text: 'Segue meu currículo em anexo.' });
+            await navigator.share({
+              files: [file],
+              title: `Currículo - ${curriculumData?.personalInfo?.name || ''}`,
+              text: 'Segue meu currículo em anexo.',
+            });
             setSnackbarMessage('Compartilhamento concluído!');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -324,7 +368,9 @@ const Preview = () => {
         a.remove();
         URL.revokeObjectURL(url);
 
-        setSnackbarMessage('PDF gerado e baixado. Envie o arquivo manualmente pelo WhatsApp.');
+        setSnackbarMessage(
+          'PDF gerado e baixado. Envie o arquivo manualmente pelo WhatsApp.'
+        );
         setSnackbarSeverity('info');
         setSnackbarOpen(true);
       } catch (error) {
@@ -340,18 +386,20 @@ const Preview = () => {
 
   const handleShareEmail = () => {
     try {
-      const encodedData = btoa(encodeURIComponent(JSON.stringify(curriculumData)));
+      const encodedData = btoa(
+        encodeURIComponent(JSON.stringify(curriculumData))
+      );
       const shareUrl = `${window.location.origin}/preview?shared=${encodedData}`;
       const subject = `Currículo - ${curriculumData?.personalInfo?.name || 'Profissional'}`;
       const body = `Olá,\n\nConfira meu currículo através do link: ${shareUrl}\n\nAtenciosamente,\n${curriculumData?.personalInfo?.name || ''}`;
       const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
+
       window.location.href = mailtoUrl;
       handleCloseShareMenu();
     } catch (error) {
-      console.error("Erro ao compartilhar por email:", error);
-      setSnackbarMessage("Erro ao compartilhar por email.");
-      setSnackbarSeverity("error");
+      console.error('Erro ao compartilhar por email:', error);
+      setSnackbarMessage('Erro ao compartilhar por email.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
@@ -362,17 +410,20 @@ const Preview = () => {
 
   const handleTemplateChange = (templateId) => {
     setSelectedTemplate(templateId);
-    setCurriculumData(prev => ({
+    setCurriculumData((prev) => ({
       ...prev,
-      template: templateId
+      template: templateId,
     }));
-    localStorage.setItem('curriculumData', JSON.stringify({
-      ...curriculumData,
-      template: templateId
-    }));
+    localStorage.setItem(
+      'curriculumData',
+      JSON.stringify({
+        ...curriculumData,
+        template: templateId,
+      })
+    );
     setIsTemplateDialogOpen(false);
-    setSnackbarMessage("Modelo alterado com sucesso!");
-    setSnackbarSeverity("success");
+    setSnackbarMessage('Modelo alterado com sucesso!');
+    setSnackbarSeverity('success');
     setSnackbarOpen(true);
   };
 
@@ -417,32 +468,41 @@ const Preview = () => {
 
   return (
     <Container maxWidth="md" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-      <Box sx={{ 
-        display: 'flex', 
-        flexWrap: 'wrap',           // permite quebrar multiline no mobile
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: 1, 
-        mb: 2,
-        mt: 1,
-        backgroundColor: 'rgba(25, 118, 210, 0.08)',
-        borderRadius: 1,
-        py: 1,
-        px: 2,
-        '@media (max-width:600px)': {  // mobile
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-        }
-      }} className="no-print">
-        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          ℹ️ Esta é uma visualização exata do formato A4 do seu currículo. Use os controles de zoom para melhor visualização.
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap', // permite quebrar multiline no mobile
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 1,
+          mb: 2,
+          mt: 1,
+          backgroundColor: 'rgba(25, 118, 210, 0.08)',
+          borderRadius: 1,
+          py: 1,
+          px: 2,
+          '@media (max-width:600px)': {
+            // mobile
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+          },
+        }}
+        className="no-print"
+      >
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        >
+          ℹ️ Esta é uma visualização exata do formato A4 do seu currículo. Use
+          os controles de zoom para melhor visualização.
         </Typography>
       </Box>
 
-      <Stack 
+      <Stack
         direction="row"
-        justifyContent="center" 
-        alignItems="center" 
+        justifyContent="center"
+        alignItems="center"
         spacing={1}
         sx={{ mb: 2 }}
         className="no-print"
@@ -452,14 +512,17 @@ const Preview = () => {
             <ZoomOutIcon />
           </IconButton>
         </Tooltip>
-        <Typography variant="body2" sx={{ 
-          minWidth: '48px', 
-          textAlign: 'center',
-          bgcolor: 'rgba(25, 118, 210, 0.04)',
-          borderRadius: 1,
-          py: 0.5,
-          px: 1
-        }}>
+        <Typography
+          variant="body2"
+          sx={{
+            minWidth: '48px',
+            textAlign: 'center',
+            bgcolor: 'rgba(25, 118, 210, 0.04)',
+            borderRadius: 1,
+            py: 0.5,
+            px: 1,
+          }}
+        >
           {Math.round(zoomLevel * 100)}%
         </Typography>
         <Tooltip title="Aumentar zoom">
@@ -474,44 +537,48 @@ const Preview = () => {
         </Tooltip>
       </Stack>
 
-      <Box sx={{ 
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        pb: 2,
-        overflow: 'hidden'
-      }}>
-        <Box sx={{
+      <Box
+        sx={{
           width: '100%',
-          maxWidth: '100%',
-          overflowX: 'auto',
-          overflowY: 'auto',
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
           pb: 2,
-          maxHeight: {
-            xs: 'calc(100vh - 280px)',
-            sm: 'calc(100vh - 260px)',
-            md: 'calc(100vh - 240px)'
-          }
-        }}>
-          <Paper 
-            elevation={3} 
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: '100%',
+            overflowX: 'auto',
+            overflowY: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
+            pb: 2,
+            maxHeight: {
+              xs: 'calc(100vh - 280px)',
+              sm: 'calc(100vh - 260px)',
+              md: 'calc(100vh - 240px)',
+            },
+          }}
+        >
+          <Paper
+            elevation={3}
             sx={{
               margin: '0 auto',
-              width: (a4WidthInPixels * zoomLevel) + 'px',
-              height: (a4HeightInPixels * zoomLevel) + 'px',
+              width: a4WidthInPixels * zoomLevel + 'px',
+              height: a4HeightInPixels * zoomLevel + 'px',
               position: 'relative',
               border: '1px solid #ddd',
               boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
             {/* Conteúdo para visualização na tela */}
-            <Box 
+            <Box
               className="curriculum-preview-content"
-              sx={{ 
+              sx={{
                 width: a4WidthInPixels,
                 height: a4HeightInPixels,
                 position: 'absolute',
@@ -519,20 +586,18 @@ const Preview = () => {
                 left: 0,
                 transform: 'scale(' + zoomLevel + ')',
                 transformOrigin: 'top left',
-              }}>
-              <TemplateComponent 
-                data={curriculumData}
-                isGenerating={false}
-              />
+              }}
+            >
+              <TemplateComponent data={curriculumData} isGenerating={false} />
             </Box>
           </Paper>
         </Box>
 
         {/* Elemento oculto apenas para impressão - posicionado de forma visível mas fora da viewport */}
-        <Box 
+        <Box
           ref={printRef}
           id="print-content"
-          sx={{ 
+          sx={{
             position: 'fixed',
             left: 0,
             top: 0,
@@ -545,31 +610,31 @@ const Preview = () => {
             '&.printing': {
               visibility: 'visible',
               position: 'static',
-              zIndex: 9999
-            }
+              zIndex: 9999,
+            },
           }}
           className="print-only"
         >
-          <TemplateComponent 
-            data={curriculumData}
-            isGenerating={true}
-          />
+          <TemplateComponent data={curriculumData} isGenerating={true} />
         </Box>
       </Box>
 
-      <Box sx={{ 
-        textAlign: 'center', 
-        mb: 4, 
-        mt: 3, 
-        display: 'flex', 
-        flexDirection: { xs: 'column', sm: 'row' },
-        gap: 2, 
-        justifyContent: 'center',
-        px: { xs: 2, sm: 0 }
-      }} className="no-print">
-        <Button 
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 4,
+          mt: 3,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          justifyContent: 'center',
+          px: { xs: 2, sm: 0 },
+        }}
+        className="no-print"
+      >
+        <Button
           onClick={handleBack}
-          variant="outlined" 
+          variant="outlined"
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
@@ -584,45 +649,45 @@ const Preview = () => {
           onClick={() => setIsTemplateDialogOpen(true)}
           disabled={isGeneratingPdf}
           fullWidth={isMobile}
-          sx={{ 
+          sx={{
             borderWidth: 2,
             '&:hover': {
               borderWidth: 2,
-              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+              backgroundColor: 'rgba(25, 118, 210, 0.04)',
             },
-            fontWeight: 'medium'
+            fontWeight: 'medium',
           }}
         >
           Escolher Outro Modelo
         </Button>
         <Button
           onClick={handleShare}
-          variant="outlined" 
+          variant="outlined"
           color="success"
           size="large"
           disabled={isGeneratingPdf}
           fullWidth={isMobile}
           startIcon={<ShareIcon />}
-          sx={{ 
-            fontWeight: 'medium'
+          sx={{
+            fontWeight: 'medium',
           }}
         >
           Compartilhar
         </Button>
         <Button
           onClick={handleGeneratePDF}
-          variant="contained" 
+          variant="contained"
           color="primary"
           size="large"
           disabled={isGeneratingPdf}
           fullWidth={isMobile}
           startIcon={<PictureAsPdfIcon />}
-          sx={{ 
+          sx={{
             fontWeight: 'bold',
             boxShadow: '0 4px 6px rgba(25, 118, 210, 0.25)',
             '&:hover': {
               boxShadow: '0 6px 10px rgba(25, 118, 210, 0.3)',
-            }
+            },
           }}
         >
           {isGeneratingPdf ? 'Gerando PDF...' : 'Gerar PDF'}
@@ -664,8 +729,8 @@ const Preview = () => {
         </Typography>
       )}
 
-      <Dialog 
-        open={isTemplateDialogOpen} 
+      <Dialog
+        open={isTemplateDialogOpen}
         onClose={() => setIsTemplateDialogOpen(false)}
         maxWidth="md"
         fullWidth
@@ -673,15 +738,17 @@ const Preview = () => {
         sx={{
           '& .MuiDialog-paper': {
             width: '100%',
-            maxWidth: { xs: '95%', sm: '80%', md: '900px' }
-          }
+            maxWidth: { xs: '95%', sm: '80%', md: '900px' },
+          },
         }}
       >
-        <DialogTitle sx={{ 
-          position: 'relative', 
-          pr: 6,
-          fontSize: { xs: '1.1rem', sm: '1.25rem' }
-        }}>
+        <DialogTitle
+          sx={{
+            position: 'relative',
+            pr: 6,
+            fontSize: { xs: '1.1rem', sm: '1.25rem' },
+          }}
+        >
           Escolha um Modelo de Currículo
           <IconButton
             aria-label="Fechar"
@@ -700,48 +767,61 @@ const Preview = () => {
           <Grid container spacing={{ xs: 2, sm: 3 }}>
             {templates.map((template) => (
               <Grid item xs={12} sm={6} md={4} key={template.id}>
-                <Card 
-                  sx={{ 
-                    border: selectedTemplate === template.id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                <Card
+                  sx={{
+                    border:
+                      selectedTemplate === template.id
+                        ? '2px solid #1976d2'
+                        : '1px solid #e0e0e0',
                     transition: 'all 0.2s ease',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     '&:hover': {
                       transform: { xs: 'none', sm: 'translateY(-4px)' },
-                      boxShadow: 3
-                    }
+                      boxShadow: 3,
+                    },
                   }}
                 >
-                  <CardActionArea 
+                  <CardActionArea
                     onClick={() => handleTemplateChange(template.id)}
-                    sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                    }}
                   >
                     <CardMedia
                       component="img"
-                      height={isMobile ? "200" : "320"}
+                      height={isMobile ? '200' : '320'}
                       image={template.thumbnail}
                       alt={template.name}
                       sx={{
                         objectFit: 'contain',
                         bgcolor: '#f5f5f5',
-                        filter: selectedTemplate === template.id ? 'none' : 'grayscale(40%)'
+                        filter:
+                          selectedTemplate === template.id
+                            ? 'none'
+                            : 'grayscale(40%)',
                       }}
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography 
-                        gutterBottom 
-                        variant="h6" 
-                        component="div" 
-                        sx={{ 
-                          color: selectedTemplate === template.id ? '#1976d2' : 'inherit',
-                          fontSize: { xs: '1rem', sm: '1.25rem' }
+                      <Typography
+                        gutterBottom
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          color:
+                            selectedTemplate === template.id
+                              ? '#1976d2'
+                              : 'inherit',
+                          fontSize: { xs: '1rem', sm: '1.25rem' },
                         }}
                       >
                         {template.name}
                       </Typography>
-                      <Typography 
-                        variant="body2" 
+                      <Typography
+                        variant="body2"
                         color="text.secondary"
                         sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                       >
@@ -754,25 +834,27 @@ const Preview = () => {
             ))}
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 1.5, sm: 2 }, 
-          justifyContent: { xs: 'center', sm: 'space-between' },
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: { xs: 1, sm: 0 }
-        }}>
-          <Button 
-            onClick={() => setIsTemplateDialogOpen(false)} 
-            color="primary" 
-            size="large" 
+        <DialogActions
+          sx={{
+            p: { xs: 1.5, sm: 2 },
+            justifyContent: { xs: 'center', sm: 'space-between' },
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 0 },
+          }}
+        >
+          <Button
+            onClick={() => setIsTemplateDialogOpen(false)}
+            color="primary"
+            size="large"
             variant="outlined"
             fullWidth={isMobile}
           >
             Cancelar
           </Button>
-          <Button 
-            onClick={() => setIsTemplateDialogOpen(false)} 
-            color="primary" 
-            size="large" 
+          <Button
+            onClick={() => setIsTemplateDialogOpen(false)}
+            color="primary"
+            size="large"
             variant="contained"
             fullWidth={isMobile}
           >
@@ -785,20 +867,26 @@ const Preview = () => {
         open={snackbarOpen}
         autoHideDuration={2000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ 
-          vertical: 'bottom', 
-          horizontal: isMobile ? 'center' : 'right' 
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: isMobile ? 'center' : 'right',
         }}
         className="no-print"
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbarSeverity}
           variant="filled"
           sx={{
             width: '100%',
-            backgroundColor: snackbarSeverity === 'success' ? theme.palette.primary.main : undefined,
-            color: snackbarSeverity === 'success' ? theme.palette.primary.contrastText : undefined
+            backgroundColor:
+              snackbarSeverity === 'success'
+                ? theme.palette.primary.main
+                : undefined,
+            color:
+              snackbarSeverity === 'success'
+                ? theme.palette.primary.contrastText
+                : undefined,
           }}
         >
           {snackbarMessage}

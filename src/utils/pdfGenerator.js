@@ -8,7 +8,11 @@ import jsPDF from 'jspdf';
  * @param {object} options - Opções de configuração
  * @returns {Promise<boolean>} - Sucesso ou falha
  */
-export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf', options = {}) => {
+export const generateHighQualityPDF = async (
+  element,
+  filename = 'curriculo.pdf',
+  options = {}
+) => {
   try {
     const {
       scale = 3, // Maior escala = maior qualidade
@@ -17,7 +21,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       orientation = 'portrait',
       onProgress = null,
       margin = 10, // margem em mm
-      returnBlob = false // se true, retorna um Blob ao invés de salvar diretamente
+      returnBlob = false, // se true, retorna um Blob ao invés de salvar diretamente
     } = options;
 
     if (onProgress) onProgress(10, 'Preparando documento...');
@@ -34,7 +38,10 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       onclone: (clonedDoc) => {
         try {
           // Remover arredondamentos e sombras no clone para evitar cortes estranhos entre páginas
-          const cloned = clonedDoc.getElementById('print-content') || clonedDoc.querySelector('.print-only') || clonedDoc.body;
+          const cloned =
+            clonedDoc.getElementById('print-content') ||
+            clonedDoc.querySelector('.print-only') ||
+            clonedDoc.body;
           if (cloned) {
             cloned.style.borderRadius = '0';
             cloned.style.boxShadow = 'none';
@@ -51,7 +58,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
         } catch (e) {
           // Silencioso
         }
-      }
+      },
     });
 
     if (onProgress) onProgress(50, 'Gerando PDF...');
@@ -67,15 +74,15 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       orientation: orientation,
       unit: 'mm',
       format: format,
-      compress: true
+      compress: true,
     });
 
-  // Calcular conversão px <-> mm usando a altura do canvas (mais confiável para paginação vertical)
-  const pxPerMmHeight = canvas.height / a4Height; // pixels por mm baseado na altura A4
-  const pageHeightPx = Math.floor(usableHeight * pxPerMmHeight);
-  const overlapMm = options.overlapMm || 12; // sobreposição entre páginas para evitar cortes visíveis (padrão 12mm)
-  const overlapPx = Math.round(overlapMm * pxPerMmHeight);
-  const stride = Math.max(1, pageHeightPx - overlapPx);
+    // Calcular conversão px <-> mm usando a altura do canvas (mais confiável para paginação vertical)
+    const pxPerMmHeight = canvas.height / a4Height; // pixels por mm baseado na altura A4
+    const pageHeightPx = Math.floor(usableHeight * pxPerMmHeight);
+    const overlapMm = options.overlapMm || 12; // sobreposição entre páginas para evitar cortes visíveis (padrão 12mm)
+    const overlapPx = Math.round(overlapMm * pxPerMmHeight);
+    const stride = Math.max(1, pageHeightPx - overlapPx);
 
     // Calcular número aproximado de páginas e informar progresso
     const totalPages = Math.ceil((canvas.height - overlapPx) / stride);
@@ -104,7 +111,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
               topPx: rect.top - rootRect.top,
               widthPx: rect.width,
               heightPx: rect.height,
-              color: bg
+              color: bg,
             };
           }
         }
@@ -123,7 +130,17 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
 
       // Limpar e desenhar o recorte
       tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-      tempCtx.drawImage(canvas, 0, y, canvas.width, thisPageHeightPx, 0, 0, canvas.width, thisPageHeightPx);
+      tempCtx.drawImage(
+        canvas,
+        0,
+        y,
+        canvas.width,
+        thisPageHeightPx,
+        0,
+        0,
+        canvas.width,
+        thisPageHeightPx
+      );
 
       // Converter slice para imagem
       const imgData = tempCanvas.toDataURL('image/jpeg', quality);
@@ -139,14 +156,16 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       // Desenhar máscara na região de sobreposição da sidebar para cobrir seams visíveis
       if (sidebarInfo) {
         try {
-          const sidebarLeftMm = (sidebarInfo.leftPx / pxPerMmWidth) + margin / 1; // ajustar à margem
+          const sidebarLeftMm = sidebarInfo.leftPx / pxPerMmWidth + margin / 1; // ajustar à margem
           const sidebarWidthMm = sidebarInfo.widthPx / pxPerMmWidth;
-          const overlapMm = Math.round((options.overlapMm || 12));
+          const overlapMm = Math.round(options.overlapMm || 12);
           // Para páginas além da primeira, desenhar um retângulo no topo da página (altura = overlap)
           if (page > 0) {
             const rectHeightMm = overlapMm;
             // converter bg color rgb(...) para valores 0-255
-            const colorMatch = (/rgba?\((\d+),\s*(\d+),\s*(\d+)/).exec(sidebarInfo.color || '');
+            const colorMatch = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(
+              sidebarInfo.color || ''
+            );
             if (colorMatch) {
               const r = parseInt(colorMatch[1], 10);
               const g = parseInt(colorMatch[2], 10);
@@ -161,10 +180,23 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       }
 
       const imgHeightMm = thisPageHeightPx / pxPerMmHeight;
-      pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidth, imgHeightMm, undefined, 'FAST');
+      pdf.addImage(
+        imgData,
+        'JPEG',
+        xPos,
+        yPos,
+        imgWidth,
+        imgHeightMm,
+        undefined,
+        'FAST'
+      );
 
       page++;
-      if (onProgress) onProgress(60 + Math.round((page / totalPages) * 30), `Processando página ${page}/${totalPages}...`);
+      if (onProgress)
+        onProgress(
+          60 + Math.round((page / totalPages) * 30),
+          `Processando página ${page}/${totalPages}...`
+        );
     }
 
     if (onProgress) onProgress(90, 'Finalizando...');
@@ -193,11 +225,14 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
  * @param {string} filename - Nome do arquivo PDF
  * @returns {Promise<boolean>} - Sucesso ou falha
  */
-export const generateOptimizedPDF = async (element, filename = 'curriculo.pdf') => {
+export const generateOptimizedPDF = async (
+  element,
+  filename = 'curriculo.pdf'
+) => {
   return generateHighQualityPDF(element, filename, {
     scale: 2,
     quality: 0.85,
-    onProgress: null
+    onProgress: null,
   });
 };
 
@@ -209,8 +244,10 @@ export const prepareElementForPDF = (element) => {
   if (!element) return;
 
   // Ocultar botões e elementos que não devem aparecer no PDF
-  const elementsToHide = element.querySelectorAll('.no-print, .no-print-container');
-  elementsToHide.forEach(el => {
+  const elementsToHide = element.querySelectorAll(
+    '.no-print, .no-print-container'
+  );
+  elementsToHide.forEach((el) => {
     el.style.display = 'none';
   });
 
@@ -221,7 +258,7 @@ export const prepareElementForPDF = (element) => {
 
   return () => {
     // Restaurar elementos ocultos
-    elementsToHide.forEach(el => {
+    elementsToHide.forEach((el) => {
       el.style.display = '';
     });
   };
@@ -233,7 +270,11 @@ export const prepareElementForPDF = (element) => {
  * @param {string} format - Formato de exportação ('pdf', 'png', 'jpeg')
  * @param {string} filename - Nome do arquivo
  */
-export const exportCurriculum = async (element, format = 'pdf', filename = 'curriculo') => {
+export const exportCurriculum = async (
+  element,
+  format = 'pdf',
+  filename = 'curriculo'
+) => {
   try {
     if (format === 'pdf') {
       return await generateHighQualityPDF(element, `${filename}.pdf`);
@@ -245,11 +286,11 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: false
+      logging: false,
     });
 
     const dataUrl = canvas.toDataURL(`image/${format}`, 1.0);
-    
+
     // Criar link para download
     const link = document.createElement('a');
     link.href = dataUrl;
@@ -269,7 +310,7 @@ const pdfUtils = {
   generateHighQualityPDF,
   generateOptimizedPDF,
   prepareElementForPDF,
-  exportCurriculum
+  exportCurriculum,
 };
 
 export default pdfUtils;

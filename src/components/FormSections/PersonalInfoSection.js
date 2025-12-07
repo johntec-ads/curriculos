@@ -14,7 +14,7 @@ import {
   Grid,
   InputAdornment,
   Tooltip,
-  Alert
+  Alert,
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,7 +28,9 @@ import Cropper from 'react-easy-crop';
 import lookupCep from '../../utils/cepService';
 
 function PersonalInfoSection({ formik }) {
-  const [photo, setPhoto] = useState(formik.values.personalInfo.photoUrl || null);
+  const [photo, setPhoto] = useState(
+    formik.values.personalInfo.photoUrl || null
+  );
   const [showCropper, setShowCropper] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -102,7 +104,10 @@ function PersonalInfoSection({ formik }) {
   };
 
   const getFieldError = (fieldName) => {
-    return formik.touched.personalInfo?.[fieldName] && formik.errors.personalInfo?.[fieldName];
+    return (
+      formik.touched.personalInfo?.[fieldName] &&
+      formik.errors.personalInfo?.[fieldName]
+    );
   };
 
   const getFieldHelperText = (fieldName) => {
@@ -128,7 +133,11 @@ function PersonalInfoSection({ formik }) {
       const addressParts = [];
       if (data.logradouro) addressParts.push(data.logradouro);
       if (data.bairro) addressParts.push(data.bairro);
-      const addressStr = `${addressParts.join(', ')} - ${data.localidade}, ${data.uf}`.replace(/^\s*-\s*/, '');
+      const addressStr =
+        `${addressParts.join(', ')} - ${data.localidade}, ${data.uf}`.replace(
+          /^\s*-\s*/,
+          ''
+        );
       formik.setFieldValue('personalInfo.address', addressStr);
       formik.setFieldValue('personalInfo.cep', sanitized);
     } catch (err) {
@@ -140,19 +149,33 @@ function PersonalInfoSection({ formik }) {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom fontWeight="bold" color="primary" sx={{ mb: 3 }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        fontWeight="bold"
+        color="primary"
+        sx={{ mb: 3 }}
+      >
         Informações Pessoais
       </Typography>
 
       <Alert severity="success" sx={{ mb: 3 }}>
         <Typography variant="body2">
-          💡 <strong>Dica profissional:</strong> Use uma foto profissional com fundo neutro e roupas adequadas.
-          Evite selfies ou fotos com outras pessoas.
+          💡 <strong>Dica profissional:</strong> Use uma foto profissional com
+          fundo neutro e roupas adequadas. Evite selfies ou fotos com outras
+          pessoas.
         </Typography>
       </Alert>
 
       {/* Seção de Foto */}
-      <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Avatar
           src={photo}
           sx={{
@@ -161,7 +184,7 @@ function PersonalInfoSection({ formik }) {
             mb: 2,
             border: '4px solid',
             borderColor: 'primary.light',
-            boxShadow: 3
+            boxShadow: 3,
           }}
         >
           <PersonIcon sx={{ fontSize: 80 }} />
@@ -184,7 +207,11 @@ function PersonalInfoSection({ formik }) {
           </Button>
           {photo && (
             <Tooltip title="Remover foto">
-              <IconButton onClick={handleDeletePhoto} color="error" size="small">
+              <IconButton
+                onClick={handleDeletePhoto}
+                color="error"
+                size="small"
+              >
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -196,7 +223,12 @@ function PersonalInfoSection({ formik }) {
       </Box>
 
       {/* Dialog para cortar foto */}
-      <Dialog open={showCropper} onClose={() => setShowCropper(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={showCropper}
+        onClose={() => setShowCropper(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Ajustar Foto</DialogTitle>
         <DialogContent>
           <Box sx={{ position: 'relative', width: '100%', height: 400, mb: 3 }}>
@@ -244,14 +276,17 @@ function PersonalInfoSection({ formik }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={!!getFieldError('name')}
-            helperText={getFieldHelperText('name') || 'Digite seu nome completo como aparece em documentos'}
+            helperText={
+              getFieldHelperText('name') ||
+              'Digite seu nome completo como aparece em documentos'
+            }
             required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <PersonIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -266,14 +301,16 @@ function PersonalInfoSection({ formik }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={!!getFieldError('email')}
-            helperText={getFieldHelperText('email') || 'Use um email profissional'}
+            helperText={
+              getFieldHelperText('email') || 'Use um email profissional'
+            }
             required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <EmailIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -295,7 +332,7 @@ function PersonalInfoSection({ formik }) {
                 <InputAdornment position="start">
                   <PhoneIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -327,7 +364,7 @@ function PersonalInfoSection({ formik }) {
                     {cepLoading ? 'Buscando...' : 'Buscar'}
                   </Button>
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -341,13 +378,15 @@ function PersonalInfoSection({ formik }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={!!getFieldError('address')}
-            helperText={getFieldHelperText('address') || 'Rua, Bairro - Cidade, UF'}
+            helperText={
+              getFieldHelperText('address') || 'Rua, Bairro - Cidade, UF'
+            }
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <LocationOnIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -361,14 +400,17 @@ function PersonalInfoSection({ formik }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={!!getFieldError('linkedin')}
-            helperText={getFieldHelperText('linkedin') || 'linkedin.com/in/seu-perfil (opcional)'}
+            helperText={
+              getFieldHelperText('linkedin') ||
+              'linkedin.com/in/seu-perfil (opcional)'
+            }
             placeholder="linkedin.com/in/seu-perfil"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <LinkedInIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
@@ -391,10 +433,13 @@ function PersonalInfoSection({ formik }) {
             placeholder="Ex: Profissional com 5 anos de experiência em desenvolvimento web, buscando oportunidades para contribuir com projetos inovadores..."
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 2 }}>
+                <InputAdornment
+                  position="start"
+                  sx={{ alignSelf: 'flex-start', mt: 2 }}
+                >
                   <WorkIcon />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>

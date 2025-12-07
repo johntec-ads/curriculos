@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Typography, Button, Paper, Stack, Alert, CircularProgress } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Button,
+  Paper,
+  Stack,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import PDFTemplate1 from '../templates/pdf/PDFTemplate1';
 import { sampleCurriculumData } from '../data/sampleData';
@@ -19,12 +27,12 @@ const TestPDFComparison = () => {
     experience: [
       ...sampleCurriculumData.experience,
       ...sampleCurriculumData.experience,
-      ...sampleCurriculumData.experience
+      ...sampleCurriculumData.experience,
     ],
     education: [
       ...sampleCurriculumData.education,
-      ...sampleCurriculumData.education
-    ]
+      ...sampleCurriculumData.education,
+    ],
   };
 
   return (
@@ -33,24 +41,25 @@ const TestPDFComparison = () => {
         <Typography variant="h4" gutterBottom>
           Teste: PDF com Texto Real
         </Typography>
-        
+
         <Alert severity="info" sx={{ mb: 3 }}>
-          <strong>Nova abordagem:</strong> Usando @react-pdf/renderer, o PDF é gerado com texto real 
-          (selecionável e pesquisável), não como imagem. A paginação é automática e inteligente.
+          <strong>Nova abordagem:</strong> Usando @react-pdf/renderer, o PDF é
+          gerado com texto real (selecionável e pesquisável), não como imagem. A
+          paginação é automática e inteligente.
         </Alert>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
           1. Download direto (dados normais - 1-2 páginas)
         </Typography>
-        
+
         <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
           <PDFDownloadLink
             document={<PDFTemplate1 data={testData} />}
             fileName="curriculo_teste_normal.pdf"
           >
             {({ blob, url, loading, error }) => (
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 color="primary"
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} /> : null}
@@ -64,15 +73,15 @@ const TestPDFComparison = () => {
         <Typography variant="h6" gutterBottom>
           2. Download (dados longos - 3+ páginas)
         </Typography>
-        
+
         <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
           <PDFDownloadLink
             document={<PDFTemplate1 data={longTestData} />}
             fileName="curriculo_teste_longo.pdf"
           >
             {({ blob, url, loading, error }) => (
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 color="secondary"
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} /> : null}
@@ -86,9 +95,9 @@ const TestPDFComparison = () => {
         <Typography variant="h6" gutterBottom>
           3. Visualizar PDF no navegador
         </Typography>
-        
-        <Button 
-          variant="outlined" 
+
+        <Button
+          variant="outlined"
           onClick={() => setShowViewer(!showViewer)}
           sx={{ mb: 2 }}
         >

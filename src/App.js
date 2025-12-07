@@ -34,9 +34,9 @@ function App() {
     ],
     {
       // Opt-in antecipado para o comportamento da v7
-      future: { 
+      future: {
         v7_relativeSplatPath: true,
-        v7_startTransition: true 
+        v7_startTransition: true,
       },
     }
   );

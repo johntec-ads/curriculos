@@ -9,21 +9,25 @@ import jsPDF from 'jspdf';
  * @param {object} options - Opções de configuração
  * @returns {Promise<boolean>} - Sucesso ou falha
  */
-export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf', options = {}) => {
+export const generateHighQualityPDF = async (
+  element,
+  filename = 'curriculo.pdf',
+  options = {}
+) => {
   try {
     const {
       scale = 2, // Escala reduzida para melhor compatibilidade
       quality = 0.95,
       format = 'a4',
       orientation = 'portrait',
-      onProgress = null
+      onProgress = null,
     } = options;
 
     if (onProgress) onProgress(10, 'Preparando documento...');
 
     // Clonar o elemento para não afetar o original
     const clonedElement = element.cloneNode(true);
-    
+
     // Criar container temporário para o clone
     const tempContainer = document.createElement('div');
     tempContainer.style.position = 'absolute';
@@ -38,7 +42,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     document.body.appendChild(tempContainer);
 
     // Aguardar um momento para o DOM processar
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     if (onProgress) onProgress(20, 'Capturando conteúdo...');
 
@@ -56,7 +60,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       scrollX: 0,
       scrollY: 0,
       width: clonedElement.scrollWidth,
-      height: clonedElement.scrollHeight
+      height: clonedElement.scrollHeight,
     });
 
     // Remover o container temporário
@@ -73,7 +77,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       orientation: orientation,
       unit: 'mm',
       format: format,
-      compress: true
+      compress: true,
     });
 
     // Calcular dimensões para manter proporção
@@ -89,17 +93,36 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     let page = 1;
 
     // Adicionar primeira página
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+    pdf.addImage(
+      imgData,
+      'JPEG',
+      0,
+      position,
+      imgWidth,
+      imgHeight,
+      undefined,
+      'FAST'
+    );
     heightLeft -= a4Height;
 
     // Adicionar páginas adicionais se necessário
     while (heightLeft > 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      pdf.addImage(
+        imgData,
+        'JPEG',
+        0,
+        position,
+        imgWidth,
+        imgHeight,
+        undefined,
+        'FAST'
+      );
       heightLeft -= a4Height;
       page++;
-      if (onProgress) onProgress(60 + (page * 10), `Processando página ${page}...`);
+      if (onProgress)
+        onProgress(60 + page * 10, `Processando página ${page}...`);
     }
 
     if (onProgress) onProgress(90, 'Finalizando...');
@@ -122,11 +145,14 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
  * @param {string} filename - Nome do arquivo PDF
  * @returns {Promise<boolean>} - Sucesso ou falha
  */
-export const generateOptimizedPDF = async (element, filename = 'curriculo.pdf') => {
+export const generateOptimizedPDF = async (
+  element,
+  filename = 'curriculo.pdf'
+) => {
   return generateHighQualityPDF(element, filename, {
     scale: 1.5,
     quality: 0.85,
-    onProgress: null
+    onProgress: null,
   });
 };
 
@@ -136,7 +162,11 @@ export const generateOptimizedPDF = async (element, filename = 'curriculo.pdf') 
  * @param {string} format - Formato de exportação ('pdf', 'png', 'jpeg')
  * @param {string} filename - Nome do arquivo
  */
-export const exportCurriculum = async (element, format = 'pdf', filename = 'curriculo') => {
+export const exportCurriculum = async (
+  element,
+  format = 'pdf',
+  filename = 'curriculo'
+) => {
   try {
     if (format === 'pdf') {
       return await generateHighQualityPDF(element, `${filename}.pdf`);
@@ -144,7 +174,7 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
 
     // Clonar o elemento para não afetar o original
     const clonedElement = element.cloneNode(true);
-    
+
     // Criar container temporário
     const tempContainer = document.createElement('div');
     tempContainer.style.position = 'absolute';
@@ -159,7 +189,7 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
     document.body.appendChild(tempContainer);
 
     // Aguardar processamento
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Para PNG ou JPEG
     const canvas = await html2canvas(clonedElement, {
@@ -167,14 +197,14 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
-      logging: false
+      logging: false,
     });
 
     // Remover container temporário
     document.body.removeChild(tempContainer);
 
     const dataUrl = canvas.toDataURL(`image/${format}`, 1.0);
-    
+
     // Criar link para download
     const link = document.createElement('a');
     link.href = dataUrl;
@@ -207,16 +237,16 @@ export const prepareElementForPDF = (element) => {
     'button',
     '.MuiButton-root',
     '.MuiIconButton-root',
-    '.MuiFab-root'
+    '.MuiFab-root',
   ];
 
-  hideSelectors.forEach(selector => {
+  hideSelectors.forEach((selector) => {
     const elements = element.querySelectorAll(selector);
-    elements.forEach(el => {
+    elements.forEach((el) => {
       if (el.style.display !== 'none') {
         elementsToHide.push({
           element: el,
-          originalDisplay: el.style.display
+          originalDisplay: el.style.display,
         });
         el.style.display = 'none';
       }
@@ -227,7 +257,7 @@ export const prepareElementForPDF = (element) => {
   const originalStyles = {
     width: element.style.width,
     minHeight: element.style.minHeight,
-    backgroundColor: element.style.backgroundColor
+    backgroundColor: element.style.backgroundColor,
   };
 
   element.style.width = '210mm';
@@ -252,7 +282,7 @@ const pdfUtils = {
   generateHighQualityPDF,
   generateOptimizedPDF,
   prepareElementForPDF,
-  exportCurriculum
+  exportCurriculum,
 };
 
 export default pdfUtils;

@@ -14,7 +14,7 @@ import {
   Avatar,
   Fade,
   Zoom,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -40,68 +40,80 @@ function HomeV2() {
     {
       icon: <SpeedIcon sx={{ fontSize: 50 }} />,
       title: 'Criação Rápida',
-      description: 'Preencha seu currículo em poucos minutos com nossa interface intuitiva e assistida.',
-      color: theme.palette.primary.main
+      description:
+        'Preencha seu currículo em poucos minutos com nossa interface intuitiva e assistida.',
+      color: theme.palette.primary.main,
     },
     {
       icon: <PaletteIcon sx={{ fontSize: 50 }} />,
       title: 'Templates Profissionais',
-      description: 'Escolha entre diversos templates modernos, elegantes e otimizados para ATS.',
-      color: theme.palette.secondary.main
+      description:
+        'Escolha entre diversos templates modernos, elegantes e otimizados para ATS.',
+      color: theme.palette.secondary.main,
     },
     {
       icon: <DownloadIcon sx={{ fontSize: 50 }} />,
       title: 'PDF Alta Qualidade',
-      description: 'Exporte seu currículo em PDF de alta resolução, pronto para impressão.',
-      color: theme.palette.success.main
+      description:
+        'Exporte seu currículo em PDF de alta resolução, pronto para impressão.',
+      color: theme.palette.success.main,
     },
     {
       icon: <SecurityIcon sx={{ fontSize: 50 }} />,
       title: '100% Gratuito',
-      description: 'Sem taxas ocultas, sem limites. Crie quantos currículos precisar, gratuitamente.',
-      color: theme.palette.info.main
+      description:
+        'Sem taxas ocultas, sem limites. Crie quantos currículos precisar, gratuitamente.',
+      color: theme.palette.info.main,
     },
     {
       icon: <SupportAgentIcon sx={{ fontSize: 50 }} />,
       title: 'Guia Passo a Passo',
-      description: 'Dicas profissionais em cada etapa para criar um currículo que se destaca.',
-      color: theme.palette.warning.main
+      description:
+        'Dicas profissionais em cada etapa para criar um currículo que se destaca.',
+      color: theme.palette.warning.main,
     },
     {
       icon: <TrendingUpIcon sx={{ fontSize: 50 }} />,
       title: 'Auto-Save',
-      description: 'Seu progresso é salvo automaticamente. Volte a qualquer momento.',
-      color: theme.palette.error.main
-    }
+      description:
+        'Seu progresso é salvo automaticamente. Volte a qualquer momento.',
+      color: theme.palette.error.main,
+    },
   ];
 
   const steps = [
     {
       number: '1',
       title: 'Escolha um Template',
-      description: 'Selecione o design que melhor representa seu estilo profissional'
+      description:
+        'Selecione o design que melhor representa seu estilo profissional',
     },
     {
       number: '2',
       title: 'Preencha Seus Dados',
-      description: 'Siga o guia passo a passo com dicas para cada seção'
+      description: 'Siga o guia passo a passo com dicas para cada seção',
     },
     {
       number: '3',
       title: 'Baixe em PDF',
-      description: 'Gere e baixe seu currículo profissional em segundos'
-    }
+      description: 'Gere e baixe seu currículo profissional em segundos',
+    },
   ];
 
   return (
-    <Box sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        minHeight: '100vh',
+      }}
+    >
       {/* Hero Section */}
       <Box
         sx={{
           position: 'relative',
           overflow: 'hidden',
           pt: { xs: 8, md: 12 },
-          pb: { xs: 8, md: 12 }
+          pb: { xs: 8, md: 12 },
         }}
       >
         {/* Background Pattern */}
@@ -137,8 +149,8 @@ function HomeV2() {
                     color: 'white',
                     border: '2px solid rgba(255,255,255,0.3)',
                     '& .MuiChip-icon': {
-                      color: 'white'
-                    }
+                      color: 'white',
+                    },
                   }}
                 />
               </Zoom>
@@ -152,17 +164,18 @@ function HomeV2() {
                   color: 'white',
                   mb: 2,
                   textShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  lineHeight: 1.2
+                  lineHeight: 1.2,
                 }}
               >
                 Conquiste a Vaga dos{' '}
                 <Box
                   component="span"
                   sx={{
-                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                    background:
+                      'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    display: 'inline-block'
+                    display: 'inline-block',
                   }}
                 >
                   Seus Sonhos
@@ -179,7 +192,7 @@ function HomeV2() {
                   mx: 'auto',
                   fontWeight: 400,
                   lineHeight: 1.6,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  textShadow: '0 2px 4px rgba(0,0,0,0.2)',
                 }}
               >
                 Crie currículos profissionais que impressionam recrutadores.
@@ -188,7 +201,11 @@ function HomeV2() {
               </Typography>
 
               {/* CTA Buttons */}
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                justifyContent="center"
+              >
                 <Button
                   component={Link}
                   to="/create"
@@ -208,9 +225,9 @@ function HomeV2() {
                     '&:hover': {
                       backgroundColor: '#FFA500',
                       transform: 'translateY(-3px)',
-                      boxShadow: '0 8px 25px rgba(255, 165, 0, 0.5)'
+                      boxShadow: '0 8px 25px rgba(255, 165, 0, 0.5)',
                     },
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
                   }}
                 >
                   Criar Currículo Agora
@@ -231,9 +248,9 @@ function HomeV2() {
                     '&:hover': {
                       borderColor: '#fff',
                       backgroundColor: 'rgba(255,255,255,0.1)',
-                      transform: 'translateY(-2px)'
+                      transform: 'translateY(-2px)',
                     },
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
                   }}
                 >
                   Teste Rápido (Dados Fictícios)
@@ -248,8 +265,15 @@ function HomeV2() {
                 flexWrap="wrap"
                 sx={{ gap: 2 }}
               >
-                {['Sem Cadastro', 'Salva Automaticamente', 'PDF Profissional'].map((badge) => (
-                  <Box key={badge} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {[
+                  'Sem Cadastro',
+                  'Salva Automaticamente',
+                  'PDF Profissional',
+                ].map((badge) => (
+                  <Box
+                    key={badge}
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
                     <CheckCircleIcon sx={{ color: '#4ade80', fontSize: 20 }} />
                     <Typography sx={{ color: 'white', fontWeight: 500 }}>
                       {badge}
@@ -271,13 +295,18 @@ function HomeV2() {
               sx={{
                 fontWeight: 800,
                 color: theme.palette.primary.main,
-                mb: 2
+                mb: 2,
               }}
             >
               Por Que Usar Nossa Plataforma?
             </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-              Ferramentas profissionais para ajudá-lo a conseguir o emprego que merece
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ maxWidth: 600, mx: 'auto' }}
+            >
+              Ferramentas profissionais para ajudá-lo a conseguir o emprego que
+              merece
             </Typography>
           </Box>
 
@@ -296,8 +325,8 @@ function HomeV2() {
                       '&:hover': {
                         transform: 'translateY(-8px)',
                         borderColor: feature.color,
-                        boxShadow: `0 12px 24px ${feature.color}20`
-                      }
+                        boxShadow: `0 12px 24px ${feature.color}20`,
+                      },
                     }}
                   >
                     <CardContent sx={{ p: 4, textAlign: 'center' }}>
@@ -308,7 +337,7 @@ function HomeV2() {
                           mx: 'auto',
                           mb: 2,
                           background: `linear-gradient(135deg, ${feature.color} 0%, ${feature.color}CC 100%)`,
-                          boxShadow: `0 8px 16px ${feature.color}30`
+                          boxShadow: `0 8px 16px ${feature.color}30`,
                         }}
                       >
                         {feature.icon}
@@ -329,7 +358,12 @@ function HomeV2() {
       </Box>
 
       {/* How It Works Section */}
-      <Box sx={{ py: { xs: 6, md: 10 }, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+      <Box
+        sx={{
+          py: { xs: 6, md: 10 },
+          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        }}
+      >
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography
@@ -337,7 +371,7 @@ function HomeV2() {
               sx={{
                 fontWeight: 800,
                 color: theme.palette.primary.main,
-                mb: 2
+                mb: 2,
               }}
             >
               Como Funciona?
@@ -361,8 +395,8 @@ function HomeV2() {
                       background: 'white',
                       '&:hover': {
                         transform: 'scale(1.05)',
-                        transition: 'transform 0.3s ease'
-                      }
+                        transition: 'transform 0.3s ease',
+                      },
                     }}
                   >
                     <Avatar
@@ -373,7 +407,7 @@ function HomeV2() {
                         mb: 2,
                         fontSize: '2rem',
                         fontWeight: 'bold',
-                        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`
+                        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                       }}
                     >
                       {step.number}
@@ -405,8 +439,8 @@ function HomeV2() {
                 background: theme.palette.primary.main,
                 '&:hover': {
                   background: theme.palette.primary.dark,
-                  transform: 'scale(1.05)'
-                }
+                  transform: 'scale(1.05)',
+                },
               }}
             >
               Começar Agora - É Grátis!

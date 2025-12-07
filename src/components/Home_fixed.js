@@ -19,7 +19,7 @@ import {
   Grid,
   Card,
   CardContent,
-  Stack
+  Stack,
 } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -114,40 +114,45 @@ function HomeFixed() {
     {
       icon: <DescriptionIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
       title: 'Criação Rápida',
-      description: 'Preencha seu currículo em poucos minutos com nossa interface intuitiva.'
+      description:
+        'Preencha seu currículo em poucos minutos com nossa interface intuitiva.',
     },
     {
       icon: <PaletteIcon sx={{ fontSize: 40, color: 'secondary.main' }} />,
       title: 'Templates Profissionais',
-      description: 'Escolha entre diversos templates modernos e profissionais.'
+      description: 'Escolha entre diversos templates modernos e profissionais.',
     },
     {
       icon: <DownloadIcon sx={{ fontSize: 40, color: 'success.main' }} />,
       title: 'Exportação em PDF',
-      description: 'Baixe seu currículo em formato PDF de alta qualidade.'
+      description: 'Baixe seu currículo em formato PDF de alta qualidade.',
     },
     {
       icon: <ShareOutlinedIcon sx={{ fontSize: 40, color: 'info.main' }} />,
       title: 'Compartilhamento Fácil',
-      description: 'Compartilhe seu currículo ou o aplicativo com um clique.'
-    }
+      description: 'Compartilhe seu currículo ou o aplicativo com um clique.',
+    },
   ];
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          py: 3,
-          px: 2
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            py: 3,
+            px: 2,
+          }}
+        >
           {currentUser ? (
             <Paper
               elevation={0}
@@ -159,7 +164,7 @@ function HomeFixed() {
                 gap: 2,
                 borderRadius: 3,
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.2)'
+                border: '1px solid rgba(255,255,255,0.2)',
               }}
             >
               <Avatar
@@ -167,10 +172,12 @@ function HomeFixed() {
                 sx={{
                   bgcolor: 'primary.main',
                   width: 40,
-                  height: 40
+                  height: 40,
                 }}
               >
-                {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : currentUser.email[0].toUpperCase()}
+                {currentUser.displayName
+                  ? currentUser.displayName[0].toUpperCase()
+                  : currentUser.email[0].toUpperCase()}
               </Avatar>
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
@@ -196,8 +203,8 @@ function HomeFixed() {
                 borderColor: 'rgba(255,255,255,0.3)',
                 '&:hover': {
                   borderColor: 'white',
-                  bgcolor: 'rgba(255,255,255,0.1)'
-                }
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                },
               }}
             >
               Entrar
@@ -205,14 +212,16 @@ function HomeFixed() {
           )}
         </Box>
 
-        <Box sx={{
-          textAlign: 'center',
-          py: { xs: 8, md: 12 },
-          px: 2,
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-          transition: 'all 0.8s ease-out'
-        }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: { xs: 8, md: 12 },
+            px: 2,
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+            transition: 'all 0.8s ease-out',
+          }}
+        >
           <Typography
             variant="h1"
             sx={{
@@ -220,7 +229,7 @@ function HomeFixed() {
               fontWeight: 800,
               color: 'white',
               mb: 2,
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
             }}
           >
             JOHNTEC.ADS
@@ -233,7 +242,7 @@ function HomeFixed() {
               fontWeight: 600,
               color: 'white',
               mb: 3,
-              opacity: 0.9
+              opacity: 0.9,
             }}
           >
             Gerador de Currículos
@@ -273,7 +282,9 @@ function HomeFixed() {
                   <CardContent>
                     <Box sx={{ mb: 2 }}>{feature.icon}</Box>
                     <Typography variant="h6">{feature.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{feature.description}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {feature.description}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -284,7 +295,10 @@ function HomeFixed() {
         <Box sx={{ py: 8, px: 2 }}>
           <Paper sx={{ p: 4, textAlign: 'center' }}>
             <Typography variant="h5">Compartilhe com Amigos</Typography>
-            <Typography variant="body1">Mostre este QR code para quem precisa criar um currículo profissional</Typography>
+            <Typography variant="body1">
+              Mostre este QR code para quem precisa criar um currículo
+              profissional
+            </Typography>
             <Box sx={{ mt: 2 }}>
               <QRCodeCanvas value={appUrl} size={160} level="H" includeMargin />
             </Box>
@@ -292,14 +306,30 @@ function HomeFixed() {
         </Box>
       </Container>
 
-      <Dialog open={isShareDialogOpen} onClose={handleShareDialogClose} maxWidth="sm" fullWidth>
+      <Dialog
+        open={isShareDialogOpen}
+        onClose={handleShareDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Compartilhar Aplicativo</DialogTitle>
         <DialogContent>
-          <TextField fullWidth value={appUrl} InputProps={{ readOnly: true }} sx={{ mb: 2 }} />
+          <TextField
+            fullWidth
+            value={appUrl}
+            InputProps={{ readOnly: true }}
+            sx={{ mb: 2 }}
+          />
           <Stack direction="row" spacing={1}>
-            <IconButton onClick={handleCopyLink}><ContentCopyIcon /></IconButton>
-            <IconButton onClick={() => handleShare('whatsapp')}><WhatsAppIcon /></IconButton>
-            <IconButton onClick={() => handleShare('facebook')}><FacebookIcon /></IconButton>
+            <IconButton onClick={handleCopyLink}>
+              <ContentCopyIcon />
+            </IconButton>
+            <IconButton onClick={() => handleShare('whatsapp')}>
+              <WhatsAppIcon />
+            </IconButton>
+            <IconButton onClick={() => handleShare('facebook')}>
+              <FacebookIcon />
+            </IconButton>
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -309,8 +339,17 @@ function HomeFixed() {
 
       <Authentication open={isAuthDialogOpen} onClose={handleCloseAuthDialog} />
 
-      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={() => setSnackbarOpen(false)}>
-        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>{snackbarMessage}</Alert>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+        >
+          {snackbarMessage}
+        </Alert>
       </Snackbar>
     </Box>
   );

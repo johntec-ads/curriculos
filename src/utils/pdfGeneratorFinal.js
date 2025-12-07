@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 
 /**
  * Gerador de PDF Final - Abordagem simplificada e robusta
- * 
+ *
  * Estratégia: Capturar o elemento inteiro como uma única imagem de alta qualidade
  * e dividir em páginas A4 de forma precisa, sem tentar manipular o DOM.
  */
@@ -12,9 +12,9 @@ import jsPDF from 'jspdf';
 const A4 = {
   WIDTH_MM: 210,
   HEIGHT_MM: 297,
-  WIDTH_PX_96DPI: 794,  // 210mm * 96dpi / 25.4
+  WIDTH_PX_96DPI: 794, // 210mm * 96dpi / 25.4
   HEIGHT_PX_96DPI: 1123, // 297mm * 96dpi / 25.4
-  ASPECT_RATIO: 297 / 210
+  ASPECT_RATIO: 297 / 210,
 };
 
 /**
@@ -22,7 +22,7 @@ const A4 = {
  */
 const waitForImages = async (element) => {
   const images = element.querySelectorAll('img');
-  const promises = Array.from(images).map(img => {
+  const promises = Array.from(images).map((img) => {
     if (img.complete && img.naturalHeight !== 0) {
       return Promise.resolve();
     }
@@ -41,7 +41,7 @@ const waitForImages = async (element) => {
  */
 const prepareElementForCapture = (element) => {
   const clone = element.cloneNode(true);
-  
+
   // Garantir largura fixa A4
   clone.style.width = `${A4.WIDTH_MM}mm`;
   clone.style.minHeight = `${A4.HEIGHT_MM}mm`;
@@ -52,33 +52,37 @@ const prepareElementForCapture = (element) => {
   clone.style.position = 'absolute';
   clone.style.left = '-9999px';
   clone.style.top = '0';
-  
+
   // Remover sombras e bordas arredondadas que podem causar artefatos
   clone.style.boxShadow = 'none';
   clone.style.borderRadius = '0';
-  
+
   // Garantir que todo o conteúdo seja visível
   clone.style.overflow = 'visible';
   clone.style.visibility = 'visible';
-  
+
   return clone;
 };
 
 /**
  * Gera PDF de alta qualidade a partir de um elemento HTML
- * 
+ *
  * @param {HTMLElement} element - Elemento a ser convertido em PDF
  * @param {string} filename - Nome do arquivo PDF
  * @param {object} options - Opções de configuração
  * @returns {Promise<Blob|boolean>} - Blob do PDF ou true se salvo com sucesso
  */
-export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf', options = {}) => {
+export const generateHighQualityPDF = async (
+  element,
+  filename = 'curriculo.pdf',
+  options = {}
+) => {
   const {
     onProgress = null,
     returnBlob = false,
     scale = 2, // Escala para qualidade (2 = boa qualidade, 3 = alta qualidade)
     quality = 0.92, // Qualidade JPEG (0.92 é um bom equilíbrio)
-    margin = 10 // Margem em mm (10mm = margem padrão para impressão)
+    margin = 10, // Margem em mm (10mm = margem padrão para impressão)
   } = options;
 
   try {
@@ -87,16 +91,16 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     // Preparar clone do elemento
     const clone = prepareElementForCapture(element);
     document.body.appendChild(clone);
-    
+
     // Aguardar renderização
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     // Aguardar carregamento de imagens
     if (onProgress) onProgress(10, 'Carregando imagens...');
     await waitForImages(clone);
-    
+
     // Aguardar mais um pouco para garantir renderização completa
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     if (onProgress) onProgress(20, 'Capturando conteúdo...');
 
@@ -113,7 +117,7 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       width: clone.scrollWidth,
       height: clone.scrollHeight,
       windowWidth: clone.scrollWidth,
-      windowHeight: clone.scrollHeight
+      windowHeight: clone.scrollHeight,
     });
 
     // Remover clone
@@ -126,15 +130,15 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
-      compress: true
+      compress: true,
     });
 
     // Calcular dimensões
-    const imgWidth = A4.WIDTH_MM - (margin * 2);
+    const imgWidth = A4.WIDTH_MM - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
+
     // Calcular quantas páginas serão necessárias
-    const pageHeight = A4.HEIGHT_MM - (margin * 2);
+    const pageHeight = A4.HEIGHT_MM - margin * 2;
     const totalPages = Math.ceil(imgHeight / pageHeight);
 
     if (onProgress) onProgress(60, `Processando ${totalPages} página(s)...`);
@@ -148,45 +152,59 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
       // Isso evita repetição de conteúdo e corte é inevitável com abordagem de imagem
       const pageHeightPx = (pageHeight * canvas.width) / imgWidth;
       const actualTotalPages = Math.ceil(canvas.height / pageHeightPx);
-      
+
       for (let page = 0; page < actualTotalPages; page++) {
         if (page > 0) pdf.addPage();
-        
+
         // Criar canvas temporário para esta página
         const pageCanvas = document.createElement('canvas');
         pageCanvas.width = canvas.width;
-        
+
         // Calcular posição inicial
         const startY = page * pageHeightPx;
         const remainingHeight = canvas.height - startY;
-        
+
         // Altura desta página (última página pode ser menor)
         const thisPageHeight = Math.min(pageHeightPx, remainingHeight);
-        
+
         // Garantir altura mínima
         if (thisPageHeight <= 0) break;
-        
+
         pageCanvas.height = thisPageHeight;
-        
+
         const ctx = pageCanvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-        
+
         // Desenhar a porção desta página
         ctx.drawImage(
           canvas,
-          0, startY, canvas.width, thisPageHeight,
-          0, 0, canvas.width, thisPageHeight
+          0,
+          startY,
+          canvas.width,
+          thisPageHeight,
+          0,
+          0,
+          canvas.width,
+          thisPageHeight
         );
-        
+
         // Converter para imagem e adicionar ao PDF
         const pageImgData = pageCanvas.toDataURL('image/jpeg', quality);
         const thisPageHeightMm = (thisPageHeight * imgWidth) / canvas.width;
-        
-        pdf.addImage(pageImgData, 'JPEG', margin, margin, imgWidth, thisPageHeightMm);
-        
+
+        pdf.addImage(
+          pageImgData,
+          'JPEG',
+          margin,
+          margin,
+          imgWidth,
+          thisPageHeightMm
+        );
+
         if (onProgress) {
-          const progress = 60 + Math.floor(((page + 1) / actualTotalPages) * 35);
+          const progress =
+            60 + Math.floor(((page + 1) / actualTotalPages) * 35);
           onProgress(progress, `Página ${page + 1}/${actualTotalPages}...`);
         }
       }
@@ -204,7 +222,6 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
     pdf.save(filename);
     if (onProgress) onProgress(100, 'Concluído!');
     return true;
-
   } catch (error) {
     console.error('Erro ao gerar PDF:', error);
     throw new Error(`Falha ao gerar PDF: ${error.message}`);
@@ -214,18 +231,26 @@ export const generateHighQualityPDF = async (element, filename = 'curriculo.pdf'
 /**
  * Versão otimizada para compartilhamento (arquivo menor)
  */
-export const generateOptimizedPDF = async (element, filename = 'curriculo.pdf', options = {}) => {
+export const generateOptimizedPDF = async (
+  element,
+  filename = 'curriculo.pdf',
+  options = {}
+) => {
   return generateHighQualityPDF(element, filename, {
     ...options,
     scale: 1.5,
-    quality: 0.85
+    quality: 0.85,
   });
 };
 
 /**
  * Exporta currículo em diferentes formatos
  */
-export const exportCurriculum = async (element, format = 'pdf', filename = 'curriculo') => {
+export const exportCurriculum = async (
+  element,
+  format = 'pdf',
+  filename = 'curriculo'
+) => {
   if (format === 'pdf') {
     return generateHighQualityPDF(element, `${filename}.pdf`);
   }
@@ -233,22 +258,25 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
   // Para PNG ou JPEG
   const clone = prepareElementForCapture(element);
   document.body.appendChild(clone);
-  
-  await new Promise(resolve => setTimeout(resolve, 300));
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
   await waitForImages(clone);
-  
+
   const canvas = await html2canvas(clone, {
     scale: 2,
     useCORS: true,
     allowTaint: true,
     backgroundColor: '#ffffff',
-    logging: false
+    logging: false,
   });
-  
+
   document.body.removeChild(clone);
 
-  const dataUrl = canvas.toDataURL(`image/${format}`, format === 'jpeg' ? 0.92 : 1.0);
-  
+  const dataUrl = canvas.toDataURL(
+    `image/${format}`,
+    format === 'jpeg' ? 0.92 : 1.0
+  );
+
   const link = document.createElement('a');
   link.href = dataUrl;
   link.download = `${filename}.${format}`;
@@ -262,7 +290,7 @@ export const exportCurriculum = async (element, format = 'pdf', filename = 'curr
 const pdfGeneratorFinal = {
   generateHighQualityPDF,
   generateOptimizedPDF,
-  exportCurriculum
+  exportCurriculum,
 };
 
 export default pdfGeneratorFinal;

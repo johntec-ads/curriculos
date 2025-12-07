@@ -14,7 +14,7 @@ import {
   Tab,
   CircularProgress,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -34,13 +34,20 @@ function Authentication({ open, onClose, afterLogin }) {
   const timeoutIdRef = useRef(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
-  const { login, signup, loginWithGoogle, resetPassword, currentUser, redirectInProgress } = useAuth();
+
+  const {
+    login,
+    signup,
+    loginWithGoogle,
+    resetPassword,
+    currentUser,
+    redirectInProgress,
+  } = useAuth();
 
   // Fechar modal quando o redirecionamento para login Google for iniciado em dispositivos móveis
   useEffect(() => {
     if (redirectInProgress) {
-      console.log("Redirecionamento em progresso, fechando modal...");
+      console.log('Redirecionamento em progresso, fechando modal...');
       onClose();
     }
   }, [redirectInProgress, onClose]);
@@ -66,17 +73,17 @@ function Authentication({ open, onClose, afterLogin }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !validateEmail(email)) {
       setError('Por favor, insira um email válido');
       return;
     }
-    
+
     if (!password) {
       setError('Por favor, insira sua senha');
       return;
     }
-    
+
     try {
       setError('');
       setLoading(true);
@@ -90,7 +97,10 @@ function Authentication({ open, onClose, afterLogin }) {
       }, 1000);
     } catch (error) {
       console.error(error);
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      if (
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password'
+      ) {
         setError('Email ou senha incorretos');
       } else if (error.code === 'auth/too-many-requests') {
         setError('Muitas tentativas. Tente novamente mais tarde');
@@ -104,27 +114,27 @@ function Authentication({ open, onClose, afterLogin }) {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !validateEmail(email)) {
       setError('Por favor, insira um email válido');
       return;
     }
-    
+
     if (!password) {
       setError('Por favor, insira uma senha');
       return;
     }
-    
+
     if (password.length < 6) {
       setError('A senha deve ter pelo menos 6 caracteres');
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError('As senhas não conferem');
       return;
     }
-    
+
     try {
       setError('');
       setLoading(true);
@@ -154,10 +164,10 @@ function Authentication({ open, onClose, afterLogin }) {
       setLoading(true);
       setOperationCompleted(false);
       setIsGoogleLogin(true);
-      
-      console.log("Iniciando login com Google...");
+
+      console.log('Iniciando login com Google...');
       await loginWithGoogle();
-      
+
       // Se não for redirecionamento (desktop), vamos fechar o modal após login bem-sucedido
       // Em dispositivos móveis, o redirecionamento já fechará o modal através do useEffect
       if (!redirectInProgress) {
@@ -168,7 +178,7 @@ function Authentication({ open, onClose, afterLogin }) {
         }, 1000);
       }
     } catch (error) {
-      console.error("Erro capturado no handleGoogleLogin:", error);
+      console.error('Erro capturado no handleGoogleLogin:', error);
       setError('Erro ao fazer login com Google. Tente novamente');
       setIsGoogleLogin(false);
     } finally {
@@ -180,19 +190,21 @@ function Authentication({ open, onClose, afterLogin }) {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !validateEmail(email)) {
       setError('Por favor, insira um email válido');
       return;
     }
-    
+
     try {
       setError('');
       setLoading(true);
       setOperationCompleted(false);
       await resetPassword(email);
       setOperationCompleted(true);
-      setSuccess('Email de redefinição enviado. Verifique sua caixa de entrada');
+      setSuccess(
+        'Email de redefinição enviado. Verifique sua caixa de entrada'
+      );
     } catch (error) {
       console.error(error);
       if (error.code === 'auth/user-not-found') {
@@ -208,19 +220,19 @@ function Authentication({ open, onClose, afterLogin }) {
   // Fechar o modal automaticamente se o usuário for autenticado
   useEffect(() => {
     if (currentUser && (loading || isGoogleLogin)) {
-      console.log("Usuário autenticado detectado:", currentUser.email);
+      console.log('Usuário autenticado detectado:', currentUser.email);
       setOperationCompleted(true);
       setLoading(false);
       setIsGoogleLogin(false);
-      
+
       // Limpar qualquer temporizador pendente
       if (timeoutIdRef.current) {
         clearTimeout(timeoutIdRef.current);
         timeoutIdRef.current = null;
       }
-      
+
       // Fechar o modal imediatamente
-      console.log("Fechando modal após autenticação bem-sucedida");
+      console.log('Fechando modal após autenticação bem-sucedida');
       onClose();
       if (afterLogin) afterLogin();
     }
@@ -229,37 +241,49 @@ function Authentication({ open, onClose, afterLogin }) {
   // Temporizador de segurança revisado
   useEffect(() => {
     if (loading && !isGoogleLogin && !redirectInProgress) {
-      console.log("Iniciando temporizador de segurança...");
-      
+      console.log('Iniciando temporizador de segurança...');
+
       // Limpar qualquer temporizador existente
       if (timeoutIdRef.current) {
         clearTimeout(timeoutIdRef.current);
       }
-      
+
       timeoutIdRef.current = setTimeout(() => {
         if (!operationCompleted) {
-          console.log("Temporizador de segurança acionado - operação não concluída");
+          console.log(
+            'Temporizador de segurança acionado - operação não concluída'
+          );
           setLoading(false);
-          
+
           // Verificar novamente se o usuário foi autenticado
           if (currentUser) {
-            console.log("Usuário já está autenticado, fechando modal");
+            console.log('Usuário já está autenticado, fechando modal');
             onClose();
             if (afterLogin) afterLogin();
           } else {
-            setError('A operação demorou muito tempo. Por favor, tente novamente.');
+            setError(
+              'A operação demorou muito tempo. Por favor, tente novamente.'
+            );
           }
         }
       }, 5000);
     }
-    
+
     return () => {
       if (timeoutIdRef.current) {
-        console.log("Limpando temporizador de segurança");
+        console.log('Limpando temporizador de segurança');
         clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [loading, operationCompleted, currentUser, onClose, afterLogin, isGoogleLogin, redirectInProgress]);
+  }, [
+    loading,
+    operationCompleted,
+    currentUser,
+    onClose,
+    afterLogin,
+    isGoogleLogin,
+    redirectInProgress,
+  ]);
 
   return (
     <Dialog
@@ -272,8 +296,8 @@ function Authentication({ open, onClose, afterLogin }) {
           width: '100%',
           maxWidth: { xs: '95%', sm: '450px' },
           m: { xs: 1, sm: 2 },
-          p: { xs: 1, sm: 2 }
-        }
+          p: { xs: 1, sm: 2 },
+        },
       }}
     >
       <DialogTitle>
@@ -291,23 +315,31 @@ function Authentication({ open, onClose, afterLogin }) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent>
         {!forgotPassword && (
-          <Tabs 
-            value={tab} 
-            onChange={handleTabChange} 
-            variant="fullWidth" 
+          <Tabs
+            value={tab}
+            onChange={handleTabChange}
+            variant="fullWidth"
             sx={{ mb: 3 }}
           >
             <Tab label="Login" />
             <Tab label="Criar Conta" />
           </Tabs>
         )}
-        
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-        
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
+
         {forgotPassword ? (
           <Box component="form" onSubmit={handleResetPassword} sx={{ mt: 1 }}>
             <TextField
@@ -323,7 +355,7 @@ function Authentication({ open, onClose, afterLogin }) {
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
             />
-            
+
             <Button
               type="submit"
               fullWidth
@@ -331,9 +363,13 @@ function Authentication({ open, onClose, afterLogin }) {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'Enviar email de recuperação'}
+              {loading ? (
+                <CircularProgress size={24} />
+              ) : (
+                'Enviar email de recuperação'
+              )}
             </Button>
-            
+
             <Button
               fullWidth
               variant="text"
@@ -373,7 +409,7 @@ function Authentication({ open, onClose, afterLogin }) {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
                 />
-                
+
                 <Button
                   type="submit"
                   fullWidth
@@ -383,7 +419,7 @@ function Authentication({ open, onClose, afterLogin }) {
                 >
                   {loading ? <CircularProgress size={24} /> : 'Entrar'}
                 </Button>
-                
+
                 <Button
                   variant="text"
                   size="small"
@@ -435,7 +471,7 @@ function Authentication({ open, onClose, afterLogin }) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={loading}
                 />
-                
+
                 <Button
                   type="submit"
                   fullWidth
@@ -449,7 +485,7 @@ function Authentication({ open, onClose, afterLogin }) {
             )}
           </>
         )}
-        
+
         {!forgotPassword && (
           <>
             <Divider sx={{ my: 3 }}>
@@ -457,7 +493,7 @@ function Authentication({ open, onClose, afterLogin }) {
                 OU
               </Typography>
             </Divider>
-            
+
             <Button
               fullWidth
               variant="outlined"
@@ -466,16 +502,22 @@ function Authentication({ open, onClose, afterLogin }) {
               disabled={loading}
               sx={{
                 py: 1,
-                fontSize: { xs: '0.95rem', sm: '1rem' }
+                fontSize: { xs: '0.95rem', sm: '1rem' },
               }}
             >
               {isMobile ? 'Entrar com Google' : 'Continuar com Google'}
             </Button>
           </>
         )}
-        
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 3 }}>
-          Ao fazer login, você concorda com nossos Termos de Uso e Política de Privacidade.
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          sx={{ mt: 3 }}
+        >
+          Ao fazer login, você concorda com nossos Termos de Uso e Política de
+          Privacidade.
         </Typography>
       </DialogContent>
     </Dialog>
