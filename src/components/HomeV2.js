@@ -450,13 +450,13 @@ function HomeV2() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ py: 4, background: 'rgba(0,0,0,0.05)', textAlign: 'center' }}>
+      <Box sx={{ py: 4, background: '#0f1724', color: '#ffffff', textAlign: 'center' }}>
         <Container>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            JOHNTEC.ADS
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: '#FFFFFF' }}>
+            JohnTec.ADS
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Ajudando profissionais a conquistarem suas oportunidades • 2024
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+            Seu currículo, pronto para o mercado.
           </Typography>
         </Container>
       </Box>
