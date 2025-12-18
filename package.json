@@ -40,6 +40,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "generate:logo": "node ./scripts/generate-logo-png.js",
     "lint": "eslint src --ext .js,.jsx",
     "lint:fix": "eslint src --ext .js,.jsx --fix",
     "format": "prettier --write src/**/*.{js,jsx,json,css,md}",
@@ -65,6 +66,7 @@
   },
   "devDependencies": {
     "eslint-config-prettier": "^10.1.1",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "sharp": "^0.34.5"
   }
 }

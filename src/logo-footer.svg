@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="40" viewBox="0 0 240 40" role="img" aria-label="JohnTec.ADS logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="40" height="40" rx="8" fill="url(#g)"/>
+  <text x="20" y="25" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="18" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">J</text>
+  <text x="56" y="25" font-family="Inter, Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="16" fill="#FFFFFF">JohnTec.ADS</text>
+</svg>

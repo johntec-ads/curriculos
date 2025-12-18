@@ -27,6 +27,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import BugReportIcon from '@mui/icons-material/BugReport';
+import logoFooter from '../logo-footer.svg';
 
 function HomeV2() {
   const [isVisible, setIsVisible] = useState(false);
@@ -450,11 +451,9 @@ function HomeV2() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ py: 4, background: '#0f1724', color: '#ffffff', textAlign: 'center' }}>
+      <Box sx={{ py: 4, background: '#111827', color: '#ffffff', textAlign: 'center' }}>
         <Container>
-          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: '#FFFFFF' }}>
-            JohnTec.ADS
-          </Typography>
+          <Box component="img" src={logoFooter} alt="JohnTec.ADS" sx={{ height: 40, mb: 1, mx: 'auto', display: 'block' }} />
           <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }}>
             Seu currículo, pronto para o mercado.
           </Typography>
